@@ -2,7 +2,14 @@ package controllers
 
 import javax.inject._
 
+import models._
 import play.api.mvc._
+import schemas.Schemas
+import slick.jdbc.MySQLProfile.api._
+import com.github.t3hnar.bcrypt._
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -18,7 +25,74 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * a path of `/`.
    */
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    val db = Database.forConfig("db.default")
+
+
+    /* val a = db.run(Schemas.allSchemas.drop)
+     Await.result(a, Duration.Inf)
+   */
+
+     val initUser = Schemas.usuarios ++= Seq(
+                                           Usuario("200", "200", "200".bcrypt, "200", None)
+                                           )
+
+     val initPerfiles = Schemas.perfiles ++= Seq(
+                                               Perfil("admin"),
+                                               Perfil("operador"),
+                                               Perfil("supervisor")
+                                               )
+
+     val initUserPerfil = Schemas.usuariosPerfiles ++= Seq(
+                                                         UsuarioPerfil("200", "admin")
+                                                         )
+
+
+     val initObrasSociales = Schemas.obrasSociales ++= Seq(
+                                                     ObraSocial("cobertec"),
+                                                     ObraSocial("osde"),
+                                                     ObraSocial("medicus"),
+     )
+
+     val initUserObraSocial = Schemas.usuariosObrasSociales ++= Seq(
+                                                                 UsuarioObraSocial("200", "cobertec"),
+                                                                 UsuarioObraSocial("200", "medicus"),
+                                                                 UsuarioObraSocial("200", "osde"),
+                                                                 )
+
+     val initPantallas = Schemas.pantallas ++= Seq(
+                                         Pantalla("usuario"),
+                                         )
+
+     val initRutas = Schemas.rutas ++= Seq(
+                                   Ruta("/obraSocial/all"),
+                                   Ruta("/perfil/all"),
+                                   )
+
+     val initPerfilPantalla = Schemas.perfilesPantallas ++= Seq(
+                                                               PerfilPantalla("admin", "usuario"),
+
+                                                               )
+
+     val initPantallaRuta = Schemas.pantallasRutas ++= Seq(
+                                                       PantallaRuta("usuario", "/obraSocial/all"),
+                                                       PantallaRuta("usuario", "/perfil/all"),
+                                                     )
+
+     val seq = DBIO.seq(
+                       Schemas.allSchemas.create,
+                       initUser,
+                       initObrasSociales,
+                       initPerfiles,
+                       initPantallas,
+                       initRutas,
+                       initUserObraSocial,
+                       initUserPerfil,
+                       initPerfilPantalla,
+                       initPantallaRuta
+     )
+     val e = db.run(seq.transactionally)
+     Await.result(e, Duration.Inf)
+    Ok("base de datos creada")
   }
 
   def hola (nombre: String, apellido: String) = Action {
