@@ -1,85 +1,194 @@
 package schemas
 
-import models._
+import java.sql.Timestamp
+import java.time.{Instant, ZoneOffset}
+
+import akka.http.scaladsl.model.DateTime
+import models.{UsuarioPerfil, _}
 import slick.jdbc.MySQLProfile.api._
 
 object Schemas {
 
-  class Lugares(tag: Tag) extends BaseTable[Lugar](tag, "lugares") {
 
-    def nombre = column[String]("nombre")
+  implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
+    dt => new Timestamp(dt.clicks),
+    ts => DateTime(ts.getTime)
+  )
 
-    def domicilio = column[String]("domicilio")
 
-    def telefono = column[Int]("telefono")
+  class ObrasSociales(tag: Tag) extends Table[ObraSocial](tag, "obras_sociales") {
 
-    def * = (id, nombre, domicilio, telefono, created_at, updated_at, deleted_at) <> (Lugar.tupled, Lugar.unapply)
 
+    def nombre = column[String]("nombre", O.PrimaryKey)
+
+    def * = nombre <> (ObraSocial.apply, ObraSocial.unapply)
   }
 
-  val lugares = TableQuery[Lugares]
+  val obrasSociales = TableQuery[ObrasSociales]
 
-  class Canchas(tag: Tag) extends BaseTable[Cancha](tag, "canchas") {
 
-    def nro = column[Int]("nro")
+  class Usuarios(tag: Tag) extends  Table[Usuario](tag, "usuarios") {
 
-    def precio = column[Double]("precio")
-
-    def suelo = column[String]("suelo")
-
-    def lugarId = column[Long]("lugar_id")
-
-    def lugar = foreignKey("fk_lugar", lugarId, lugares)(_.id)
-
-    def * = (id, nro, precio, suelo, lugarId, created_at, updated_at, deleted_at) <> (Cancha.tupled, Cancha.unapply)
-  }
-
-  val canchas = TableQuery[Canchas]
-
-  class Usuarios(tag: Tag) extends BaseTable[Usuario](tag, "usuarios") {
-
-    def usuario = column[String]("usuario")
-
+    def user = column[String]("user", O.PrimaryKey)
     def email = column[String]("email")
+    def password = column[String]("password")
+    def nombre = column[String]("nombre")
+    def borrado = column[Option[Boolean]]("borrado")
 
-    def * = (id, usuario, email, created_at, updated_at, deleted_at) <> (Usuario.tupled, Usuario.unapply)
-
+    def * = (user, email, password, nombre, borrado) <> (Usuario.tupled, Usuario.unapply)
   }
 
   val usuarios = TableQuery[Usuarios]
 
-  class Reservas(tag: Tag) extends BaseTable[Reserva](tag, "reservas") {
+  class UsuariosObrasSociales(tag: Tag) extends Table[UsuarioObraSocial](tag, "usuario_obra_social") {
 
-    def usuarioId = column[Long]("usuario_id")
+    def idUsuario = column[String]("id_usuario", O.Length(50))
 
-    def usuario = foreignKey("fk_usuario", usuarioId, usuarios)(_.id)
+    def idObraSocial = column[String]("id_obra_social", O.Length(50))
 
-    def canchaId = column[Long]("cancha_id")
+    def pk = primaryKey("pkusuarioobrasocial", (idUsuario, idObraSocial))
 
-    def cancha = foreignKey("fk_cancha", canchaId, canchas)(_.id)
+    def idUsuarioFk = foreignKey("fk_usuario_obra_social", idUsuario, usuarios)(_.user)
 
-    def * = (id, usuarioId, canchaId, created_at, updated_at, deleted_at) <> (Reserva.tupled, Reserva.unapply)
-  }
+    def idObraSocialFk = foreignKey("fk_obra_social_usuario", idObraSocial, obrasSociales)(_.nombre)
 
-  val reservas = TableQuery[Reservas]
-
-  class Comentarios(tag: Tag) extends BaseTable[Comentario](tag, "comentarios") {
-
-    def comentario = column[String]("comentario")
-
-    def usuarioId = column[Long]("usuario_id")
-
-    def usuario = foreignKey("fk_usuario", usuarioId, usuarios)(_.id)
-
-    def lugarId = column[Long]("lugar_id")
-
-    def lugar = foreignKey("fk_lugar", lugarId, lugares)(_.id)
-
-    def * = (id, comentario, usuarioId, lugarId, created_at, updated_at, deleted_at) <> (Comentario.tupled, Comentario.unapply)
+    def * = (idUsuario, idObraSocial) <> (UsuarioObraSocial.tupled, UsuarioObraSocial.unapply)
 
   }
 
-  val comentarios = TableQuery[Comentarios]
+  val usuariosObrasSociales = TableQuery[UsuariosObrasSociales]
 
-  val allSchemas = lugares.schema ++ canchas.schema ++ usuarios.schema ++ reservas.schema ++ comentarios.schema
+
+  class Perfiles(tag: Tag) extends Table[Perfil](tag, "perfiles") {
+
+    def nombre = column[String]("nombre", O.PrimaryKey)
+
+    def * = nombre <> (Perfil.apply, Perfil.unapply)
+  }
+
+  val perfiles = TableQuery[Perfiles]
+
+  class UsuariosPerfiles(tag: Tag) extends Table[UsuarioPerfil](tag, "usuario_perfil") {
+
+    def idUsuario = column[String]("user", O.Length(50))
+    def idPerfil = column[String]("perfil", O.Length(50))
+
+    def pk = primaryKey("pkusuarioperfiles", (idUsuario, idPerfil))
+
+    def idUsuarioFk = foreignKey("fk_usuario_perfil", idUsuario, usuarios)(_.user)
+
+    def idPerfilFk = foreignKey("fk_perfi_usuario", idPerfil, perfiles)(_.nombre)
+
+    def * = (idUsuario, idPerfil) <> (UsuarioPerfil.tupled, UsuarioPerfil.unapply)
+  }
+
+  val usuariosPerfiles = TableQuery[UsuariosPerfiles]
+
+  class Pantallas(tag: Tag) extends Table[Pantalla](tag, "pantallas") {
+
+    def nombre = column[String]("nombre", O.PrimaryKey)
+
+    def * = nombre <> (Pantalla.apply, Pantalla.unapply)
+  }
+
+  val pantallas = TableQuery[Pantallas]
+
+  class Rutas(tag: Tag) extends Table[Ruta](tag, "rutas") {
+
+    def path = column[String]("path", O.PrimaryKey)
+
+    def * = path <> (Ruta.apply, Ruta.unapply)
+  }
+
+  val rutas = TableQuery[Rutas]
+
+  class PerfilesPantallas(tag: Tag) extends Table[PerfilPantalla](tag, "perfil_pantalla") {
+
+    def idPerfil = column[String]("id_perfil", O.Length(50))
+
+    def idPantalla = column[String]("id_pantalla", O.Length(50))
+
+    def pk = primaryKey("pkperfilpantalla", (idPerfil, idPantalla))
+
+    def idPerfilFk = foreignKey("fk_perfil_pantalla", idPerfil, perfiles)(_.nombre)
+
+    def idPantallaFk = foreignKey("fk_pantalla_perfil", idPantalla, pantallas)(_.nombre)
+
+    def * = (idPerfil, idPantalla) <> (PerfilPantalla.tupled, PerfilPantalla.unapply)
+
+  }
+
+  val perfilesPantallas = TableQuery[PerfilesPantallas]
+
+  class PantallasRutas(tag: Tag) extends Table[PantallaRuta](tag, "pantalla_ruta") {
+
+    def idPantalla = column[String]("id_pantalla", O.Length(50))
+
+    def idRuta = column[String]("id_ruta", O.Length(50))
+
+    def pk = primaryKey("pkpantallasrutas", (idPantalla, idRuta))
+
+    def idUsuarioFk = foreignKey("fk_pantalla_ruta", idPantalla, pantallas)(_.nombre)
+
+    def idRutaFk = foreignKey("fk_ruta_pantalla", idRuta, rutas)(_.path)
+
+    def * = (idPantalla, idRuta) <> (PantallaRuta.tupled, PantallaRuta.unapply)
+
+  }
+
+  val pantallasRutas = TableQuery[PantallasRutas]
+
+  class Ventas(tag:Tag) extends Table[Venta](tag, "ventas") {
+
+    def dni = column[Int]("dni", O.PrimaryKey)
+    def nombre = column[String]("nombre")
+    def nacionalidad = column[String]("nacionalidad")
+    def domicilio = column[String]("domicilio")
+    def localidad = column[String]("localidad")
+    def telefono = column[String]("telefono")
+    def cuil = column[Int]("cuil")
+    def estadoCivil = column[String]("estadoCivil")
+    def edad = column[Int]("edad")
+    def codem = column[Option[Boolean]]("codem", O.Default(None))
+    def superr = column[Option[Boolean]]("super", O.Default(None))
+    def afip = column[Option[Boolean]]("afip", O.Default(None))
+
+    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, codem, superr, afip) <> (Venta.tupled, Venta.unapply)
+
+  }
+
+  val ventas = TableQuery[Ventas]
+
+  class Estados(tag:Tag) extends Table[Estado](tag, "estados") {
+
+    def user = column[String]("user", O.Length(50))
+    def idVenta = column[Int]("id_venta")
+    def estado = column[String]("estado", O.Length(50))
+    def fecha = column[DateTime]("fecha")
+
+    def pk = primaryKey("pkestados", (user, idVenta, estado))
+
+    def userFk = foreignKey("fk_user_estado", user, usuarios)(_.user)
+
+    def ventaFk = foreignKey("fk_venta_estado", idVenta, ventas)(_.dni)
+
+    def * = (user, idVenta, estado, fecha) <> (Estado.tupled, Estado.unapply)
+  }
+
+  val estados = TableQuery[Estados]
+
+
+  val allSchemas = {
+      obrasSociales.schema ++
+      usuarios.schema ++
+      usuariosObrasSociales.schema ++
+      perfiles.schema ++
+      pantallas.schema ++
+      rutas.schema ++
+      perfilesPantallas.schema ++
+      pantallasRutas.schema ++
+      ventas.schema ++
+      estados.schema ++
+      usuariosPerfiles.schema
+  }
 }

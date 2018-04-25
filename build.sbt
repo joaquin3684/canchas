@@ -14,3 +14,8 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.196"
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "3.0.0"
 libraryDependencies += jdbc
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.41"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.4"
+libraryDependencies +=   "com.pauldijou" %% "jwt-play" % "0.16.0"
+libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "3.0"
+
+

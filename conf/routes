@@ -6,6 +6,8 @@
 GET     /                           controllers.HomeController.index
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count
+
+
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
@@ -14,6 +16,23 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /hola/:nombre/:apellido     controllers.HomeController.hola(nombre: String, apellido: String)
 
-GET     /pruebaRepoMagico/:id       controllers.LugarController.getById(id: Long)
+# USUARIOS
 
-POST    /nuevo                      controllers.LugarController.nuevo
+POST /usuario/create                controllers.UsuarioController.create
+
+GET /usuario/get/:user              controllers.UsuarioController.getById(user: String)
+
+GET /usuario/all                    controllers.UsuarioController.all
+
+PUT /usuario/update/:user           controllers.UsuarioController.update(user: String)
+
+DELETE /usuario/delete/:user        controllers.UsuarioController.delete(user: String)
+
+POST /usuario/cambiarPasswordPropia controllers.UsuarioController.cambiarPasswordPropia
+
+POST /usuario/cambiarPassword       controllers.UsuarioController.cambiarPassword
+
+
+# LOGIN
+
+POST /login                         controllers.LoginController.login
