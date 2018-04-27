@@ -7,12 +7,16 @@ case class Venta(
                 domicilio: String,
                 localidad: String,
                 telefono: String,
-                cuil: Int,
+                cuil: String,
                 estadoCivil: String,
                 edad: Int,
+                idObraSocial: String,
                 codem: Option[Boolean],
                 superr: Option[Boolean],
-                afip: Option[Boolean]
+                afip: Option[Boolean],
+                motivoCodem: Option[String],
+                motivoSuper: Option[String],
+                motivoAfip: Option[String],
                 ) {
 
 }

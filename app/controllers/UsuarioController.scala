@@ -3,10 +3,9 @@ package controllers
 import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
-import com.fasterxml.jackson.databind.node.ObjectNode
 import models._
 import play.api.mvc.{AbstractController, ControllerComponents}
-import repositories.{ClimedRepository, UsuarioRepository}
+import repositories.UsuarioRepository
 import services.JsonMapper
 import com.github.t3hnar.bcrypt._
 
@@ -42,9 +41,8 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
       Await.result(futureUser, Duration.Inf)
 
       Ok("guardado")
-    } else {
-      throw new RuntimeException("obra social erronea")
-    }
+    } else throw new RuntimeException("obra social erronea")
+
 
   }
 

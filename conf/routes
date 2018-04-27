@@ -11,6 +11,8 @@ GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
+POST    /prueba                     controllers.
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
@@ -36,3 +38,17 @@ POST /usuario/cambiarPassword       controllers.UsuarioController.cambiarPasswor
 # LOGIN
 
 POST /login                         controllers.LoginController.login
+
+# VENTA
+
+POST /venta/create                  controllers.VentaController.create
+
+GET /venta/all                      controllers.VentaController.all
+
+# VALIDACION
+
+POST /validacion/validar            controllers.ValidarController.validar
+
+GET /validacion/all                 controllers.ValidarController.all
+
+GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar

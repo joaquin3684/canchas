@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.util.Success
 import com.github.t3hnar.bcrypt._
-import schemas.Schemas.usuariosObrasSociales
+import schemas.Schemas.{estados, usuariosObrasSociales, ventas}
 
 object Main extends App {
 
@@ -87,8 +87,14 @@ object Main extends App {
   val e = db.run(seq.transactionally)*/
  // Await.result(e, Duration.Inf)
 
-  val res = usuariosObrasSociales.filter(uo => uo.idUsuario === "200" && uo.idUsuario === "pepe").result
-  res.statements.foreach(println)
+  val obs = Seq("cobertec", "medicus", "osde")
+  val query = {
+    for {
+      vali <- estados.filter(x => x.estado === "Validado" || x.estado === "Rechazo por validador").map(_.idVenta)
+      e <- estados.filter(x => x.estado === "Creado" && x.idVenta =!= vali)
+      v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs))
+    } yield v
+  }.result.statements.foreach(println)
 }
 
 

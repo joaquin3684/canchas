@@ -33,7 +33,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    */
 
      val initUser = Schemas.usuarios ++= Seq(
-                                           Usuario("200", "200", "200".bcrypt, "200", None)
+                                           Usuario("200", "200", "200".bcrypt, "200", None),
+                                           Usuario("300", "300", "300".bcrypt, "300", None)
                                            )
 
      val initPerfiles = Schemas.perfiles ++= Seq(
@@ -43,7 +44,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
                                                )
 
      val initUserPerfil = Schemas.usuariosPerfiles ++= Seq(
-                                                         UsuarioPerfil("200", "admin")
+                                                         UsuarioPerfil("200", "admin"),
+                                                         UsuarioPerfil("300", "admin")
                                                          )
 
 
@@ -57,10 +59,14 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
                                                                  UsuarioObraSocial("200", "cobertec"),
                                                                  UsuarioObraSocial("200", "medicus"),
                                                                  UsuarioObraSocial("200", "osde"),
+                                                                 UsuarioObraSocial("300", "osde"),
+                                                                 UsuarioObraSocial("300", "medicus"),
                                                                  )
 
      val initPantallas = Schemas.pantallas ++= Seq(
                                          Pantalla("usuario"),
+                                         Pantalla("venta"),
+                                         Pantalla("validacion"),
                                          )
 
      val initRutas = Schemas.rutas ++= Seq(
@@ -70,13 +76,16 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
      val initPerfilPantalla = Schemas.perfilesPantallas ++= Seq(
                                                                PerfilPantalla("admin", "usuario"),
+                                                               PerfilPantalla("admin", "venta"),
+                                                               PerfilPantalla("admin", "validacion"),
 
                                                                )
 
      val initPantallaRuta = Schemas.pantallasRutas ++= Seq(
-                                                       PantallaRuta("usuario", "/obraSocial/all"),
-                                                       PantallaRuta("usuario", "/perfil/all"),
-                                                     )
+                                                   PantallaRuta("usuario", "/obraSocial/all"),
+                                                   PantallaRuta("usuario", "/perfil/all"),
+                                                   PantallaRuta("venta", "/obraSocial/all"),
+     )
 
      val seq = DBIO.seq(
                        Schemas.allSchemas.create,

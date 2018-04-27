@@ -146,14 +146,19 @@ object Schemas {
     def domicilio = column[String]("domicilio")
     def localidad = column[String]("localidad")
     def telefono = column[String]("telefono")
-    def cuil = column[Int]("cuil")
+    def cuil = column[String]("cuil")
     def estadoCivil = column[String]("estadoCivil")
     def edad = column[Int]("edad")
+    def idObraSocial = column[String]("id_obra_social", O.Length(50))
+    def obsFk = foreignKey("fk_venta_obs", idObraSocial, obrasSociales)(_.nombre)
     def codem = column[Option[Boolean]]("codem", O.Default(None))
     def superr = column[Option[Boolean]]("super", O.Default(None))
     def afip = column[Option[Boolean]]("afip", O.Default(None))
+    def motivoCodem = column[Option[String]]("motivo_codem", O.Default(None))
+    def motivoSupper = column[Option[String]]("motivo_super", O.Default(None))
+    def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
 
-    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, codem, superr, afip) <> (Venta.tupled, Venta.unapply)
+    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, codem, superr, afip, motivoCodem, motivoSupper, motivoAfip) <> (Venta.tupled, Venta.unapply)
 
   }
 
@@ -164,7 +169,7 @@ object Schemas {
     def user = column[String]("user", O.Length(50))
     def idVenta = column[Int]("id_venta")
     def estado = column[String]("estado", O.Length(50))
-    def fecha = column[DateTime]("fecha")
+    def fecha = column[DateTime]("fecha", O.Default(DateTime.now))
 
     def pk = primaryKey("pkestados", (user, idVenta, estado))
 
