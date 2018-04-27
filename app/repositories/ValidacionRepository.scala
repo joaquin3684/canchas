@@ -41,8 +41,7 @@ class ValidacionRepository {
   def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
     val query = {
       for {
-        vali <- estados.filter(x => x.estado === "Validado" || x.estado === "Rechazo por validador").map(_.idVenta)
-        e <- estados.filter(x => x.estado === "Creado" && x.idVenta =!= vali)
+        e <- estados.filter(x => x.estado === "Creado" && !(x.idVenta in estados.filter(x => x.estado === "Validado" || x.estado === "Rechazo por validador").map(_.idVenta)))
         v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs))
       } yield v
     }

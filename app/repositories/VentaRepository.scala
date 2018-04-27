@@ -29,4 +29,16 @@ class VentaRepository {
     }
     db.run(query.result)
   }
+
+  def agregarEstado(estado: Estado) = {
+    val e = estados += estado
+    db.run(e)
+  }
+
+  def modificarVenta(venta: Venta, estado: Estado) = {
+    val updateV = ventas.filter(_.dni === venta.dni).update(venta)
+    val e = estados += estado
+    val fullQuery = DBIO.seq(updateV, e)
+    db.run(fullQuery.transactionally)
+  }
 }
