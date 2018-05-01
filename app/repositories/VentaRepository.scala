@@ -3,12 +3,19 @@ package repositories
 import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{ventas, estados}
+import schemas.Schemas.{estados, ventas}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 
 class VentaRepository {
-  val db = Database.forConfig("db.default")
+
+
+  def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Future[Option[Venta]] =  {
+
+    Db.db.run(ventas.filter( v => v.idObraSocial.inSetBind(obs) && v.dni === dni).result.headOption)
+
+  }
 
   def create(venta: Venta, user: String) = {
     val v = ventas += venta
@@ -16,7 +23,7 @@ class VentaRepository {
     val e = estados += estado
     val fullQuery = DBIO.seq(v, e)
 
-    db.run(fullQuery.transactionally)
+    Db.db.run(fullQuery.transactionally)
 
   }
 
@@ -27,18 +34,19 @@ class VentaRepository {
         v <- ventas.filter(_.dni === e.idVenta)
       } yield v
     }
-    db.run(query.result)
+    Db.db.run(query.result)
   }
 
   def agregarEstado(estado: Estado) = {
     val e = estados += estado
-    db.run(e)
+    Db.db.run(e)
   }
 
   def modificarVenta(venta: Venta, estado: Estado) = {
-    val updateV = ventas.filter(_.dni === venta.dni).update(venta)
+    //val updateV = ventas.filter(_.dni === venta.dni).update(venta)
     val e = estados += estado
-    val fullQuery = DBIO.seq(updateV, e)
-    db.run(fullQuery.transactionally)
+    //val fullQuery = DBIO.seq(updateV, e)
+    val v = Db.db.run(e)
+    Await.result(v, Duration.Inf)
   }
 }

@@ -152,4 +152,11 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
 
   }
 
+  def perfiles = getAuthAction { implicit request =>
+    val futurePerfiles = userRepo.getPerfiles
+    val perf = Await.result(futurePerfiles, Duration.Inf)
+    val perfiles = jsonMapper.toJson(perf)
+    Ok(perfiles)
+  }
+
 }

@@ -51,3 +51,21 @@ POST /validacion/validar            controllers.ValidarController.validar
 GET /validacion/all                 controllers.ValidarController.all
 
 GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
+
+# LOGISTICA
+
+POST /logistica/generarVisita       controllers.LogisticaController.altaVisita
+
+POST /logistica/confirmarVisita       controllers.LogisticaController.altaVisita
+
+POST /logistica/repactarVisita       controllers.LogisticaController.altaVisita
+
+GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
+
+GET /logistica/ventasAConfirmar     controllers.LogisticaController.ventasAConfirmar
+
+GET /logistica/all                  controllers.LogisticaController.all
+
+GET /logistica/get/:dni             controllers.LogisticaController.getById(dni: Int)
+
+

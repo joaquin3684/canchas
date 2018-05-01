@@ -3,28 +3,18 @@ package repositories
 import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{ventas, estados}
+import schemas.Schemas.{estados, ventas}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 
 class ValidacionRepository {
 
-  val db = Database.forConfig("db.default")
 
-  def validar(datos: (Option[Boolean], Option[Boolean], Option[Boolean], Option[String], Option[String], Option[String]), dni: Int, user:String) = {
-    val ventaUpdated = ventas.filter(_.dni === dni).map( v => (v.codem, v.superr, v.afip, v.motivoCodem, v.motivoSupper, v.motivoAfip)).update(datos)
-    val h = Seq(datos._1, datos._2, datos._3)
-    val checkAprobacion = h.forall(_.get == true)
-    val estado = if(checkAprobacion) Estado(user, dni, "Validado", DateTime.now) else Estado(user, dni, "Rechazo por validador", DateTime.now)
-    val estadoNuevo = estados += estado
-    val fullQuery = DBIO.seq(ventaUpdated, estadoNuevo)
-    db.run(fullQuery.transactionally)
-  }
+  def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Option[Venta] =  {
 
-  def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Future[Option[Venta]] =  {
-
-    db.run(ventas.filter( v => v.idObraSocial.inSetBind(obs) && v.dni === dni).result.headOption)
-
+    val v = Db.db.run(ventas.filter( v => v.idObraSocial.inSetBind(obs) && v.dni === dni).result.headOption)
+    Await.result(v, Duration.Inf)
   }
 
   def all(user: String): Future[Seq[Venta]] = {
@@ -34,7 +24,7 @@ class ValidacionRepository {
         v <- ventas.filter(_.dni === e.idVenta)
       } yield v
     }
-    db.run(query.result)
+    Db.db.run(query.result)
 
   }
 
@@ -45,7 +35,7 @@ class ValidacionRepository {
         v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs))
       } yield v
     }
-    db.run(query.result)
+    Db.db.run(query.result)
 
   }
 

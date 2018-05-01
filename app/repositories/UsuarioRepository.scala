@@ -2,12 +2,11 @@ package repositories
 
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{usuarios, usuariosObrasSociales, obrasSociales, usuariosPerfiles, perfiles, pantallas, pantallasRutas, rutas, perfilesPantallas}
+import schemas.Schemas.{obrasSociales, pantallas, pantallasRutas, perfiles, perfilesPantallas, rutas, usuarios, usuariosObrasSociales, usuariosPerfiles}
 
 import scala.concurrent.Future
 
 class UsuarioRepository {
-  val db = Database.forConfig("db.default")
 
   def create(user: Usuario, obrasSociales: Seq[UsuarioObraSocial], perfiles: Seq[UsuarioPerfil]) = {
 
@@ -16,7 +15,7 @@ class UsuarioRepository {
     val per = usuariosPerfiles ++= perfiles
     val fullQuery = DBIO.seq(userNuevo, obs, per)
 
-    db.run(fullQuery.transactionally)
+    Db.db.run(fullQuery.transactionally)
   }
 
   def getById(user: String)(implicit obs: Seq[String]): Future[Seq[(Usuario, ObraSocial, Perfil)]] = {
@@ -30,7 +29,7 @@ class UsuarioRepository {
         p <- perfiles if p.nombre === up.idPerfil
       } yield (u, o, p)
     }
-    db.run(query.result)
+    Db.db.run(query.result)
   }
 
   def all()(implicit obs: Seq[String]) : Future[Seq[Usuario]] = {
@@ -41,7 +40,7 @@ class UsuarioRepository {
         u <- usuarios.filter(x => x.borrado.isEmpty && x.user === uo.idUsuario)
       } yield u
     }
-    db.run(query.result)
+    Db.db.run(query.result)
   }
 
 
@@ -53,7 +52,7 @@ class UsuarioRepository {
         uo <- usuariosObrasSociales.filter(x => x.idObraSocial.inSetBind(obs) && x.idUsuario === user)
       } yield uo.idUsuario
     }
-    db.run(query.result.headOption)
+    Db.db.run(query.result.headOption)
 
   }
 
@@ -69,11 +68,11 @@ class UsuarioRepository {
 
     val fullQuery = DBIO.seq(userObsBorrados, userPerBorrados, modUser, userObs, userPerfiles)
 
-    db.run(fullQuery.transactionally)
+    Db.db.run(fullQuery.transactionally)
   }
 
   def delete(user: String) = {
-    db.run(usuarios.filter(_.user === user).map(_.borrado).update(Some(true)))
+    Db.db.run(usuarios.filter(_.user === user).map(_.borrado).update(Some(true)))
   }
 
   def validateCredentials(username: String): Future[Seq[(Usuario, ObraSocial, Pantalla)]] = {
@@ -88,7 +87,7 @@ class UsuarioRepository {
           p <- pantallas.filter(_.nombre === pp.idPantalla)
       } yield (u, o, p)
     }
-    db.run(q.result)
+    Db.db.run(q.result)
   }
 
   def getRuta(path: String, panta: Seq[String]): Future[Option[PantallaRuta]] = {
@@ -97,11 +96,15 @@ class UsuarioRepository {
         pr <- pantallasRutas.filter {pant => pant.idRuta === path && panta.contains(pant.idPantalla)}
       } yield pr
     }
-    db.run(q.result.headOption)
+    Db.db.run(q.result.headOption)
 
   }
 
   def cambiarPassword(user: String, password: String) = {
-    db.run(usuarios.filter(_.user === user).map(_.password).update(password))
+    Db.db.run(usuarios.filter(_.user === user).map(_.password).update(password))
+  }
+
+  def getPerfiles : Future[Seq[Perfil]] = {
+    Db.db.run(perfiles.result)
   }
 }

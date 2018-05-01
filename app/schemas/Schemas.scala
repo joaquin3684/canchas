@@ -182,6 +182,28 @@ object Schemas {
 
   val estados = TableQuery[Estados]
 
+  class Visitas(tag: Tag) extends Table[Visita](tag, "visitas") {
+
+     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+     def idVenta = column[Int]("id_venta")
+     def idUser = column[String]("id_user", O.Length(50))
+     def lugar= column[String]("lugar")
+     def direccion= column[String]("direccion")
+     def entreCalles= column[String]("entre_calles")
+     def localidad= column[String]("localidad")
+     def observacion= column[String]("observacion")
+     def fecha= column[DateTime]("fecha")
+     def estado= column[String]("estado")
+
+     def ventaFk = foreignKey("fk_venta_visita", idVenta, ventas)(_.dni)
+     def userFk = foreignKey("fk_user_visita", idUser, usuarios)(_.user)
+
+
+
+    def * = (id, idVenta, idUser, lugar, direccion, entreCalles, localidad, observacion, fecha, estado) <> (Visita.tupled, Visita.unapply)
+  }
+
+  val visitas = TableQuery[Visitas]
 
   val allSchemas = {
       obrasSociales.schema ++
@@ -194,6 +216,7 @@ object Schemas {
       pantallasRutas.schema ++
       ventas.schema ++
       estados.schema ++
-      usuariosPerfiles.schema
+      usuariosPerfiles.schema ++
+      visitas.schema
   }
 }

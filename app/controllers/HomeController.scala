@@ -67,17 +67,20 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
                                          Pantalla("usuario"),
                                          Pantalla("venta"),
                                          Pantalla("validacion"),
+                                         Pantalla("logistica"),
                                          )
 
      val initRutas = Schemas.rutas ++= Seq(
                                    Ruta("/obraSocial/all"),
                                    Ruta("/perfil/all"),
+                                   Ruta("/venta/all"),
                                    )
 
      val initPerfilPantalla = Schemas.perfilesPantallas ++= Seq(
                                                                PerfilPantalla("admin", "usuario"),
                                                                PerfilPantalla("admin", "venta"),
                                                                PerfilPantalla("admin", "validacion"),
+                                                               PerfilPantalla("admin", "logistica"),
 
                                                                )
 

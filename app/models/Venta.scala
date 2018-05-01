@@ -21,11 +21,13 @@ case class Venta(
                 motivoAfip: Option[String],
                 ) {
 
-  def validar(datos: (Option[Boolean], Option[Boolean], Option[Boolean], Option[String], Option[String], Option[String]), user: String) : Estado = {
+  def validar(datos: (Option[Boolean], Option[Boolean], Option[Boolean], Option[String], Option[String], Option[String]), user: String) : (Venta, Estado) = {
     val h = Seq(datos._1, datos._2, datos._3)
-    val checkAprobacion = h.forall(_.get == true)
-    if(checkAprobacion) Estado(user, dni, "Validado", DateTime.now) else Estado(user, dni, "Rechazo por validador", DateTime.now)
 
+    val checkAprobacion = h.forall(_.get == true)
+    val estado = if(checkAprobacion) Estado(user, dni, "Validado", DateTime.now) else Estado(user, dni, "Rechazo por validador", DateTime.now)
+    val venta = this.copy(codem = datos._1, superr = datos._2, afip = datos._3, motivoCodem = datos._4, motivoSuper = datos._5, motivoAfip = datos._6)
+    (venta, estado)
   }
 
 }

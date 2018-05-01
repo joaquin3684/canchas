@@ -1,5 +1,7 @@
 
 
+import java.sql.Timestamp
+
 import JsonFormats.{DateTimeDeserializer, DateTimeSerializer}
 import akka.http.scaladsl.model.DateTime
 import com.fasterxml.jackson.databind._
@@ -15,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.util.Success
 import com.github.t3hnar.bcrypt._
-import schemas.Schemas.{estados, usuariosObrasSociales, ventas}
+import schemas.Schemas.{estados, usuariosObrasSociales, ventas, visitas}
 
 object Main extends App {
 
@@ -88,13 +90,28 @@ object Main extends App {
  // Await.result(e, Duration.Inf)
 
   val obs = Seq("cobertec", "medicus", "osde")
-  val query = {
+  implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
+    dt => new Timestamp(dt.clicks),
+    ts => DateTime(ts.getTime)
+  )
+  /*val query = {
     for {
-      vali <- estados.filter(x => x.estado === "Validado" || x.estado === "Rechazo por validador").map(_.idVenta)
-      e <- estados.filter(x => x.estado === "Creado" && x.idVenta =!= vali)
+      e <- estados.filter(x => x.estado === "Visita creada"  && !(x.idVenta in estados.filter(x => x.estado === "Visita confirmada").map(_.idVenta)))
       v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs))
-    } yield v
+      vis <- visitas.filter(x => x.idVenta === v.dni).sortBy(_.idVenta.desc)
+    } yield (v, vis)
   }.result.statements.foreach(println)
+*/
+/*  val p = sql"""select ventas.* from estados
+        join ventas on ventas.dni = estados.id_venta
+        join visitas on visitas.id_venta
+        join obras_sociales on ventas.id_obra_social = obras_sociales.nombre
+        where estados.estado = "Visita creada" and
+         not(estados.id_venta in (select id_venta from estados where estado = "Visita confirmada")) AND
+         ventas.id_obra_social in (#$obs)
+         ORDER BY visitas.fecha desc
+      """.as[Venta]*/
+
 }
 
 
