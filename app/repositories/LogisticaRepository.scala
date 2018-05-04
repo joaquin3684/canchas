@@ -6,10 +6,12 @@ import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
 import schemas.Schemas.{estados, ventas, visitas}
+import slick.jdbc.GetResult
 
 import scala.concurrent.Future
 
 class LogisticaRepository {
+  implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<))
 
   implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.clicks),
@@ -44,28 +46,22 @@ class LogisticaRepository {
 
   def rechazar(visita: Visita) = {
     val vi = visitas += visita
-    val es = Estado(visita.idUser, visita.idVenta, "Visita repactada", DateTime.now)
+    val es = Estado(visita.idUser, visita.idVenta, "Rechazo por logistica", DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
   }
-  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[Int]] = {
-    /*val query = {
-      for {
-        e <- estados.filter(x => (x.estado === "Visita creada" || x.estado === "Visita repactada") && !(x.idVenta in estados.filter(x => x.estado === "Visita confirmada").map(_.idVenta)))
-        v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs)).distinct
-        vis <- visitas.filter(x => x.idVenta === v.dni).sortBy(_.fecha.desc)
-      } yield (v, vis)
-    }
-    Db.db.run(query.result)*/
-       val p = sql"""select ventas.dni from estados
-        join ventas on ventas.dni = estados.id_venta
-        join visitas on visitas.id_venta
-        where estados.estado = "Visita creada" and
-         not(estados.id_venta in (select id_venta from estados where estado = "Visita confirmada")) AND
-         ventas.id_obra_social in (${obs.mkString("(",")")})
-      """.as[Int]
 
+  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+    val p = sql"""select ventas.* from estados
+        join ventas on ventas.dni = estados.id_venta
+        join visitas on visitas.id_venta = ventas.dni
+        where (estados.estado = 'Visita creada' or estados.estado = 'Visita repactada') and
+         not(estados.id_venta in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica')) and
+         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)
+      """.as[Venta]
     Db.db.run(p)
   }
 
@@ -77,6 +73,17 @@ class LogisticaRepository {
       } yield  vis
     }
     Db.db.run(query.result)
+  }
+
+  def getVisita(dni: Int)(implicit obs: Seq[String]): Future[Visita] = {
+    val query = {
+      for {
+        v <- ventas.filter(x => x.dni === dni && x.idObraSocial.inSetBind(obs))
+        vis <- visitas.filter(x => x.idVenta === v.dni).sortBy(_.id.desc).take(1)
+
+      } yield  vis
+    }
+    Db.db.run(query.result.head)
   }
 
   def all(user: String): Future[Seq[Venta]] = {

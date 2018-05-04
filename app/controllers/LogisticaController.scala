@@ -76,6 +76,14 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
     } else throw new RuntimeException("obra social erronea")
   }
 
+  def getVisita(dni: Int) = getAuthAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val futureVisita = logisRepo.getVisita(dni)
+    val visita = Await.result(futureVisita, Duration.Inf)
+    val visitaJson = jsonMapper.toJson(visita)
+    Ok(visitaJson)
+  }
+
   def repactarVisita = authAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val rootNode = request.rootNode
@@ -103,12 +111,12 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
     } else throw new RuntimeException("no tiene permiso a esta obra social")
   }
 
-  def find(dni: Int) = getAuthAction { implicit request =>
+  def getVisitas(dni: Int) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = logisRepo.getVisitas(dni)
-    val ven= Await.result(futureVentas, Duration.Inf)
-    val ventas = jsonMapper.toJson(ven)
-    Ok(ventas)
+    val futureVisitas = logisRepo.getVisitas(dni)
+    val visitas = Await.result(futureVisitas, Duration.Inf)
+    val visitasJson = jsonMapper.toJson(visitas)
+    Ok(visitasJson)
   }
 
   def all = getAuthAction { implicit request =>

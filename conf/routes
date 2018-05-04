@@ -66,6 +66,14 @@ GET /logistica/ventasAConfirmar     controllers.LogisticaController.ventasAConfi
 
 GET /logistica/all                  controllers.LogisticaController.all
 
-GET /logistica/get/:dni             controllers.LogisticaController.getById(dni: Int)
+GET /logistica/getAll/:dni           controllers.LogisticaController.getVisitas(dni: Int)
 
+GET /logistica/get/:dni             controllers.LogisticaController.getVisita(dni: Int)
 
+# AUDITORIA
+
+GET /auditoria/all                  controllers.AuditoriaController.all
+
+GET /auditoria/ventasParaAuditar    controllers.AuditoriaController.ventasParaAuditar
+
+POST /auditoria/upload              controllers.AuditoriaController.upload

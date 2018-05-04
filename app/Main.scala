@@ -17,7 +17,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.util.Success
 import com.github.t3hnar.bcrypt._
+import repositories.Db
 import schemas.Schemas.{estados, usuariosObrasSociales, ventas, visitas}
+import services.JsonMapper
+import slick.jdbc.GetResult
 
 object Main extends App {
 
@@ -94,6 +97,7 @@ object Main extends App {
     dt => new Timestamp(dt.clicks),
     ts => DateTime(ts.getTime)
   )
+  val j = obs.mkString("'", "', '", "'")
   /*val query = {
     for {
       e <- estados.filter(x => x.estado === "Visita creada"  && !(x.idVenta in estados.filter(x => x.estado === "Visita confirmada").map(_.idVenta)))
@@ -102,16 +106,21 @@ object Main extends App {
     } yield (v, vis)
   }.result.statements.foreach(println)
 */
-/*  val p = sql"""select ventas.* from estados
-        join ventas on ventas.dni = estados.id_venta
-        join visitas on visitas.id_venta
-        join obras_sociales on ventas.id_obra_social = obras_sociales.nombre
-        where estados.estado = "Visita creada" and
-         not(estados.id_venta in (select id_venta from estados where estado = "Visita confirmada")) AND
-         ventas.id_obra_social in (#$obs)
-         ORDER BY visitas.fecha desc
-      """.as[Venta]*/
+  implicit val getFoo = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<))
 
+  val p = sql"""select visitas.* from estados
+        join ventas on ventas.dni = estados.id_venta
+        join visitas on visitas.id_venta = ventas.dni
+        where (estados.estado = 'Visita creada' or estados.estado = 'Visita repactada') and
+         not(estados.id_venta in (select id_venta from estados where estado = "Visita confirmada")) and
+         ventas.id_obra_social in (#$j) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)
+      """.as[Venta]
+  print(obs.mkString("('", "', '", "')"))
+  val h = sql"""select ventas.dni from ventas where ventas.id_obra_social in (#$j)""".as[Int]
+  val a = Db.db.run(p)
+  val f = Await.result(a, Duration.Inf)
+  val jsonMapper = new JsonMapper
+  print(jsonMapper.toJson(f).toString)
 }
 
 
