@@ -25,6 +25,8 @@ GET /usuario/get/:user              controllers.UsuarioController.getById(user: 
 
 GET /usuario/all                    controllers.UsuarioController.all
 
+GET /usuario/perfiles               controllers.UsuarioController.perfiles
+
 PUT /usuario/update/:user           controllers.UsuarioController.update(user: String)
 
 DELETE /usuario/delete/:user        controllers.UsuarioController.delete(user: String)
