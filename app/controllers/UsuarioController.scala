@@ -58,8 +58,8 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
   def mapToJsonString(usuarioConRelaciones: Seq[(Usuario, ObraSocial, Perfil)]): String = {
 
     val user = usuarioConRelaciones.map(_._1).head
-    val obrasSociales = usuarioConRelaciones.map(_._2).distinct
-    val perfiles = usuarioConRelaciones.map(_._3).distinct
+    val obrasSociales = usuarioConRelaciones.map(_._2.nombre).distinct
+    val perfiles = usuarioConRelaciones.map(_._3.nombre).distinct
 
     val userJson = jsonMapper.toJson(user)
     val perfilesJson = jsonMapper.toJson(perfiles)
@@ -69,7 +69,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
     val perfilesNode = jsonMapper.getJsonNode(perfilesJson)
     val obsNode = jsonMapper.getJsonNode(obsJson)
 
-    jsonMapper.addNode("especialidades", perfilesNode, userNode)
+    jsonMapper.addNode("perfiles", perfilesNode, userNode)
     jsonMapper.addNode("obrasSociales", obsNode, userNode)
 
     userNode.toString
