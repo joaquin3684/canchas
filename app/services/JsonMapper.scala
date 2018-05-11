@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import play.api.libs.json._
 
 @JsonInclude(Include.NON_DEFAULT)
 class JsonMapper {
@@ -22,7 +23,9 @@ class JsonMapper {
   module.addDeserializer[java.lang.Long](classOf[java.lang.Long], new LongDeserializer())
   mapper.registerModule(module)
 
-  def toJson[A : Manifest](value: A): String = mapper.writeValueAsString(value)
+  def toJsonString[A : Manifest](value: A): String = mapper.writeValueAsString(value)
+
+  def toJson[A : Manifest](value: A): JsValue = Json.parse(mapper.writeValueAsString(value))
 
   def fromJson[A : Manifest](json: String): A = mapper.readValue[A](json)
 

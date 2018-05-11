@@ -58,9 +58,11 @@ GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
 
 POST /logistica/generarVisita       controllers.LogisticaController.altaVisita
 
-POST /logistica/confirmarVisita       controllers.LogisticaController.altaVisita
+POST /logistica/confirmarVisita     controllers.LogisticaController.confirmarVisita
 
-POST /logistica/repactarVisita       controllers.LogisticaController.altaVisita
+POST /logistica/repactarVisita      controllers.LogisticaController.repactarVisita
+
+POST /logistica/rechazar            controllers.LogisticaController.rechazar
 
 GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
 

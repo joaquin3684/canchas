@@ -51,7 +51,9 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
     implicit val obs: Seq[String] = request.obrasSociales
     val futureUser = userRepo.getById(user)
     val userWithRealtionships = Await.result(futureUser, Duration.Inf)
-    Ok(mapToJsonString(userWithRealtionships))
+    val map = mapToJsonString(userWithRealtionships)
+    val json = jsonMapper.toJson(map)
+    Ok(json)
   }
 
 
@@ -61,9 +63,9 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
     val obrasSociales = usuarioConRelaciones.map(_._2).distinct
     val perfiles = usuarioConRelaciones.map(_._3).distinct
 
-    val userJson = jsonMapper.toJson(user)
-    val perfilesJson = jsonMapper.toJson(perfiles)
-    val obsJson = jsonMapper.toJson(obrasSociales)
+    val userJson = jsonMapper.toJsonString(user)
+    val perfilesJson = jsonMapper.toJsonString(perfiles)
+    val obsJson = jsonMapper.toJsonString(obrasSociales)
 
     val userNode = jsonMapper.getJsonNode(userJson)
     val perfilesNode = jsonMapper.getJsonNode(perfilesJson)

@@ -2,7 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
-import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
+import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
+import models.Venta
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{ValidacionRepository, VentaRepository}
 import services.JsonMapper
@@ -10,31 +11,19 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
-  def validar = authAction { implicit request =>
-    implicit val obs: Seq[String] = request.obrasSociales
-    val dni = jsonMapper.getAndRemoveElement(request.rootNode, "dni").toInt
-    val optionVenta = valiRepo.checkObraSocial(dni)
+  def validar = (authAction andThen checkObs) { implicit request =>
 
-    if(optionVenta.nonEmpty) {
-      val ventaRepo = new VentaRepository
-      val venta = optionVenta.get
-      val codem = Option(request.rootNode.get("codem").asBoolean)
-      val supper = Option(request.rootNode.get("supper").asBoolean)
-      val afip = Option(request.rootNode.get("afip").asBoolean)
-      val motivoCodem = Option(request.rootNode.get("motivoCodem").asText)
-      val motivoSupper = Option(request.rootNode.get("motivoSupper").asText)
-      val motivoAfip = Option(request.rootNode.get("motivoAfip").asText)
-      val datos = (codem, supper, afip, motivoCodem, motivoSupper, motivoAfip)
+    val ventaRepo = new VentaRepository
 
-      val (ventaModificada, estadoNuevo) = venta.validar(datos, request.user)
+    val venta = jsonMapper.fromJson[Venta](request.rootNode.toString)
+    val estadoNuevo = venta.validar(request.user)
 
-      ventaRepo.modificarVenta(ventaModificada, estadoNuevo)
-
-      Ok("validado")
-    } else throw new RuntimeException("obra social erronea")
+    val futureV = ventaRepo.modificarVenta(venta, estadoNuevo)
+    Await.result(futureV, Duration.Inf)
+    Ok("validado")
 
   }
 
@@ -51,5 +40,6 @@ class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: Valida
     val futureVentas = valiRepo.ventasAValidar(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
     val json = jsonMapper.toJson(ventas)
-    Ok(json)  }
+    Ok(json)
+  }
 }

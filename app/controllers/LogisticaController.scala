@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
+import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
 import akka.http.scaladsl.model.DateTime
 import models.{Estado, Visita}
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -12,7 +12,7 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: LogisticaRepository, val ventaRepo: VentaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: LogisticaRepository, ventaRepo: VentaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
   def ventasSinVisita = getAuthAction {implicit request =>
@@ -23,32 +23,24 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
     Ok(ventas)
   }
 
-  def altaVisita = authAction { implicit request =>
+  def altaVisita = (authAction andThen checkObs) { implicit request =>
 
-    implicit val obs: Seq[String] = request.obrasSociales
     val rootNode = request.rootNode
 
-    val dni = rootNode.get("dni").asInt
+    val dni = jsonMapper.getAndRemoveElement(rootNode, "dni").toInt
 
-    val futureCheckObs = ventaRepo.checkObraSocial(dni)
+    jsonMapper.putElement(rootNode, "fecha", DateTime.now.toString())
+    jsonMapper.putElement(rootNode, "idVenta", dni.toString)
+    jsonMapper.putElement(rootNode, "estado", "Visita creada")
+    jsonMapper.putElement(rootNode, "idUser", request.user)
 
-    val optionVenta= Await.result(futureCheckObs, Duration.Inf)
-    if(optionVenta.nonEmpty) {
+    val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
-      val lugar = rootNode.get("lugar").asText
-      val direccion = rootNode.get("direccion").asText
-      val entreCalles = rootNode.get("entreCalles").asText
-      val localidad = rootNode.get("localidad").asText
-      val observacion = rootNode.get("observacion").asText
+    val futureVisita = logisRepo.create(visita)
+    Await.result(futureVisita, Duration.Inf)
 
-      val visita = Visita(1, dni, request.user, lugar, direccion, entreCalles, localidad, observacion, DateTime.now, "Visita creada")
+    Ok("visita creada")
 
-      val futureVisita = logisRepo.create(visita)
-      Await.result(futureVisita, Duration.Inf)
-
-      Ok("visita creada")
-
-    } else throw new RuntimeException("no tiene permiso a esta obra social")
   }
 
   def ventasAConfirmar = getAuthAction { implicit request =>
@@ -59,21 +51,18 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
     Ok(ventas)
   }
 
-  def confirmarVisita = authAction { implicit request =>
-    implicit val obs: Seq[String] = request.obrasSociales
+  def confirmarVisita = (authAction andThen checkObs) { implicit request =>
+
     val rootNode = request.rootNode
 
-    val idVenta = rootNode.get("idVenta").asInt
+    val dni = rootNode.get("dni").asInt
 
-    val futureCheckObs = ventaRepo.checkObraSocial(idVenta)
+    val estadoNuevo = Estado(request.user, dni, "Visita confirmada", DateTime.now)
 
-    val optionVenta= Await.result(futureCheckObs, Duration.Inf)
-    if(optionVenta.nonEmpty) {
-      val estadoNuevo = Estado(request.user, idVenta, "Visita confirmada", DateTime.now)
-      val futureEstado = ventaRepo.agregarEstado(estadoNuevo)
-      Await.result(futureEstado, Duration.Inf)
-      Ok("confirmada")
-    } else throw new RuntimeException("obra social erronea")
+    val futureEstado = ventaRepo.agregarEstado(estadoNuevo)
+    Await.result(futureEstado, Duration.Inf)
+
+    Ok("confirmada")
   }
 
   def getVisita(dni: Int) = getAuthAction { implicit request =>
@@ -84,31 +73,36 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
     Ok(visitaJson)
   }
 
+  def rechazar = (authAction andThen checkObs) { implicit request =>
+
+    val rootNode = request.rootNode
+    val dni = rootNode.get("dni").asInt
+
+    val estadoNuevo = Estado(request.user, dni, "Rechazo por logistica", DateTime.now)
+
+    val futureEstado = ventaRepo.agregarEstado(estadoNuevo)
+    Await.result(futureEstado, Duration.Inf)
+
+    Ok("rechazado")
+  }
+
   def repactarVisita = authAction { implicit request =>
-    implicit val obs: Seq[String] = request.obrasSociales
+
     val rootNode = request.rootNode
 
     val dni = rootNode.get("dni").asInt
+    jsonMapper.putElement(rootNode, "fecha", DateTime.now.toString())
+    jsonMapper.putElement(rootNode, "idVenta", dni.toString)
+    jsonMapper.putElement(rootNode, "estado", "Visita creada")
+    jsonMapper.putElement(rootNode, "idUser", request.user)
 
-    val futureCheckObs = ventaRepo.checkObraSocial(dni)
+    val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
-    val optionVenta= Await.result(futureCheckObs, Duration.Inf)
-    if(optionVenta.nonEmpty) {
+    val futureVisita = logisRepo.repactar(visita)
+    Await.result(futureVisita, Duration.Inf)
 
-      val lugar = rootNode.get("lugar").asText
-      val direccion = rootNode.get("direccion").asText
-      val entreCalles = rootNode.get("entreCalles").asText
-      val localidad = rootNode.get("localidad").asText
-      val observacion = rootNode.get("observacion").asText
+    Ok("visita creada")
 
-      val visita = Visita(1, dni, request.user, lugar, direccion, entreCalles, localidad, observacion, DateTime.now, "Visita repactada")
-
-      val futureVisita = logisRepo.repactar(visita)
-      Await.result(futureVisita, Duration.Inf)
-
-      Ok("visita creada")
-
-    } else throw new RuntimeException("no tiene permiso a esta obra social")
   }
 
   def getVisitas(dni: Int) = getAuthAction { implicit request =>

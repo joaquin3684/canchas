@@ -4,6 +4,7 @@ import java.sql.Timestamp
 
 import akka.http.scaladsl.model.DateTime
 import models._
+import schemas.Schemas
 import slick.jdbc.MySQLProfile.api._
 import schemas.Schemas.{estados, ventas, visitas}
 import slick.jdbc.GetResult
@@ -95,5 +96,7 @@ class LogisticaRepository {
     }
     Db.db.run(query.result)
   }
+
+
 
 }
