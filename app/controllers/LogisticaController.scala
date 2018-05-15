@@ -43,7 +43,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
   }
 
-  def ventasAConfirmar = getAuthAction { implicit request =>
+  def ventasATrabajar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = logisRepo.ventasAConfirmar
     val ven= Await.result(futureVentas, Duration.Inf)

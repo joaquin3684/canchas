@@ -10,6 +10,8 @@ import services.JsonMapper
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
@@ -22,6 +24,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: Valida
     val estadoNuevo = venta.validar(request.user)
 
     val futureV = ventaRepo.modificarVenta(venta, estadoNuevo)
+
     Await.result(futureV, Duration.Inf)
     Ok("validado")
 
