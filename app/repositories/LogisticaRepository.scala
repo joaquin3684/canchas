@@ -61,7 +61,7 @@ class LogisticaRepository {
         join visitas on visitas.id_venta = ventas.dni
         where ((estados.estado = 'Visita creada' or estados.estado = 'Visita repactada') and
          not(estados.id_venta in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica')) and
-         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)) or ((estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada') and (estados.estado <> 'Rechazo por auditoria' and <> 'Visita creada'))
+         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)) or ((estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada') and (estados.estado <> 'Rechazo por auditoria' and estados.estado <> 'Visita creada'))
       """.as[Venta]
     Db.db.run(p)
   }
