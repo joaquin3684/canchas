@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
 import akka.http.scaladsl.model.DateTime
-import models.{Estado, Visita}
+import models.{Estado, Venta, Visita}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{LogisticaRepository, VentaRepository}
 import services.JsonMapper
@@ -43,12 +43,23 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
   }
 
+  def ccToMap(cc: AnyRef) =
+    (Map[String, Any]() /: cc.getClass.getDeclaredFields) {
+      (a, f) =>
+        f.setAccessible(true)
+        a + (f.getName -> f.get(cc))
+    }
+
+
   def ventasATrabajar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = logisRepo.ventasAConfirmar
     val ven= Await.result(futureVentas, Duration.Inf)
-    val ventas = jsonMapper.toJson(ven)
-    Ok(ventas)
+
+    val venta = ven.map( x => ccToMap(x._1) + ("estado" -> x._2)).distinct
+    val ventasJson = jsonMapper.toJson(venta)
+
+    Ok(ventasJson)
   }
 
   def confirmarVisita = (authAction andThen checkObs) { implicit request =>

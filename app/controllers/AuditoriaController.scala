@@ -30,7 +30,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
 
   def upload=  Action(parse.multipartFormData) { implicit request =>
 
-    //val a = request.body.dataParts.flatMap()
+    val a = request.body.dataParts.map( x => x._1 )
     request.body.file("picture").map { picture =>
 
       // only get the last part of the filename

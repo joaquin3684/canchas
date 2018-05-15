@@ -12,12 +12,13 @@ import slick.jdbc.GetResult
 import scala.concurrent.Future
 
 class LogisticaRepository {
-  implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<))
-
   implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.clicks),
     ts => DateTime(ts.getTime)
   )
+
+
+ implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<))
 
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
@@ -53,18 +54,24 @@ class LogisticaRepository {
     Db.db.run(fullquery.transactionally)
   }
 
-  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
+  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
-    val p = sql"""select ventas.* from estados
+    val p = sql"""select ventas.*,
+              Case when (estados.estado = 'Visita creada') then 'Confirmar'
+              else 'Pendiente' END AS is_a_senior
+               from estados
         join ventas on ventas.dni = estados.id_venta
         join visitas on visitas.id_venta = ventas.dni
         where ((estados.estado = 'Visita creada' or estados.estado = 'Visita repactada') and
          not(estados.id_venta in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica')) and
          ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)) or ((estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada') and (estados.estado <> 'Rechazo por auditoria' and estados.estado <> 'Visita creada'))
-      """.as[Venta]
+      """.as[(Venta, String)]
+
     Db.db.run(p)
   }
+
+
 
   def getVisitas(dni: Int)(implicit obs: Seq[String]): Future[Seq[Visita]] = {
     val query = {
