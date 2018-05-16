@@ -84,14 +84,8 @@ class LogisticaRepository {
   }
 
   def getVisita(dni: Int)(implicit obs: Seq[String]): Future[Visita] = {
-    val query = {
-      for {
-        v <- ventas.filter(x => x.dni === dni && x.idObraSocial.inSetBind(obs))
-        vis <- visitas.filter(x => x.idVenta === v.dni).sortBy(_.id.desc).take(1)
 
-      } yield  vis
-    }
-    Db.db.run(query.result.head)
+    Db.db.run(visitas.filter(_.idVenta === dni).sortBy(_.id.desc).result.head)
   }
 
   def all(user: String): Future[Seq[Venta]] = {
