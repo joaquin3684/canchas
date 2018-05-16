@@ -157,8 +157,10 @@ object Schemas {
     def motivoCodem = column[Option[String]]("motivo_codem", O.Default(None))
     def motivoSuper = column[Option[String]]("motivo_super", O.Default(None))
     def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
+    def motivoAuditoria = column[Option[String]]("motivo_auditoria", O.Default(None))
+    def audio = column[Option[String]]("audio", O.Default(None))
 
-    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, codem, superr, afip, motivoCodem, motivoSuper, motivoAfip) <> (Venta.tupled, Venta.unapply)
+    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, codem, superr, afip, motivoCodem, motivoSuper, motivoAfip, motivoAuditoria, audio) <> (Venta.tupled, Venta.unapply)
 
   }
 

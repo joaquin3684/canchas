@@ -18,7 +18,7 @@ class LogisticaRepository {
   )
 
 
- implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<))
+ implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<))
 
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {

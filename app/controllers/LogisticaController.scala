@@ -55,11 +55,15 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = logisRepo.ventasAConfirmar
     val ven= Await.result(futureVentas, Duration.Inf)
+    val root = jsonMapper.mapper.createObjectNode()
 
-    val venta = ven.map( x => ccToMap(x._1) + ("estado" -> x._2)).distinct
-    val ventasJson = jsonMapper.toJson(venta)
-
-    Ok(ventasJson)
+    val venta = ven.map { x =>
+      val obj = jsonMapper.mapper.createObjectNode()
+      jsonMapper.addNode("venta", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._1)), obj)
+      jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._2)), obj)
+      obj
+    }
+    Ok(jsonMapper.toJson(venta))
   }
 
   def confirmarVisita = (authAction andThen checkObs) { implicit request =>

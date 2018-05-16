@@ -19,6 +19,8 @@ case class Venta(
                 motivoCodem: Option[String],
                 motivoSuper: Option[String],
                 motivoAfip: Option[String],
+                motivoAuditoria: Option[String],
+                audio: Option[String]
                 ) {
 
   def validar(user: String) : Estado = {
