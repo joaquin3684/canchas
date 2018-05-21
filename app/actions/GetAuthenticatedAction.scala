@@ -5,7 +5,6 @@ import javax.inject.Inject
 import play.api.mvc._
 import repositories.UsuarioRepository
 import requests.GetUserRequest
-import services.JsonMapper
 import pdi.jwt.JwtSession
 
 import scala.concurrent.duration.Duration

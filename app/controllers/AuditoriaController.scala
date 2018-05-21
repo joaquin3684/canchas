@@ -4,6 +4,8 @@ import java.nio.file.Paths
 import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
+import akka.http.scaladsl.model.DateTime
+import models.Estado
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{AuditoriaRepository, VentaRepository}
 import services.JsonMapper
@@ -28,9 +30,23 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
     Ok(ventasJson)
   }
 
-  def upload=  Action(parse.multipartFormData) { implicit request =>
+/*  def vectorToElem[A <: Any](a: Vector[A]) = a match {
+    case Vector[Int] => "ha"
+  }*/
 
-    val a = request.body.dataParts.map( x => x._1 )
+  def upload = getAuthAction(parse.multipartFormData) { implicit request =>
+
+    val dni = request.body.dataParts.get("dni").mkString.toInt
+
+    val estado = request.body.dataParts.get("estado").mkString match {
+      case "ok" => Estado(request.user, dni, "Auditoria aprobada", DateTime.now)
+      case "rechazo" => Estado(request.user, dni, "Auditoria rechazada", DateTime.now)
+      case "observado" => Estado(request.user, dni, "Auditoria observada", DateTime.now)
+    }
+
+    val observacion = if (request.body.dataParts.get("observacion").isDefined) request.body.dataParts.get("observacion").mkString else None
+
+
     request.body.file("picture").map { picture =>
 
       // only get the last part of the filename

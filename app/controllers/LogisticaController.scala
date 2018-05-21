@@ -29,7 +29,6 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
     val dni = jsonMapper.getAndRemoveElement(rootNode, "dni").toInt
 
-    jsonMapper.putElement(rootNode, "fecha", DateTime.now.toString())
     jsonMapper.putElement(rootNode, "idVenta", dni.toString)
     jsonMapper.putElement(rootNode, "estado", "Visita creada")
     jsonMapper.putElement(rootNode, "idUser", request.user)

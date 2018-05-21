@@ -47,11 +47,9 @@ class LogisticaRepository {
   }
 
   def rechazar(visita: Visita) = {
-    val vi = visitas += visita
     val es = Estado(visita.idUser, visita.idVenta, "Rechazo por logistica", DateTime.now)
     val e = estados += es
-    val fullquery = DBIO.seq(vi, e)
-    Db.db.run(fullquery.transactionally)
+    Db.db.run(e)
   }
 
   def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
