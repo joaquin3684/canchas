@@ -23,4 +23,11 @@ class AuditoriaRepository {
     Db.db.run(query.result)
   }
 
+  def auditar(estado: Estado, dni: Int, observacion: Option[String], audio: Option[String]) = {
+    val e = estados += estado
+    val update = ventas.filter(_.dni === dni).map(x => (x.audio, x.motivoAuditoria)).update(audio, observacion)
+    val fullQuery = DBIO.seq(update, e)
+    Db.db.run(fullQuery)
+  }
+
 }

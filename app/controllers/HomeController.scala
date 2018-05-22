@@ -68,6 +68,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
                                          Pantalla("venta"),
                                          Pantalla("validacion"),
                                          Pantalla("logistica"),
+                                         Pantalla("auditoria"),
                                          )
 
      val initRutas = Schemas.rutas ++= Seq(
@@ -81,6 +82,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
                                                                PerfilPantalla("admin", "venta"),
                                                                PerfilPantalla("admin", "validacion"),
                                                                PerfilPantalla("admin", "logistica"),
+                                                               PerfilPantalla("admin", "auditoria"),
 
                                                                )
 
@@ -107,8 +109,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok("base de datos creada")
   }
 
-  def hola (nombre: String, apellido: String) = Action {
-    Ok("")
+  def prueba = Action {
+    Ok("anda el servidor")
   }
 
 }

@@ -36,18 +36,25 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
 
   def upload = getAuthAction(parse.multipartFormData) { implicit request =>
 
-    val dni = request.body.dataParts.get("dni").mkString.toInt
-
-    val estado = request.body.dataParts.get("estado").mkString match {
-      case "ok" => Estado(request.user, dni, "Auditoria aprobada", DateTime.now)
-      case "rechazo" => Estado(request.user, dni, "Auditoria rechazada", DateTime.now)
-      case "observado" => Estado(request.user, dni, "Auditoria observada", DateTime.now)
-    }
-
-    val observacion = if (request.body.dataParts.get("observacion").isDefined) request.body.dataParts.get("observacion").mkString else None
 
 
     request.body.file("picture").map { picture =>
+
+
+      val dni = request.body.dataParts.get("dni").get.head.toInt
+
+      val estado = request.body.dataParts.get("estado").get.head match {
+        case "ok" => Estado(request.user, dni, "Auditoria aprobada", DateTime.now)
+        case "rechazo" => Estado(request.user, dni, "Auditoria rechazada", DateTime.now)
+        case "observado" => Estado(request.user, dni, "Auditoria observada", DateTime.now)
+      }
+
+      val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
+
+
+      val ruta = "public/images/"+ dni + ".mp3"
+      val futureVenta = audiRepo.auditar(estado, dni, observacion, Some(ruta))
+      Await.result(futureVenta, Duration.Inf)
 
       // only get the last part of the filename
       // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
@@ -55,7 +62,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
 
       val filename = Paths.get(picture.filename).getFileName
 
-      picture.ref.moveTo(Paths.get("public/images/tmp.png"), replace = true)
+      picture.ref.moveTo(Paths.get(ruta), replace = true)
       Ok("File uploaded")
     }.getOrElse {
       Ok("esto no anda")
