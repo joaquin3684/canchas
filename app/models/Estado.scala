@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.DateTime
 
 case class Estado(
                  user: String,
-                 idVenta: Int,
+                 dni: Int,
                  estado: String,
                  fecha: DateTime
                  ) {

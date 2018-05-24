@@ -27,11 +27,9 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
     val rootNode = request.rootNode
 
-    val dni = jsonMapper.getAndRemoveElement(rootNode, "dni").toInt
 
-    jsonMapper.putElement(rootNode, "idVenta", dni.toString)
     jsonMapper.putElement(rootNode, "estado", "Visita creada")
-    jsonMapper.putElement(rootNode, "idUser", request.user)
+    jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
@@ -83,7 +81,17 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVisita = logisRepo.getVisita(dni)
     val visita = Await.result(futureVisita, Duration.Inf)
-    val visitaJson = jsonMapper.toJson(visita)
+    val rootNode = jsonMapper.mapper.createObjectNode
+    rootNode.put("dni", visita.dni)
+    rootNode.put("direccion", visita.direccion)
+    rootNode.put("entreCalles", visita.entreCalles)
+    rootNode.put("lugar", visita.lugar)
+    rootNode.put("localidad", visita.localidad)
+    rootNode.put("observacion", visita.observacion)
+    rootNode.put("fecha", visita.fecha.toIsoDateTimeString)
+
+    val visitaJson = jsonMapper.toJson(rootNode)
+
     Ok(visitaJson)
   }
 
@@ -104,11 +112,8 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
     val rootNode = request.rootNode
 
-    val dni = rootNode.get("dni").asInt
-    jsonMapper.putElement(rootNode, "fecha", DateTime.now.toString())
-    jsonMapper.putElement(rootNode, "idVenta", dni.toString)
     jsonMapper.putElement(rootNode, "estado", "Visita creada")
-    jsonMapper.putElement(rootNode, "idUser", request.user)
+    jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
@@ -130,8 +135,18 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
   def all = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = logisRepo.all(request.user)
-    val ven= Await.result(futureVentas, Duration.Inf)
-    val ventas = jsonMapper.toJson(ven)
+    val ventasConVisitas = Await.result(futureVentas, Duration.Inf)
+    val ventass = ventasConVisitas.map(_._1).distinct
+    val visitas = ventasConVisitas.map(_._2)
+
+    val j = ventass.map{
+          vp'
+      x => (x, visitas.filter(_.dni == x.dni))
+    }
+
+
+
+    val ventas = jsonMapper.toJson()
     Ok(ventas)
   }
 }

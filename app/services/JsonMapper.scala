@@ -25,7 +25,7 @@ class JsonMapper {
 
   def toJsonString[A : Manifest](value: A): String = mapper.writeValueAsString(value)
 
-  def toJson[A : Manifest](value: A): JsValue = Json.parse(mapper.writeValueAsString(value))
+  def toJson[A : Manifest](value: A): JsValue = Json.parse(toJsonString(value))
 
   def fromJson[A : Manifest](json: String): A = mapper.readValue[A](json)
 

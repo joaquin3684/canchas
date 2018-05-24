@@ -4,8 +4,8 @@ import akka.http.scaladsl.model.DateTime
 
 case class Visita(
                  id: Long,
-                 idVenta: Int,
-                 idUser: String,
+                 dni: Int,
+                 user: String,
                  lugar: String,
                  direccion: String,
                  entreCalles: String,

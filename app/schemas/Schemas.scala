@@ -169,17 +169,17 @@ object Schemas {
   class Estados(tag:Tag) extends Table[Estado](tag, "estados") {
 
     def user = column[String]("user", O.Length(50))
-    def idVenta = column[Int]("id_venta")
+    def dni = column[Int]("id_venta")
     def estado = column[String]("estado", O.Length(50))
     def fecha = column[DateTime]("fecha", O.Default(DateTime.now))
 
-    def pk = primaryKey("pkestados", (user, idVenta, estado))
+    def pk = primaryKey("pkestados", (user, dni, estado))
 
     def userFk = foreignKey("fk_user_estado", user, usuarios)(_.user)
 
-    def ventaFk = foreignKey("fk_venta_estado", idVenta, ventas)(_.dni)
+    def ventaFk = foreignKey("fk_venta_estado", dni, ventas)(_.dni)
 
-    def * = (user, idVenta, estado, fecha) <> (Estado.tupled, Estado.unapply)
+    def * = (user, dni, estado, fecha) <> (Estado.tupled, Estado.unapply)
   }
 
   val estados = TableQuery[Estados]
@@ -187,8 +187,8 @@ object Schemas {
   class Visitas(tag: Tag) extends Table[Visita](tag, "visitas") {
 
      def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-     def idVenta = column[Int]("id_venta")
-     def idUser = column[String]("id_user", O.Length(50))
+     def dni = column[Int]("id_venta")
+     def user = column[String]("id_user", O.Length(50))
      def lugar= column[String]("lugar")
      def direccion= column[String]("direccion")
      def entreCalles= column[String]("entre_calles")
@@ -197,12 +197,12 @@ object Schemas {
      def fecha= column[DateTime]("fecha")
      def estado= column[String]("estado")
 
-     def ventaFk = foreignKey("fk_venta_visita", idVenta, ventas)(_.dni)
-     def userFk = foreignKey("fk_user_visita", idUser, usuarios)(_.user)
+     def ventaFk = foreignKey("fk_venta_visita", dni, ventas)(_.dni)
+     def userFk = foreignKey("fk_user_visita", user, usuarios)(_.user)
 
 
 
-    def * = (id, idVenta, idUser, lugar, direccion, entreCalles, localidad, observacion, fecha, estado) <> (Visita.tupled, Visita.unapply)
+    def * = (id, dni, user, lugar, direccion, entreCalles, localidad, observacion, fecha, estado) <> (Visita.tupled, Visita.unapply)
   }
 
   val visitas = TableQuery[Visitas]

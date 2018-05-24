@@ -38,7 +38,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
 
 
 
-    request.body.file("picture").map { picture =>
+    request.body.file("audio").map { picture =>
 
 
       val dni = request.body.dataParts.get("dni").get.head.toInt

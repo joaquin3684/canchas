@@ -80,4 +80,4 @@ GET /auditoria/all                  controllers.AuditoriaController.all
 
 GET /auditoria/ventasParaAuditar    controllers.AuditoriaController.ventasParaAuditar
 
-POST /auditoria/upload              controllers.AuditoriaController.upload
+POST /auditoria/auditar              controllers.AuditoriaController.upload

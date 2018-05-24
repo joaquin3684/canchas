@@ -23,8 +23,8 @@ class LogisticaRepository {
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === "Validado" && !(x.idVenta in estados.filter(x => x.estado === "Visita creada" || x.estado === "Rechazo por logistica").map(_.idVenta)))
-        v <- ventas.filter(x => x.dni === e.idVenta && x.idObraSocial.inSetBind(obs))
+        e <- estados.filter(x => x.estado === "Validado" && !(x.dni in estados.filter(x => x.estado === "Visita creada" || x.estado === "Rechazo por logistica").map(_.dni)))
+        v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
       } yield v
     }
     Db.db.run(query.result)
@@ -32,7 +32,7 @@ class LogisticaRepository {
 
   def create(visita: Visita) = {
     val vi = visitas += visita
-    val es = Estado(visita.idUser, visita.idVenta, "Visita creada", DateTime.now)
+    val es = Estado(visita.user, visita.dni, "Visita creada", DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
@@ -40,14 +40,14 @@ class LogisticaRepository {
 
   def repactar(visita: Visita) = {
     val vi = visitas += visita
-    val es = Estado(visita.idUser, visita.idVenta, "Visita repactada", DateTime.now)
+    val es = Estado(visita.user, visita.dni, "Visita repactada", DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
   }
 
   def rechazar(visita: Visita) = {
-    val es = Estado(visita.idUser, visita.idVenta, "Rechazo por logistica", DateTime.now)
+    val es = Estado(visita.user, visita.dni, "Rechazo por logistica", DateTime.now)
     val e = estados += es
     Db.db.run(e)
   }
@@ -75,7 +75,7 @@ class LogisticaRepository {
     val query = {
       for {
         v <- ventas.filter(x => x.dni === dni && x.idObraSocial.inSetBind(obs))
-        vis <- visitas.filter(x => x.idVenta === v.dni)
+        vis <- visitas.filter(x => x.dni === v.dni)
       } yield  vis
     }
     Db.db.run(query.result)
@@ -83,16 +83,18 @@ class LogisticaRepository {
 
   def getVisita(dni: Int)(implicit obs: Seq[String]): Future[Visita] = {
 
-    Db.db.run(visitas.filter(_.idVenta === dni).sortBy(_.id.desc).result.head)
+    Db.db.run(visitas.filter(_.dni === dni).sortBy(_.id.desc).result.head)
   }
 
-  def all(user: String): Future[Seq[Venta]] = {
+  def all(user: String): Future[Seq[(Venta, Visita)]] = {
     val query = {
       for {
-        e <- estados.filter(x => (x.estado === "Visita creada" || x.estado === "Visita repactada" || x.estado === "Visita confirmada" || x.estado === "Rechazo por logistica") && x.user === user ).map(_.idVenta)
-        v <- ventas.filter(x => x.dni === e ).distinct
-      } yield v
+        e <- estados.filter(x => (x.estado === "Visita creada" || x.estado === "Visita repactada" || x.estado === "Visita confirmada" || x.estado === "Rechazo por logistica") && x.user === user ).map(_.dni)
+        v <- ventas.filter(x => x.dni === e )
+        vis <- visitas.filter(_.dni === v.dni)
+      } yield (v, vis)
     }
+
     Db.db.run(query.result)
   }
 

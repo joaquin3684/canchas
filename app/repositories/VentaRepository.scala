@@ -31,7 +31,7 @@ class VentaRepository {
     val query = {
       for {
         e <- estados.filter( x => x.user === user && x.estado === "Creado")
-        v <- ventas.filter(_.dni === e.idVenta)
+        v <- ventas.filter(_.dni === e.dni)
       } yield v
     }
     Db.db.run(query.result)
