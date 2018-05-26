@@ -139,10 +139,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     val ventass = ventasConVisitas.map(_._1).distinct
     val visitas = ventasConVisitas.map(_._2)
 
-    val j = ventass.map{
-          vp'
-      x => (x, visitas.filter(_.dni == x.dni))
-    }
+
 
 
 
