@@ -61,7 +61,7 @@ class LogisticaRepository {
               else 'Confirmar' END AS is_a_senior
                from ventas
         join estados on ventas.dni = estados.id_venta
-        join visitas on visitas.id_venta = ventas.dni
+        left join visitas on visitas.id_venta = ventas.dni
         where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
          estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
          ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY))
