@@ -26,7 +26,7 @@ case class Venta(
   def validar(user: String) : Estado = {
     val h = Seq(codem, superr, afip)
 
-    val checkAprobacion = h.forall(_ == true)
+    val checkAprobacion = h.forall(_.get == true)
     if(checkAprobacion)
       Estado(user, dni, "Validado", DateTime.now)
     else

@@ -55,15 +55,22 @@ class LogisticaRepository {
   def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
-    val p = sql"""select ventas.*,
-              Case when (estados.estado = 'Visita creada') then 'Confirmar'
-              else 'Pendiente' END AS is_a_senior
-               from estados
-        join ventas on ventas.dni = estados.id_venta
+    val p = sql"""select ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.codem, ventas.super, ventas.afip, ventas.motivo_codem, ventas.motivo_super, ventas.motivo_afip, ventas.motivo_auditoria, ventas.audio,
+              Case when ((estados.id_venta in (select id_venta from estados where estado = 'Auditoria aprobada' or estado = 'Auditoria observada' group by id_venta)
+                             and estados.id_venta not in (select id_venta from estados where estado = 'Rechazo por auditoria' or estado = 'Visita creada' group by id_venta))) then 'Pendiente'
+              else 'Confirmar' END AS is_a_senior
+               from ventas
+        join estados on ventas.dni = estados.id_venta
         join visitas on visitas.id_venta = ventas.dni
-        where ((estados.estado = 'Visita creada' or estados.estado = 'Visita repactada') and
-         not(estados.id_venta in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica')) and
-         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY)) or ((estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada') and (estados.estado <> 'Rechazo por auditoria' and estados.estado <> 'Visita creada'))
+        where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
+         estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
+         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY))
+          or
+           (estados.id_venta in (select id_venta from estados where estado = 'Auditoria aprobada' or estado = 'Auditoria observada' group by id_venta)
+            and estados.id_venta not in (select id_venta from estados where estado = 'Rechazo por auditoria' or estado = 'Visita creada' group by id_venta))
+             group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.codem, ventas.super, ventas.afip, ventas.motivo_codem, ventas.motivo_super, ventas.motivo_afip, ventas.motivo_auditoria, ventas.audio, Case when ((estados.id_venta in (select id_venta from estados where estado = 'Auditoria aprobada' or estado = 'Auditoria observada' group by id_venta)
+                             and estados.id_venta not in (select id_venta from estados where estado = 'Rechazo por auditoria' or estado = 'Visita creada' group by id_venta))) then 'Pendiente'
+                               else 'Confirmar' END
       """.as[(Venta, String)]
 
     Db.db.run(p)

@@ -112,7 +112,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
 
     val rootNode = request.rootNode
 
-    jsonMapper.putElement(rootNode, "estado", "Visita creada")
+    jsonMapper.putElement(rootNode, "estado", "Visita repactada")
     jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
@@ -138,11 +138,6 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     val ventasConVisitas = Await.result(futureVentas, Duration.Inf)
     val ventass = ventasConVisitas.map(_._1).distinct
     val visitas = ventasConVisitas.map(_._2)
-
-
-
-
-
     val ventas = jsonMapper.toJson()
     Ok(ventas)
   }
