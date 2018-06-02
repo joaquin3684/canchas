@@ -120,7 +120,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     val futureVisita = logisRepo.repactar(visita)
     Await.result(futureVisita, Duration.Inf)
 
-    Ok("visita creada")
+    Ok("visita repactada")
 
   }
 
@@ -138,7 +138,16 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     val ventasConVisitas = Await.result(futureVentas, Duration.Inf)
     val ventass = ventasConVisitas.map(_._1).distinct
     val visitas = ventasConVisitas.map(_._2)
-    val ventas = jsonMapper.toJson()
+    val a = ventass.map{x =>
+        val j = jsonMapper.toJsonString(x)
+        val vNode = jsonMapper.getJsonNode(j)
+        val h = jsonMapper.toJsonString(visitas.filter(_.dni == x.dni))
+        val visNode = jsonMapper.getJsonNode(h)
+        jsonMapper.addNode("visitas", visNode, vNode)
+       vNode
+    }
+
+    val ventas = jsonMapper.toJson(a)
     Ok(ventas)
   }
 }
