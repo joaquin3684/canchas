@@ -41,7 +41,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
     request.body.file("audio").map { picture =>
 
 
-      val dni = request.body.dataParts.get("dni").get.head.toInt
+     /* val dni = request.body.dataParts.get("dni").get.head.toInt
 
       val estado = request.body.dataParts.get("estado").get.head match {
         case "ok" => Estado(request.user, dni, "Auditoria aprobada", DateTime.now)
@@ -52,12 +52,12 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
       val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
 
 
-      val ruta = "public/images/"+ dni + ".mp3"
+      */val ruta = "public/images/"+ 1 + ".mp3"/*
       val futureVenta = audiRepo.auditar(estado, dni, observacion, Some(ruta))
       Await.result(futureVenta, Duration.Inf)
 
       // only get the last part of the filename
-      // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
+      // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system*/
       val reg_ex = """.*\.(\w+)""".r
 
       val filename = Paths.get(picture.filename).getFileName
