@@ -52,7 +52,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
       val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
 
 
-      val ruta = "/public/images/"+ dni + ".mp3"
+      val ruta = "public/images/"+ dni + ".mp3"
       val futureVenta = audiRepo.auditar(estado, dni, observacion, Some(ruta))
       Await.result(futureVenta, Duration.Inf)
 
