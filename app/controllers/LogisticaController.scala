@@ -12,7 +12,7 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: LogisticaRepository, ventaRepo: VentaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
+class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: LogisticaRepository, val ventaRepo: VentaRepository, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
   def ventasSinVisita = getAuthAction {implicit request =>
@@ -39,13 +39,6 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     Ok("visita creada")
 
   }
-
-  def ccToMap(cc: AnyRef) =
-    (Map[String, Any]() /: cc.getClass.getDeclaredFields) {
-      (a, f) =>
-        f.setAccessible(true)
-        a + (f.getName -> f.get(cc))
-    }
 
 
   def ventasATrabajar = getAuthAction { implicit request =>
@@ -87,7 +80,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, logisRepo: Logisti
     rootNode.put("entreCalles", visita.entreCalles)
     rootNode.put("lugar", visita.lugar)
     rootNode.put("localidad", visita.localidad)
-    rootNode.put("observacion", visita.observacion)
+    rootNode.put("observacion", visita.observacion.get)
     rootNode.put("fecha", visita.fecha.toIsoDateTimeString)
 
     val visitaJson = jsonMapper.toJson(rootNode)

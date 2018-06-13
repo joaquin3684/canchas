@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
-import models.Venta
+import models.{Validacion, Venta}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{ValidacionRepository, VentaRepository}
 import services.JsonMapper
@@ -13,17 +13,15 @@ import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
+class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: VentaRepository, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
   def validar = (authAction andThen checkObs) { implicit request =>
 
-    val ventaRepo = new VentaRepository
-
-    val venta = jsonMapper.fromJson[Venta](request.rootNode.toString)
+    val venta = jsonMapper.fromJson[Validacion](request.rootNode.toString)
     val estadoNuevo = venta.validar(request.user)
 
-    val futureV = ventaRepo.modificarVenta(venta, estadoNuevo)
+    val futureV = valiRepo.validarVenta(venta, estadoNuevo)
 
     Await.result(futureV, Duration.Inf)
     Ok("validado")
@@ -44,5 +42,13 @@ class ValidarController @Inject()(cc: ControllerComponents, val valiRepo: Valida
     val ventas = Await.result(futureVentas, Duration.Inf)
     val json = jsonMapper.toJson(ventas)
     Ok(json)
+  }
+
+  def modificarVenta = (authAction andThen checkObs) { implicit request =>
+    val venta = jsonMapper.fromJson[Venta](request.rootNode.toString)
+    val futureVenta = ventaRepo.modificarVenta(venta)
+    val ventas = Await.result(futureVenta, Duration.Inf)
+
+    Ok("modificado")
   }
 }

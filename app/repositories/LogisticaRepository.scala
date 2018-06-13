@@ -18,7 +18,7 @@ class LogisticaRepository {
   )
 
 
- implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<))
+ //implicit val impVenta = GetResult(r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<))
 
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
@@ -55,7 +55,11 @@ class LogisticaRepository {
   def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
-    val p = sql"""select ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.codem, ventas.super, ventas.afip, ventas.motivo_codem, ventas.motivo_super, ventas.motivo_afip, ventas.motivo_auditoria, ventas.audio,
+    val p = for {
+      v <- ventas
+
+    }yield(v, "a")
+    /*val p = sql"""select ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.codem, ventas.super, ventas.afip, ventas.motivo_codem, ventas.motivo_super, ventas.motivo_afip, ventas.motivo_auditoria, ventas.audio,
               Case when ((estados.id_venta in (select id_venta from estados where estado = 'Auditoria aprobada' or estado = 'Auditoria observada' group by id_venta)
                              and estados.id_venta not in (select id_venta from estados where estado = 'Rechazo por auditoria' or estado = 'Visita creada' group by id_venta))) then 'Pendiente'
               else 'Confirmar' END AS is_a_senior
@@ -72,8 +76,8 @@ class LogisticaRepository {
                              and estados.id_venta not in (select id_venta from estados where estado = 'Rechazo por auditoria' or estado = 'Visita creada' group by id_venta))) then 'Pendiente'
                                else 'Confirmar' END
       """.as[(Venta, String)]
-
-    Db.db.run(p)
+*/
+    Db.db.run(p.result)
   }
 
 

@@ -42,10 +42,9 @@ class VentaRepository {
     Db.db.run(e)
   }
 
-  def modificarVenta(venta: Venta, estado: Estado) = {
-    val updateV = ventas.filter(_.dni === venta.dni).map( u => (u.codem, u.superr, u.afip, u.motivoCodem, u.motivoSuper, u.motivoAfip) ).update(venta.codem, venta.superr, venta.afip, venta.motivoCodem, venta.motivoSuper, venta.motivoAfip)
-    val e = estados += estado
-    val fullQuery = DBIO.seq(updateV, e)
-    Db.db.run(fullQuery)
+  def modificarVenta(venta: Venta) = {
+
+    val updateV = ventas.filter(_.dni === venta.dni).update(venta)
+    Db.db.run(updateV)
   }
 }

@@ -13,25 +13,16 @@ case class Venta(
                 estadoCivil: String,
                 edad: Int,
                 idObraSocial: String,
-                codem: Option[Boolean],
-                superr: Option[Boolean],
-                afip: Option[Boolean],
-                motivoCodem: Option[String],
-                motivoSuper: Option[String],
-                motivoAfip: Option[String],
-                motivoAuditoria: Option[String],
-                audio: Option[String]
+                fechaNacimiento: DateTime,
+                zona: String,
+                codigoPostal: Int,
+                horaContactoTel: String,
+                piso: Option[String],
+                dpto: Option[String],
+                celular: Option[String],
+                horaContactoCel: Option[String],
+                base: Option[String],
                 ) {
 
-  def validar(user: String) : Estado = {
-    val h = Seq(codem, superr, afip)
-
-    val checkAprobacion = h.forall(_.get == true)
-    if(checkAprobacion)
-      Estado(user, dni, "Validado", DateTime.now)
-    else
-      Estado(user, dni, "Rechazo por validador", DateTime.now)
-
-  }
 
 }

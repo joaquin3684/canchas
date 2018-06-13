@@ -13,7 +13,7 @@ import play.api.libs.json._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class LoginController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, val jsonMapperAction: JsonMapperAction, val userRepo: UsuarioRepository) extends AbstractController(cc){
+class LoginController @Inject()(cc: ControllerComponents,val userRepo: UsuarioRepository, val jsonMapper: JsonMapper, val jsonMapperAction: JsonMapperAction) extends AbstractController(cc){
 
 
   def login = jsonMapperAction { implicit request =>

@@ -150,17 +150,22 @@ object Schemas {
     def estadoCivil = column[String]("estadoCivil")
     def edad = column[Int]("edad")
     def idObraSocial = column[String]("id_obra_social", O.Length(50))
+    def fechaNacimiento =  column[DateTime]("fecha_nacimiento")
+    def zona =  column[String]("zona")
+    def codigoPostal =  column[Int]("codigo_postal")
+    def horaContactoTel =  column[String]("hora_contacto_tel")
+    def piso = column[Option[String]]("piso", O.Default(None))
+    def dpto = column[Option[String]]("departamento", O.Default(None))
+    def celular = column[Option[String]]("celular", O.Default(None))
+    def horaContactoCel = column[Option[String]]("hora_contacto_cel", O.Default(None))
+    def base = column[Option[String]]("base", O.Default(None))
+
     def obsFk = foreignKey("fk_venta_obs", idObraSocial, obrasSociales)(_.nombre)
-    def codem = column[Option[Boolean]]("codem", O.Default(None))
-    def superr = column[Option[Boolean]]("super", O.Default(None))
-    def afip = column[Option[Boolean]]("afip", O.Default(None))
-    def motivoCodem = column[Option[String]]("motivo_codem", O.Default(None))
-    def motivoSuper = column[Option[String]]("motivo_super", O.Default(None))
-    def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
+
     def motivoAuditoria = column[Option[String]]("motivo_auditoria", O.Default(None))
     def audio = column[Option[String]]("audio", O.Default(None))
 
-    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, codem, superr, afip, motivoCodem, motivoSuper, motivoAfip, motivoAuditoria, audio) <> (Venta.tupled, Venta.unapply)
+    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, fechaNacimiento, zona, codigoPostal, horaContactoTel, piso, dpto, celular, horaContactoCel, base) <> (Venta.tupled, Venta.unapply)
 
   }
 
@@ -193,19 +198,59 @@ object Schemas {
      def direccion= column[String]("direccion")
      def entreCalles= column[String]("entre_calles")
      def localidad= column[String]("localidad")
-     def observacion= column[String]("observacion")
+     def observacion= column[Option[String]]("observacion", O.Default(None))
      def fecha= column[DateTime]("fecha")
+     def hora = column[String]("hora")
      def estado= column[String]("estado")
 
      def ventaFk = foreignKey("fk_venta_visita", dni, ventas)(_.dni)
      def userFk = foreignKey("fk_user_visita", user, usuarios)(_.user)
 
-
-
-    def * = (id, dni, user, lugar, direccion, entreCalles, localidad, observacion, fecha, estado) <> (Visita.tupled, Visita.unapply)
+     def * = (id, dni, user, lugar, direccion, entreCalles, localidad, observacion, fecha, hora, estado) <> (Visita.tupled, Visita.unapply)
   }
 
   val visitas = TableQuery[Visitas]
+
+  class Validaciones(tag: Tag) extends Table[Validacion](tag, "validaciones") {
+
+    def dni = column[Int]("id_venta", O.PrimaryKey)
+    def codem = column[Boolean]("codem")
+    def superr = column[Boolean]("super")
+    def afip = column[Boolean]("afip")
+    def capitas = column[Int]("capitas")
+    def motivoCodem = column[Option[String]]("motivo_codem", O.Default(None))
+    def motivoSuper = column[Option[String]]("motivo_super", O.Default(None))
+    def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
+
+
+    def ventaFk = foreignKey("fk_venta_validacion", dni, ventas)(_.dni)
+
+    def * = (dni, codem, superr, afip, capitas, motivoCodem, motivoSuper, motivoAfip) <> (Validacion.tupled, Validacion.unapply)
+  }
+
+  val validaciones = TableQuery[Validaciones]
+
+  class Auditorias(tag: Tag) extends Table[Auditoria](tag, "auditorias") {
+
+
+    def dni =  column[Int]("id_venta", O.PrimaryKey)
+    def audio =  column[String]("audio")
+    def observacion =  column[Option[String]]("obsevacion", O.Default(None))
+    def empresa =  column[Option[String]]("empresa", O.Default(None))
+    def direccion =  column[Option[String]]("direccion", O.Default(None))
+    def localidad =  column[Option[String]]("localidad", O.Default(None))
+    def cantidadEmpleados =  column[Option[String]]("cantidad_empleados", O.Default(None))
+    def horaEntrada =  column[Option[String]]("hora_entrada", O.Default(None))
+    def horaSalida =  column[Option[String]]("hora_salida", O.Default(None))
+    def cuit =  column[Option[Int]]("cuit", O.Default(None))
+    def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
+
+    def ventaFk = foreignKey("fk_venta_auditoria", dni, ventas)(_.dni)
+
+    def * = (dni, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida, cuit, tresPorciento) <> (Auditoria.tupled, Auditoria.unapply)
+  }
+
+  val auditorias = TableQuery[Auditorias]
 
   val allSchemas = {
       obrasSociales.schema ++
@@ -219,6 +264,8 @@ object Schemas {
       ventas.schema ++
       estados.schema ++
       usuariosPerfiles.schema ++
-      visitas.schema
+      visitas.schema ++
+      validaciones.schema ++
+      auditorias.schema
   }
 }

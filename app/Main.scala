@@ -24,7 +24,7 @@ import slick.jdbc.GetResult
 
 object Main extends App {
 
-  val db = Database.forConfig("db.default")
+  //val db = Database.forConfig("db.default")
 
 
  /* val a = db.run(Schemas.allSchemas.drop)
@@ -101,7 +101,80 @@ object Main extends App {
     } yield (v, vis)
   }.result.statements.foreach(println)
 */
+/*  import java.io._
 
+  import org.apache.pdfbox.pdfparser.PDFParser
+  import org.apache.pdfbox.pdmodel.PDDocument
+  import org.apache.pdfbox.util.PDFTextStripper
+
+  def prueba = {
+    try {
+
+      val parser = new PDFParser(new FileInputStream("/home/joaquin/Descargas/prueba.PDF"));
+      parser.parse()
+      val cosDoc = parser.getDocument();
+      val pdfStripper = new PDFTextStripper();
+      val pdDoc = new PDDocument(cosDoc);
+      pdfStripper.setStartPage(1)
+      pdfStripper.setEndPage(1)
+      val parsedText = pdfStripper.getText(pdDoc);
+
+      Some(parsedText)
+
+      /*val pdf = PDDocument.load(new File("/home/joaquin/Descargas/prueba.PDF"))
+      val stripper = new PDFTextStripper
+      stripper.setStartPage(1)
+      stripper.setEndPage(2)
+      Some(stripper.getText(pdf))*/
+    } catch {
+      case t: Throwable =>
+        t.printStackTrace
+        None
+    }
+  }
+
+  prueba
+
+  val str = "0.00 20.20.30 A20.200,00A a20.400.400,00A 20.220,00"
+  val cuit = "((\\d{2}-\\d{8}-\\d)|((?<!.)(20|30|24|25|26|27)\\d{9}))".r
+  val tipoFactura = "(^|\n)[ABCM][\n\\s]".r
+  val puntoVenta = "\\d{4}\\s?-\\s?\\d{8}".r
+  val fechaEmision = "\\d{2}\\s?[-/]\\s?\\d{2}\\s?[-/]\\s?\\d{2,4}".r
+  val respoInsc = ("(?i)" + "iva responsable inscripto".mkString("\\s?")).r
+
+  val pruebaPunto = "[\\.,]".r
+  val importes =  "(?<![\\.,0-9])(((\\d{1,3}([.,]\\d{3})*)[.,]\\d{2})|\\d+[.,]\\d{2})(?![\\.,])".r
+
+  val codigoBarra = "\\d{40}".r
+
+  val c = (cuit findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(", ")
+  val fac = (tipoFactura findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(", ")
+  val a = (puntoVenta findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(" ")
+  val fec = (fechaEmision findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(" ")
+  val resp = (respoInsc findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(" ")
+  val imp = (importes findAllIn prueba.get).mkString(" ")
+  val puntos = (pruebaPunto findAllIn prueba.get).mkString(" ")
+  val cod = (codigoBarra findAllIn prueba.get).mkString(" ")
+  val cuit2 = cod.take(11)
+  val tipoComp = cod.substring(11,13)
+  val puntoVenta2 = cod.substring(13,17)
+  val cai = cod.substring(17,31)
+  val fecha = cod.substring(31,39)
+
+  /*println("cuit: " + c)
+  println("tipo factura: " + fac)
+  println("punto venta: " + a)
+  println("fecha emision: " + fec)
+  println("resp: " + resp)
+  println("importes: " + imp)
+  println("putnos: " + puntos)*/
+  println("codigo de barra : " + cod)
+  println("cuit : " + cuit2)
+  println("tipo comprobante : " + tipoComp)
+  println("punto venta : " + puntoVenta2)
+  println("CAI : " + cai)
+  println("fecha : " + fecha)
+  println("factura texto :" + prueba.get)*/
 }
 
 

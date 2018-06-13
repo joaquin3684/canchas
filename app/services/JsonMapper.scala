@@ -35,7 +35,7 @@ class JsonMapper {
     if(node.isObject){
       node.asInstanceOf[ObjectNode].remove(valueToRemove)
     } else {
-      throw new JsonMappingException("not an object " + node)
+      throw new RuntimeException("not an object " + node)
     }
   }
 
@@ -43,7 +43,7 @@ class JsonMapper {
     if(oldNode.isObject){
       oldNode.asInstanceOf[ObjectNode].set(fieldName, newNode)
     } else {
-      throw new JsonMappingException("not an object " + oldNode)
+      throw new RuntimeException("not an object " + oldNode)
     }
   }
 
@@ -51,7 +51,7 @@ class JsonMapper {
     if(node.isObject){
       node.asInstanceOf[ObjectNode].put(fieldName, value)
     } else {
-      throw new JsonMappingException("not an object " + node)
+      throw new RuntimeException("not an object " + node)
     }
   }
 

@@ -5,15 +5,15 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
 import akka.http.scaladsl.model.DateTime
-import models.Estado
+import models.{Auditoria, Estado}
 import play.api.mvc.{AbstractController, ControllerComponents}
-import repositories.{AuditoriaRepository, VentaRepository}
+import repositories.{AuditoriaRepository}
 import services.JsonMapper
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: AuditoriaRepository, val ventaRepo: VentaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: AuditoriaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
 
   def all = getAuthAction {implicit request =>
     val futureVentas = audiRepo.all(request.user)
@@ -30,16 +30,9 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
     Ok(ventasJson)
   }
 
-/*  def vectorToElem[A <: Any](a: Vector[A]) = a match {
-    case Vector[Int] => "ha"
-  }*/
-
   def upload = getAuthAction(parse.multipartFormData) { implicit request =>
 
-
-
     request.body.file("audio").map { picture =>
-
 
       val dni = request.body.dataParts.get("dni").get.head.toInt
 
@@ -50,19 +43,26 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
       }
 
       val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
+      val empresa = if(request.body.dataParts.get("empresa").isDefined) Some(request.body.dataParts.get("empresa").get.head) else None
+      val direccion = if(request.body.dataParts.get("direccion").isDefined) Some(request.body.dataParts.get("direccion").get.head) else None
+      val localidad = if(request.body.dataParts.get("localidad").isDefined) Some(request.body.dataParts.get("localidad").get.head) else None
+      val cantidadEmpleados = if(request.body.dataParts.get("cantidadEmpleados").isDefined) Some(request.body.dataParts.get("cantidadEmpleados").get.head) else None
+      val horaEntrada = if(request.body.dataParts.get("horaEntrada").isDefined) Some(request.body.dataParts.get("horaEntrada").get.head) else None
+      val horaSalida = if(request.body.dataParts.get("horaSalida").isDefined) Some(request.body.dataParts.get("horaSalida").get.head) else None
 
 
-      val ruta = "public/images/"+ dni + ".mp3"
-      val futureVenta = audiRepo.auditar(estado, dni, observacion, Some(ruta))
+      val rutaAudio = "public/images/"+ dni + ".mp3"
+      val auditoria = Auditoria(dni, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida, None, None)
+
+      val futureVenta = audiRepo.auditar(auditoria, estado)
       Await.result(futureVenta, Duration.Inf)
 
       // only get the last part of the filename
       // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
-      val reg_ex = """.*\.(\w+)""".r
 
       val filename = Paths.get(picture.filename).getFileName
 
-      picture.ref.moveTo(Paths.get(ruta), replace = true)
+      picture.ref.moveTo(Paths.get(rutaAudio), replace = true)
       Ok("File uploaded")
     }.getOrElse {
       Ok("esto no anda")

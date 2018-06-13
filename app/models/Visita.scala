@@ -10,8 +10,9 @@ case class Visita(
                  direccion: String,
                  entreCalles: String,
                  localidad: String,
-                 observacion: String,
+                 observacion: Option[String],
                  fecha: DateTime,
+                 hora: String,
                  estado: String
                  ) {
 

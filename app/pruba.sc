@@ -1,24 +1,16 @@
-import java.time.LocalDateTime
+val str = "0.00 20.20.30 A20.200,00A a20.400.400,00A 20.220,00"
 
-import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
-val mapper = new ObjectMapper()
-mapper.registerModule(DefaultScalaModule)
-mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+val cuit = "\\d{2}-\\d{8}-\\d".r
+val tipoFactura = "[ABCM]".r
+val puntoVenta = "\\d{4}\\s?-\\s?\\d{8}".r
+val fechaEmision = "\\d{2}\\s?[-/]\\s?\\d{2}\\s?[-/]\\s?\\d{2,4}".r
+val importes =  "(?<![\\.,])(\\d{1,3}([.,]\\d{3})*)[.,]\\d{2}(?<!(\\.3))".r
 
 
-@JsonCreator
-case class Persona(@JsonProperty("nombre") nombre: String, @JsonProperty("edad") edad: Int)
 
-val persona = Persona("pepe", 32)
 
-val string = "{\"nombre\":1,\"edad\": 20\"}"
+val fec = (fechaEmision findAllIn str).mkString(" ")
 
-val j = mapper.readValue(string, classOf[Persona])
-
-val edadNueva = persona.edad * 2
-
-val json = mapper.writeValueAsString(persona)
+(cuit findAllIn str).mkString(", ")
+(tipoFactura findAllIn str).mkString(", ")
+(importes findAllIn str).mkString(" ")

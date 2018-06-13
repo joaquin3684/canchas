@@ -54,6 +54,8 @@ GET /validacion/all                 controllers.ValidarController.all
 
 GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
 
+POST /validacion/updateVenta        controllers.ValidarController.modificarVenta
+
 # LOGISTICA
 
 POST /logistica/generarVisita       controllers.LogisticaController.altaVisita
