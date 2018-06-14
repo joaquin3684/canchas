@@ -28,9 +28,8 @@ case class GetAuthenticatedAction @Inject()(val parser: BodyParsers.Default)(imp
     val pantallas = session.get("permisos").get.as[Seq[String]]
     val obrasSociales = session.get("obrasSociales").get.as[Seq[String]]
     if (pantallas.contains(pantalla)) new GetUserRequest(obrasSociales, userId, request) else {
-      val userRepo = new UsuarioRepository
 
-      val futureRuta = userRepo.getRuta(path, pantallas)
+      val futureRuta = UsuarioRepository.getRuta(path, pantallas)
       val ruta = Await.result(futureRuta, Duration.Inf)
       if (ruta.isEmpty) throw new RuntimeException("no tiene permiso para esta ruta") else new GetUserRequest(obrasSociales, userId, request)
     }

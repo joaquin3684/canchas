@@ -13,7 +13,7 @@ import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: VentaRepository, val valiRepo: ValidacionRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
+class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
   def validar = (authAction andThen checkObs) { implicit request =>
@@ -21,7 +21,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: Venta
     val venta = jsonMapper.fromJson[Validacion](request.rootNode.toString)
     val estadoNuevo = venta.validar(request.user)
 
-    val futureV = valiRepo.validarVenta(venta, estadoNuevo)
+    val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo)
 
     Await.result(futureV, Duration.Inf)
     Ok("validado")
@@ -30,7 +30,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: Venta
 
 
   def all = getAuthAction { implicit request =>
-    val futureVentas = valiRepo.all(request.user)
+    val futureVentas = ValidacionRepository.all(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
     val json = jsonMapper.toJson(ventas)
     Ok(json)
@@ -38,7 +38,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: Venta
 
   def ventasAValidar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = valiRepo.ventasAValidar(request.user)
+    val futureVentas = ValidacionRepository.ventasAValidar(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
     val json = jsonMapper.toJson(ventas)
     Ok(json)
@@ -46,7 +46,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val ventaRepo: Venta
 
   def modificarVenta = (authAction andThen checkObs) { implicit request =>
     val venta = jsonMapper.fromJson[Venta](request.rootNode.toString)
-    val futureVenta = ventaRepo.modificarVenta(venta)
+    val futureVenta = VentaRepository.modificarVenta(venta)
     val ventas = Await.result(futureVenta, Duration.Inf)
 
     Ok("modificado")

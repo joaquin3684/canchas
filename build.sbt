@@ -18,6 +18,7 @@ libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" 
 libraryDependencies +=   "com.pauldijou" %% "jwt-play" % "0.16.0"
 libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "3.0"
 libraryDependencies += "org.apache.pdfbox" % "pdfbox" % "1.8.2"
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "x.x.x" % "test"
 
 
 

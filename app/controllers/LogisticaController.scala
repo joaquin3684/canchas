@@ -12,12 +12,12 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: LogisticaRepository, val ventaRepo: VentaRepository, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
+class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
 
 
   def ventasSinVisita = getAuthAction {implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = logisRepo.ventasSinVisita
+    val futureVentas = LogisticaRepository.ventasSinVisita
     val ven= Await.result(futureVentas, Duration.Inf)
     val ventas = jsonMapper.toJson(ven)
     Ok(ventas)
@@ -33,7 +33,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
-    val futureVisita = logisRepo.create(visita)
+    val futureVisita = LogisticaRepository.create(visita)
     Await.result(futureVisita, Duration.Inf)
 
     Ok("visita creada")
@@ -43,7 +43,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
   def ventasATrabajar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = logisRepo.ventasAConfirmar
+    val futureVentas = LogisticaRepository.ventasAConfirmar
     val ven= Await.result(futureVentas, Duration.Inf)
     val root = jsonMapper.mapper.createObjectNode()
 
@@ -64,7 +64,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
     val estadoNuevo = Estado(request.user, dni, "Visita confirmada", DateTime.now)
 
-    val futureEstado = ventaRepo.agregarEstado(estadoNuevo)
+    val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("confirmada")
@@ -72,7 +72,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
   def getVisita(dni: Int) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVisita = logisRepo.getVisita(dni)
+    val futureVisita = LogisticaRepository.getVisita(dni)
     val visita = Await.result(futureVisita, Duration.Inf)
     val rootNode = jsonMapper.mapper.createObjectNode
     rootNode.put("dni", visita.dni)
@@ -95,7 +95,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
     val estadoNuevo = Estado(request.user, dni, "Rechazo por logistica", DateTime.now)
 
-    val futureEstado = ventaRepo.agregarEstado(estadoNuevo)
+    val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("rechazado")
@@ -110,7 +110,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
 
-    val futureVisita = logisRepo.repactar(visita)
+    val futureVisita = LogisticaRepository.repactar(visita)
     Await.result(futureVisita, Duration.Inf)
 
     Ok("visita repactada")
@@ -119,7 +119,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
   def getVisitas(dni: Int) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVisitas = logisRepo.getVisitas(dni)
+    val futureVisitas = LogisticaRepository.getVisitas(dni)
     val visitas = Await.result(futureVisitas, Duration.Inf)
     val visitasJson = jsonMapper.toJson(visitas)
     Ok(visitasJson)
@@ -127,7 +127,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val logisRepo: Log
 
   def all = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = logisRepo.all(request.user)
+    val futureVentas = LogisticaRepository.all(request.user)
     val ventasConVisitas = Await.result(futureVentas, Duration.Inf)
     val ventass = ventasConVisitas.map(_._1).distinct
     val visitas = ventasConVisitas.map(_._2)

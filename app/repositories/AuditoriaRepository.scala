@@ -5,7 +5,7 @@ import models._
 import slick.jdbc.MySQLProfile.api._
 import schemas.Schemas.{estados, ventas, auditorias}
 
-class AuditoriaRepository {
+object AuditoriaRepository {
 
   def ventasParaAuditar()(implicit obs: Seq[String]) : Future[Seq[Venta]]= {
     val query = for {

@@ -6,7 +6,7 @@ import schemas.Schemas.{obrasSociales, pantallas, pantallasRutas, perfiles, perf
 
 import scala.concurrent.Future
 
-class UsuarioRepository {
+object UsuarioRepository {
 
   def create(user: Usuario, obrasSociales: Seq[UsuarioObraSocial], perfiles: Seq[UsuarioPerfil]) = {
 

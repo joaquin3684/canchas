@@ -12,7 +12,7 @@ import com.github.t3hnar.bcrypt._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: UsuarioRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
 
 
 
@@ -37,7 +37,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
       val obsUser = obrasSociales.map { o => UsuarioObraSocial(user.user, o.nombre)}
       val perfUser = perfiles.map { p => UsuarioPerfil(user.user, p.nombre)}
 
-      val futureUser = userRepo.create(user, obsUser, perfUser)
+      val futureUser = UsuarioRepository.create(user, obsUser, perfUser)
       Await.result(futureUser, Duration.Inf)
 
       Ok("guardado")
@@ -49,7 +49,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
 
   def getById(user: String) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureUser = userRepo.getById(user)
+    val futureUser = UsuarioRepository.getById(user)
     val userWithRealtionships = Await.result(futureUser, Duration.Inf)
     val map = mapToJsonString(userWithRealtionships)
     val json = jsonMapper.toJson(map)
@@ -80,7 +80,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
 
   def all() = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureUser = userRepo.all()
+    val futureUser = UsuarioRepository.all()
     val users = Await.result(futureUser, Duration.Inf)
     val u = users.distinct
     val json = jsonMapper.toJson(u)
@@ -91,7 +91,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
   def update(user: String) = authAction { implicit request =>
 
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureCheckObs = userRepo.checkObraSocial(user)
+    val futureCheckObs = UsuarioRepository.checkObraSocial(user)
     val rootNode = request.rootNode
     val perfilesJson = jsonMapper.getAndRemoveElement(rootNode, "perfiles")
     val obrasSocialesJson = jsonMapper.getAndRemoveElement(rootNode, "obrasSociales")
@@ -107,7 +107,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
       val obsUser = obrasSociales.map { o => UsuarioObraSocial(userModificado.user, o.nombre) }
       val perfUser = perfiles.map { p => UsuarioPerfil(userModificado.user, p.nombre) }
 
-      val futureUser = userRepo.update(user, userModificado, perfUser, obsUser)
+      val futureUser = UsuarioRepository.update(user, userModificado, perfUser, obsUser)
       val checkObs = Await.result(futureCheckObs, Duration.Inf)
       if(checkObs.nonEmpty) Await.result(futureUser, Duration.Inf) else throw new RuntimeException("obra social erronea")
 
@@ -120,10 +120,10 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
 
   def delete(user: String) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureCheckObs = userRepo.checkObraSocial(user)
+    val futureCheckObs = UsuarioRepository.checkObraSocial(user)
     val check = Await.result(futureCheckObs, Duration.Inf)
     if(check.nonEmpty) {
-      val futureUser = userRepo.delete(user)
+      val futureUser = UsuarioRepository.delete(user)
       Await.result(futureUser, Duration.Inf)
       Ok("borrado")
     } else throw new RuntimeException("obra social erronea")
@@ -132,7 +132,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
 
   def cambiarPasswordPropia = authAction { implicit request =>
     val password = request.rootNode.get("password").asText().bcrypt
-    val futureUser = userRepo.cambiarPassword(request.user, password)
+    val futureUser = UsuarioRepository.cambiarPassword(request.user, password)
     Await.result(futureUser, Duration.Inf)
 
     Ok("password modificada")
@@ -142,11 +142,11 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
   def cambiarPassword = authAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val user = request.rootNode.get("user").asText()
-    val futureCheckObs = userRepo.checkObraSocial(user)
+    val futureCheckObs = UsuarioRepository.checkObraSocial(user)
     val password = request.rootNode.get("password").asText().bcrypt
     val check = Await.result(futureCheckObs, Duration.Inf)
     if(check.nonEmpty){
-      val futureUser = userRepo.cambiarPassword(user, password)
+      val futureUser = UsuarioRepository.cambiarPassword(user, password)
       Await.result(futureUser, Duration.Inf)
       Ok("passowrd modificada")
     } else throw new RuntimeException("obra social erronea")
@@ -155,7 +155,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val userRepo: Usuari
   }
 
   def perfiles = getAuthAction { implicit request =>
-    val futurePerfiles = userRepo.getPerfiles
+    val futurePerfiles = UsuarioRepository.getPerfiles
     val perf = Await.result(futurePerfiles, Duration.Inf)
     val perfiles = jsonMapper.toJson(perf)
     Ok(perfiles)

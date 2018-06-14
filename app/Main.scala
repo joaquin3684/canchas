@@ -101,7 +101,7 @@ object Main extends App {
     } yield (v, vis)
   }.result.statements.foreach(println)
 */
-/*  import java.io._
+ import java.io._
 
   import org.apache.pdfbox.pdfparser.PDFParser
   import org.apache.pdfbox.pdmodel.PDDocument
@@ -110,7 +110,7 @@ object Main extends App {
   def prueba = {
     try {
 
-      val parser = new PDFParser(new FileInputStream("/home/joaquin/Descargas/prueba.PDF"));
+      val parser = new PDFParser(new FileInputStream("/home/joaquin/Documentos/Factura Tecno.pdf"));
       parser.parse()
       val cosDoc = parser.getDocument();
       val pdfStripper = new PDFTextStripper();
@@ -154,27 +154,27 @@ object Main extends App {
   val resp = (respoInsc findAllIn prueba.get).map(_.replaceAll("\\s", "")).mkString(" ")
   val imp = (importes findAllIn prueba.get).mkString(" ")
   val puntos = (pruebaPunto findAllIn prueba.get).mkString(" ")
-  val cod = (codigoBarra findAllIn prueba.get).mkString(" ")
+  /*val cod = (codigoBarra findAllIn prueba.get).mkString(" ")
   val cuit2 = cod.take(11)
   val tipoComp = cod.substring(11,13)
   val puntoVenta2 = cod.substring(13,17)
   val cai = cod.substring(17,31)
   val fecha = cod.substring(31,39)
-
-  /*println("cuit: " + c)
+*/
+  println("cuit: " + c)
   println("tipo factura: " + fac)
   println("punto venta: " + a)
   println("fecha emision: " + fec)
   println("resp: " + resp)
   println("importes: " + imp)
-  println("putnos: " + puntos)*/
-  println("codigo de barra : " + cod)
+  println("putnos: " + puntos)
+ /* println("codigo de barra : " + cod)
   println("cuit : " + cuit2)
   println("tipo comprobante : " + tipoComp)
   println("punto venta : " + puntoVenta2)
   println("CAI : " + cai)
-  println("fecha : " + fecha)
-  println("factura texto :" + prueba.get)*/
+  println("fecha : " + fecha)*/
+  println("factura texto :" + prueba.get)
 }
 
 

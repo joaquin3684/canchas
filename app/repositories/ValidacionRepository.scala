@@ -7,7 +7,7 @@ import schemas.Schemas.{estados, ventas, validaciones}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
-class ValidacionRepository {
+object ValidacionRepository {
 
 
   def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Option[Venta] =  {

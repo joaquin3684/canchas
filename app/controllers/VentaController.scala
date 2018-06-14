@@ -11,7 +11,7 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class VentaController @Inject()(cc: ControllerComponents, val ventaRepo: VentaRepository, val jsonMapper: JsonMapper, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
 
   def create = authAction { implicit request =>
 
@@ -19,7 +19,7 @@ class VentaController @Inject()(cc: ControllerComponents, val ventaRepo: VentaRe
     val ventasJson = request.rootNode.toString
     val venta = jsonMapper.fromJson[Venta](ventasJson)
     if(request.obrasSociales.contains(venta.idObraSocial)) {
-      val futureVenta = ventaRepo.create(venta, userName)
+      val futureVenta = VentaRepository.create(venta, userName)
       Await.result(futureVenta, Duration.Inf)
       Ok("creado")
     } else throw new RuntimeException("obra social erronea")
@@ -27,7 +27,7 @@ class VentaController @Inject()(cc: ControllerComponents, val ventaRepo: VentaRe
 
   def all = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = ventaRepo.all(request.user)
+    val futureVentas = VentaRepository.all(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
     val json = jsonMapper.toJson(ventas)
     Ok(json)

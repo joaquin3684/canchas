@@ -11,7 +11,7 @@ import slick.jdbc.GetResult
 
 import scala.concurrent.Future
 
-class LogisticaRepository {
+object LogisticaRepository {
   implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.clicks),
     ts => DateTime(ts.getTime)

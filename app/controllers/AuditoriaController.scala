@@ -13,10 +13,10 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: AuditoriaRepository, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
 
   def all = getAuthAction {implicit request =>
-    val futureVentas = audiRepo.all(request.user)
+    val futureVentas = AuditoriaRepository.all(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
     val ventasJson = jsonMapper.toJson(ventas)
     Ok(ventasJson)
@@ -24,7 +24,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
 
   def ventasParaAuditar = getAuthAction { implicit request =>
     implicit val obs : Seq[String] = request.obrasSociales
-    val futureVentas = audiRepo.ventasParaAuditar
+    val futureVentas = AuditoriaRepository.ventasParaAuditar
     val ventas = Await.result(futureVentas, Duration.Inf)
     val ventasJson = jsonMapper.toJson(ventas)
     Ok(ventasJson)
@@ -54,7 +54,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val audiRepo: Audi
       val rutaAudio = "public/images/"+ dni + ".mp3"
       val auditoria = Auditoria(dni, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida, None, None)
 
-      val futureVenta = audiRepo.auditar(auditoria, estado)
+      val futureVenta = AuditoriaRepository.auditar(auditoria, estado)
       Await.result(futureVenta, Duration.Inf)
 
       // only get the last part of the filename
