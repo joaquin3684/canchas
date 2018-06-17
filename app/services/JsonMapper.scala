@@ -57,7 +57,7 @@ class JsonMapper {
 
 
   def getAndRemoveElement(node: JsonNode, valueToRemove: String): String = {
-    removeElement(node, valueToRemove).toString
+    removeElement(node, valueToRemove).toString.replaceAll("\"", "")
   }
 
 

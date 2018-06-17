@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
+import akka.http.scaladsl.model.DateTime
 import models.Venta
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.VentaRepository
@@ -16,10 +17,12 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
   def create = authAction { implicit request =>
 
     val userName = jsonMapper.getAndRemoveElement(request.rootNode, "user")
+    val f = jsonMapper.getAndRemoveElement(request.rootNode, "fechaCreacion")
+    val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
     val ventasJson = request.rootNode.toString
     val venta = jsonMapper.fromJson[Venta](ventasJson)
     if(request.obrasSociales.contains(venta.idObraSocial)) {
-      val futureVenta = VentaRepository.create(venta, userName)
+      val futureVenta = VentaRepository.create(venta, userName, fechaCreacion)
       Await.result(futureVenta, Duration.Inf)
       Ok("creado")
     } else throw new RuntimeException("obra social erronea")

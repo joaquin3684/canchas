@@ -1,34 +1,26 @@
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
-import controllers.{AsyncController, CountController}
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsArray, JsValue, Json}
-import play.api.routing.Router
 import play.api.test.Helpers._
-import play.api.test.{FakeHeaders, FakeRequest}
+import play.api.test.{FakeRequest}
 import repositories.Db
-import schemas.Schemas
-import services.Counter
+
 import slick.jdbc.MySQLProfile.api._
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 import schemas.Schemas.{usuarios, usuariosObrasSociales, usuariosPerfiles}
 /**
- * Unit tests can run without a full Play application.
- */
-class UnitSpec extends PlaySpec with GuiceOneAppPerSuite{
+  * Unit tests can run without a full Play application.
+  */
+class UsuarioControllerTest extends PlaySpec with GuiceOneAppPerSuite {
 
 
-
-  "VentaController" should {
+  "UsuarioController" should {
 
     "crear un usuario con uno o mas perfiles asignados y una o mas obras sociales asignadas" in {
       Db.inicializarDb
 
       val json = Json.parse(
-          """
+        """
         {
           "user": "600",
           "email": "600",
@@ -125,7 +117,4 @@ class UnitSpec extends PlaySpec with GuiceOneAppPerSuite{
       contentAsString(result) mustEqual "password modificada"
     }
   }
-
-
-
 }

@@ -148,7 +148,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     if(check.nonEmpty){
       val futureUser = UsuarioRepository.cambiarPassword(user, password)
       Await.result(futureUser, Duration.Inf)
-      Ok("passowrd modificada")
+      Ok("password modificada")
     } else throw new RuntimeException("obra social erronea")
 
 

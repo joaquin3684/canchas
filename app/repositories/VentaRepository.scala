@@ -17,9 +17,9 @@ object VentaRepository {
 
   }
 
-  def create(venta: Venta, user: String) = {
+  def create(venta: Venta, user: String, fecha: DateTime) = {
     val v = ventas += venta
-    val estado = Estado(user, venta.dni, "Creado", DateTime.now)
+    val estado = Estado(user, venta.dni, "Creado", fecha)
     val e = estados += estado
     val fullQuery = DBIO.seq(v, e)
 

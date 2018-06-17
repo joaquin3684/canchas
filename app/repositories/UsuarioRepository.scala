@@ -62,7 +62,7 @@ object UsuarioRepository {
     val userObsBorrados = usuariosObrasSociales.filter({ x => x.idUsuario === user}).delete
     val userPerBorrados = usuariosPerfiles.filter({ x => x.idUsuario === user}).delete
 
-    val modUser = usuarios.filter(_.user === user).map( u => (u.email, u.nombre) ).update(userNuevo.email, userNuevo.nombre)
+    val modUser = usuarios.filter(_.user === user).map( u => (u.user, u.email, u.nombre) ).update(userNuevo.user, userNuevo.email, userNuevo.nombre)
     val userObs = usuariosObrasSociales ++= obrasSociales
     val userPerfiles = usuariosPerfiles ++= perfiles
 
