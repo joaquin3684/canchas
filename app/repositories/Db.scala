@@ -6,16 +6,19 @@ import schemas.Schemas
 import slick.jdbc.MySQLProfile.api._
 import com.github.t3hnar.bcrypt._
 import slick.dbio.{DBIOAction, NoStream}
+import slick.jdbc.meta.MTable
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
-
+import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Db {
 
   val db = Database.forConfig("db.default")
 
   val initDb = DBIO.seq(
+
     sqlu"SET FOREIGN_KEY_CHECKS = 0",
     Schemas.allSchemas.truncate,
     sqlu"SET FOREIGN_KEY_CHECKS = 1",
@@ -78,10 +81,25 @@ object Db {
     ),
 
   )
+
+
   def inicializarDb = {
+    val j = db.run(MTable.getTables).flatMap(tables =>
+    if(tables.isEmpty){
+      db.run(schemas.allSchemas.create).andThen {
+        case Success(_) => println("schema created")
+      }
+      } else {
+      println("schema already created")
+      Future.successful()
+    }
+    )
+    Await.result(j, Duration.Inf)
     val e = Db.db.run(initDb.transactionally)
     Await.result(e, Duration.Inf)
   }
+
+
 
   val schemas = Schemas
   def runWithAwait[R](a: DBIOAction[R, NoStream, Nothing]) = {
