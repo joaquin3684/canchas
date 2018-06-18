@@ -54,7 +54,7 @@ GET /validacion/all                 controllers.ValidarController.all
 
 GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
 
-POST /validacion/updateVenta        controllers.ValidarController.modificarVenta
+PUT /validacion/updateVenta/:dni   controllers.ValidarController.modificarVenta(dni: Int)
 
 # LOGISTICA
 

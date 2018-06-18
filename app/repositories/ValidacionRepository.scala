@@ -7,7 +7,7 @@ import schemas.Schemas.{estados, ventas, validaciones}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
-object ValidacionRepository {
+object ValidacionRepository extends Estados {
 
 
   def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Option[Venta] =  {
@@ -19,7 +19,7 @@ object ValidacionRepository {
   def all(user: String): Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter( x => x.user === user && (x.estado === "Validado" || x.estado === "Rechazo por validador"))
+        e <- estados.filter( x => x.user === user && (x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION))
         v <- ventas.filter(_.dni === e.dni)
       } yield v
     }
@@ -30,7 +30,7 @@ object ValidacionRepository {
   def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === "Creado" && !(x.dni in estados.filter(x => x.estado === "Validado" || x.estado === "Rechazo por validador").map(_.dni)))
+        e <- estados.filter(x => x.estado === CREADO && !(x.dni in estados.filter(x => x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION).map(_.dni)))
         v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
       } yield v
     }
@@ -41,9 +41,9 @@ object ValidacionRepository {
   def validarVenta(validacion: Validacion, estado: Estado) = {
 
     val e = estados += estado
-    /*val valid = validaciones += validacion
+    val valid = validaciones += validacion
     val fullQuery = DBIO.seq(valid, e)
-    */Db.db.run(e)
+    Db.db.run(fullQuery)
   }
 
 

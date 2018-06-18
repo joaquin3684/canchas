@@ -8,7 +8,7 @@ import schemas.Schemas.{estados, ventas}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
-object VentaRepository {
+object VentaRepository extends Estados {
 
 
   def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Future[Option[Venta]] =  {
@@ -19,7 +19,7 @@ object VentaRepository {
 
   def create(venta: Venta, user: String, fecha: DateTime) = {
     val v = ventas += venta
-    val estado = Estado(user, venta.dni, "Creado", fecha)
+    val estado = Estado(user, venta.dni, CREADO, fecha)
     val e = estados += estado
     val fullQuery = DBIO.seq(v, e)
 
@@ -30,7 +30,7 @@ object VentaRepository {
   def all(user: String)(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter( x => x.user === user && x.estado === "Creado")
+        e <- estados.filter( x => x.user === user && x.estado === CREADO)
         v <- ventas.filter(_.dni === e.dni)
       } yield v
     }
@@ -42,9 +42,14 @@ object VentaRepository {
     Db.db.run(e)
   }
 
-  def modificarVenta(venta: Venta) = {
+  def modificarVenta(venta: Venta, dni:Int, user: String, fechaCreacion: DateTime) = {
 
-    val updateV = ventas.filter(_.dni === venta.dni).update(venta)
-    Db.db.run(updateV)
+    val deleteEstado = estados.filter(e => e.dni === dni && e.estado === CREADO).delete
+    val updateV = ventas.filter(_.dni === dni).update(venta)
+    val estadoModificado = Estado(user, venta.dni, CREADO, fechaCreacion)
+    val updateEs = estados += estadoModificado
+    val fullQuery = DBIO.seq(deleteEstado, updateV, updateEs)
+
+    Db.db.run(fullQuery.transactionally)
   }
 }

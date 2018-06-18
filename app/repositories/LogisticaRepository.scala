@@ -11,7 +11,7 @@ import slick.jdbc.GetResult
 
 import scala.concurrent.Future
 
-object LogisticaRepository {
+object LogisticaRepository extends Estados{
   implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.clicks),
     ts => DateTime(ts.getTime)
@@ -23,7 +23,7 @@ object LogisticaRepository {
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === "Validado" && !(x.dni in estados.filter(x => x.estado === "Visita creada" || x.estado === "Rechazo por logistica").map(_.dni)))
+        e <- estados.filter(x => x.estado === VALIDADO && !(x.dni in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.dni)))
         v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
       } yield v
     }
@@ -32,7 +32,7 @@ object LogisticaRepository {
 
   def create(visita: Visita) = {
     val vi = visitas += visita
-    val es = Estado(visita.user, visita.dni, "Visita creada", DateTime.now)
+    val es = Estado(visita.user, visita.dni, VISITA_CREADA, DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
@@ -40,14 +40,14 @@ object LogisticaRepository {
 
   def repactar(visita: Visita) = {
     val vi = visitas += visita
-    val es = Estado(visita.user, visita.dni, "Visita repactada", DateTime.now)
+    val es = Estado(visita.user, visita.dni, VISITA_REPACTADA, DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
   }
 
   def rechazar(visita: Visita) = {
-    val es = Estado(visita.user, visita.dni, "Rechazo por logistica", DateTime.now)
+    val es = Estado(visita.user, visita.dni, RECHAZO_LOGISTICA, DateTime.now)
     val e = estados += es
     Db.db.run(e)
   }
@@ -100,7 +100,7 @@ object LogisticaRepository {
   def all(user: String): Future[Seq[(Venta, Visita)]] = {
     val query = {
       for {
-        e <- estados.filter(x => (x.estado === "Visita creada" || x.estado === "Visita repactada" || x.estado === "Visita confirmada" || x.estado === "Rechazo por logistica") && x.user === user ).map(_.dni)
+        e <- estados.filter(x => (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA || x.estado === VISITA_CONFIRMADA || x.estado === RECHAZO_LOGISTICA) && x.user === user ).map(_.dni)
         v <- ventas.filter(x => x.dni === e )
         vis <- visitas.filter(_.dni === v.dni)
       } yield (v, vis)
