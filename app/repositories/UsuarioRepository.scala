@@ -75,7 +75,7 @@ object UsuarioRepository {
     Db.db.run(usuarios.filter(_.user === user).map(_.borrado).update(Some(true)))
   }
 
-  def validateCredentials(username: String): Future[Seq[(Usuario, ObraSocial, Pantalla)]] = {
+  def validateCredentials(username: String): Future[Seq[(Usuario, ObraSocial, Pantalla, Perfil)]] = {
     val q = {
       for {
           u <- usuarios.filter(_.user === username)
@@ -85,7 +85,7 @@ object UsuarioRepository {
           per <- perfiles.filter(_.nombre === up.idPerfil)
           pp <- perfilesPantallas.filter(_.idPerfil === per.nombre)
           p <- pantallas.filter(_.nombre === pp.idPantalla)
-      } yield (u, o, p)
+      } yield (u, o, p, per)
     }
     Db.db.run(q.result)
   }

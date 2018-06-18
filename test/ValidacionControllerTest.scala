@@ -187,7 +187,6 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val venta = Db.runWithAwait(ventas.filter(_.dni === 1234).result.head)
       val estado = Db.runWithAwait(estados.filter( e => e.dni === 1234 && e.estado === CREADO).result.head)
 
-
       assert(ventaEsperada == venta)
       assert(estadoEsperado == estado)
 

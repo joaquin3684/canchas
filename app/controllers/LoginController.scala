@@ -32,9 +32,9 @@ class LoginController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
 
     val obs = result.map(_._2.nombre).distinct
     val pantallas = result.map(_._3.nombre).distinct
+    val perfiles = result.map(_._4.nombre).distinct
 
-
-    var session = JwtSession.apply(Json.obj("user_id" -> authUser.user, "obrasSociales" -> obs, "permisos" -> pantallas))
+    var session = JwtSession.apply(Json.obj("user_id" -> authUser.user, "obrasSociales" -> obs, "permisos" -> pantallas, "perfiles" -> perfiles))
     val token = session.serialize
 
     Ok(token)
