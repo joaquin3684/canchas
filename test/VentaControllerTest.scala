@@ -55,11 +55,11 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
 
       val jsonMaper = new JsonMapper
       val rootNode = jsonMaper.getJsonNode(json.toString)
-      val user = jsonMaper.getAndRemoveElement(rootNode, "user")
-      val f = jsonMaper.getAndRemoveElement(rootNode, "fechaCreacion")
+      val user = jsonMaper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "user")
+      val f = jsonMaper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "fechaCreacion")
       val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
       val ventaEsperada = jsonMaper.fromJson[Venta](rootNode.toString)
-      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion)
+      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion, None, estado.id)
 
       assert(ventaEsperada == venta)
       assert(estadoEsperado == estado)

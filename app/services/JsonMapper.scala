@@ -56,11 +56,13 @@ class JsonMapper {
   }
 
 
-  def getAndRemoveElement(node: JsonNode, valueToRemove: String): String = {
+  def getAndRemoveElementAndRemoveExtraQuotes(node: JsonNode, valueToRemove: String): String = {
     removeElement(node, valueToRemove).toString.replaceAll("\"", "")
   }
 
-
+  def getAndRemoveElement(node: JsonNode, valueToRemove: String): String = {
+    removeElement(node, valueToRemove).toString
+  }
 
 
 }

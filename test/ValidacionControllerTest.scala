@@ -86,7 +86,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val bodyText = contentAsString(result)
       val estado = Db.runWithAwait(estados.filter( x => x.dni === 432 && x.estado === VALIDADO).result.head)
       val validacion = Db.runWithAwait(validaciones.filter(x => x.dni === 432).result.head)
-      val estadoEsperado = Estado("200", 432, VALIDADO, DateTime.now)
+      val estadoEsperado = Estado("200", 432, VALIDADO, DateTime.now, None, estado.id)
       val validacionEsperada = Validacion(432, true, true, true, 4, None, None, None)
 
 
@@ -178,17 +178,18 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val bodyText = status(result)
 
       val rootNode = jsonMapper.getJsonNode(json.toString)
-      val user = jsonMapper.getAndRemoveElement(rootNode, "user")
-      val f = jsonMapper.getAndRemoveElement(rootNode, "fechaCreacion")
+      val user = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "user")
+      val f = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "fechaCreacion")
       val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
       val ventaEsperada = jsonMapper.fromJson[Venta](rootNode.toString)
-      val estadoEsperado = Estado(user, ventaEsperada.dni, CREADO, fechaCreacion)
-
       val venta = Db.runWithAwait(ventas.filter(_.dni === 1234).result.head)
+
       val estado = Db.runWithAwait(estados.filter( e => e.dni === 1234 && e.estado === CREADO).result.head)
 
-      assert(ventaEsperada == venta)
+      val estadoEsperado = Estado(user, ventaEsperada.dni, CREADO, fechaCreacion, None, estado.id)
+
       assert(estadoEsperado == estado)
+      assert(ventaEsperada == venta)
 
     }
 

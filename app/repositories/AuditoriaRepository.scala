@@ -25,9 +25,9 @@ object AuditoriaRepository extends Estados {
 
   def auditar(auditoria: Auditoria, estado: Estado) = {
     val e = estados += estado
-    /*val audi = auditorias += auditoria
+    val audi = auditorias += auditoria
     val fullQuery = DBIO.seq(audi, e)
-    */Db.db.run(e)
+    Db.db.run(fullQuery)
   }
 
 }

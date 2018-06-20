@@ -52,13 +52,10 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
 
       val rutaAudio = "public/images/"+ dni + ".mp3"
-      val auditoria = Auditoria(dni, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida, None, None)
+      val auditoria = Auditoria(dni, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida)
 
       val futureVenta = AuditoriaRepository.auditar(auditoria, estado)
       Await.result(futureVenta, Duration.Inf)
-
-      // only get the last part of the filename
-      // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
 
       val filename = Paths.get(picture.filename).getFileName
 

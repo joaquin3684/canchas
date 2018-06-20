@@ -66,13 +66,13 @@ POST /logistica/repactarVisita      controllers.LogisticaController.repactarVisi
 
 POST /logistica/rechazar            controllers.LogisticaController.rechazar
 
-GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
+# GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
 
 GET /logistica/ventasATrabajar     controllers.LogisticaController.ventasATrabajar
 
 GET /logistica/all                  controllers.LogisticaController.all
 
-GET /logistica/getAll/:dni           controllers.LogisticaController.getVisitas(dni: Int)
+# GET /logistica/getAll/:dni           controllers.LogisticaController.getVisitas(dni: Int)
 
 GET /logistica/get/:dni             controllers.LogisticaController.getVisita(dni: Int)
 
@@ -83,3 +83,21 @@ GET /auditoria/all                  controllers.AuditoriaController.all
 GET /auditoria/ventasParaAuditar    controllers.AuditoriaController.ventasParaAuditar
 
 POST /auditoria/auditar              controllers.AuditoriaController.upload
+
+# ADMINISTRACION DE VENTA
+
+GET /administracionVenta/ventasIncompletas  controllers.AdministracionVentaController.ventasIncompletas
+
+POST /administracionVenta/completarVenta    controllers.AdministracionVentaController.completarVenta
+
+GET /administracionVenta/ventasPresentables controllers.AdministracionVentaController.ventasPresentables
+
+POST /administracionVenta/presentarVentas   controllers.AdministracionVentaController.presentarVentas
+
+GET /administracionVenta/ventasPresentadas  controllers.AdministracionVentaController.ventasPresentadas
+
+POST /administracionVenta/analizarPresentacion controllers.AdministracionVentaController.analizarPresentacion
+
+GET /administracionVenta/ventasPagadas      controllers.AdministracionVentaController.ventasPagadas
+
+POST /administracionVenta/digitalizarArchivos controllers.AdministracionVentaController.digitalizarArchivos

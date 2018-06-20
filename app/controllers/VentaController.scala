@@ -16,8 +16,8 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
 
   def create = authAction { implicit request =>
 
-    val userName = jsonMapper.getAndRemoveElement(request.rootNode, "user")
-    val f = jsonMapper.getAndRemoveElement(request.rootNode, "fechaCreacion")
+    val userName = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "user")
+    val f = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaCreacion")
     val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
     val ventasJson = request.rootNode.toString
     val venta = jsonMapper.fromJson[Venta](ventasJson)

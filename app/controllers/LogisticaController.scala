@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
 import akka.http.scaladsl.model.DateTime
-import models.{Estado, Venta, Visita}
+import models.{Estado, Estados, Venta, Visita}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{LogisticaRepository, VentaRepository}
 import services.JsonMapper
@@ -12,23 +12,23 @@ import services.JsonMapper
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc){
+class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc) with Estados{
 
 
-  def ventasSinVisita = getAuthAction {implicit request =>
+/*  def ventasSinVisita = getAuthAction {implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = LogisticaRepository.ventasSinVisita
     val ven= Await.result(futureVentas, Duration.Inf)
     val ventas = jsonMapper.toJson(ven)
     Ok(ventas)
-  }
+  }*/
 
   def altaVisita = (authAction andThen checkObs) { implicit request =>
 
     val rootNode = request.rootNode
 
 
-    jsonMapper.putElement(rootNode, "estado", "Visita creada")
+    jsonMapper.putElement(rootNode, "estado", VISITA_CREADA)
     jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
@@ -62,7 +62,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     val dni = rootNode.get("dni").asInt
 
-    val estadoNuevo = Estado(request.user, dni, "Visita confirmada", DateTime.now)
+    val estadoNuevo = Estado(request.user, dni, VISITA_CONFIRMADA, DateTime.now)
 
     val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
@@ -92,8 +92,8 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     val rootNode = request.rootNode
     val dni = rootNode.get("dni").asInt
-
-    val estadoNuevo = Estado(request.user, dni, "Rechazo por logistica", DateTime.now)
+    val observacion = if(rootNode.get("observacion").toString.isEmpty) None else Some(jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "observacion").toString)
+    val estadoNuevo = Estado(request.user, dni, RECHAZO_LOGISTICA, DateTime.now, observacion)
 
     val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
@@ -105,7 +105,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     val rootNode = request.rootNode
 
-    jsonMapper.putElement(rootNode, "estado", "Visita repactada")
+    jsonMapper.putElement(rootNode, "estado", VISITA_REPACTADA)
     jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
@@ -117,13 +117,13 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
   }
 
-  def getVisitas(dni: Int) = getAuthAction { implicit request =>
+  /*def getVisitas(dni: Int) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVisitas = LogisticaRepository.getVisitas(dni)
     val visitas = Await.result(futureVisitas, Duration.Inf)
     val visitasJson = jsonMapper.toJson(visitas)
     Ok(visitasJson)
-  }
+  }*/
 
   def all = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales

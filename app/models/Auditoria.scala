@@ -10,8 +10,6 @@ case class Auditoria(
                       cantidadEmpleados: Option[String],
                       horaEntrada: Option[String],
                       horaSalida: Option[String],
-                      cuit: Option[Int],
-                      tresPorciento: Option[Double]
                     ) {
 
 }

@@ -17,43 +17,6 @@ class AuditoriaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
 
   "AuditoriaController" should {
 
-    "auditar una venta" in {
-      Db.inicializarDb
-
-      val json = Json.parse(
-        """
-        {
-          dni: 789,
-          estado: "ok",
-          observacion: "asdf",
-          audio: File,
-          empresa: "asdf",
-          direccion: "asdf",
-          localidad: "asdf",
-          cantidadEmpleados: "200",
-          horaEntrada: "654",
-          horaSalida: "asdf",
-        }
-        """)
-
-
-      val Some(result) = route(app, FakeRequest(POST, "/venta/create").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
-      val b = contentAsString(result)
-      val venta = Db.runWithAwait(ventas.filter(_.dni === 1234).result.head)
-      val estado = Db.runWithAwait(estados.filter(_.dni === 1234).result.head)
-
-      val jsonMaper = new JsonMapper
-      val rootNode = jsonMaper.getJsonNode(json.toString)
-      val user = jsonMaper.getAndRemoveElement(rootNode, "user")
-      val f = jsonMaper.getAndRemoveElement(rootNode, "fechaCreacion")
-      val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
-      val ventaEsperada = jsonMaper.fromJson[Venta](rootNode.toString)
-      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion)
-
-      assert(ventaEsperada == venta)
-      assert(estadoEsperado == estado)
-    }
-
     "traerse todas las ventas para auditar" in {
 
       // DATOS INICIALES PARA TEST

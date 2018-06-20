@@ -22,6 +22,9 @@ case class Venta(
                 celular: Option[String],
                 horaContactoCel: Option[String],
                 base: Option[String],
+                empresa: Option[String] = None,
+                cuit: Option[Int] = None,
+                tresPorciento: Option[Double] = None
                 ) {
 
 

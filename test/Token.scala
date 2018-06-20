@@ -1,0 +1,5 @@
+object Token {
+
+  val value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImFkbWluaXN0cmFjaW9uVmVudGEiLCJhdWRpdG9yaWEiLCJsb2dpc3RpY2EiLCJ1c3VhcmlvIiwidmFsaWRhY2lvbiIsInZlbnRhIl0sInBlcmZpbGVzIjpbImFkbWluIl19.YJJJzB2X6RRpodHr_pf3oeg3hwD-zA1UQFIJ0xyMQkc"
+  val header = "Bearer " + value
+}

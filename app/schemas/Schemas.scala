@@ -159,13 +159,13 @@ object Schemas {
     def celular = column[Option[String]]("celular", O.Default(None))
     def horaContactoCel = column[Option[String]]("hora_contacto_cel", O.Default(None))
     def base = column[Option[String]]("base", O.Default(None))
+    def cuit =  column[Option[Int]]("cuit", O.Default(None))
+    def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
+    def empresa =  column[Option[String]]("empresa", O.Default(None))
 
     def obsFk = foreignKey("fk_venta_obs", idObraSocial, obrasSociales)(_.nombre)
 
-    def motivoAuditoria = column[Option[String]]("motivo_auditoria", O.Default(None))
-    def audio = column[Option[String]]("audio", O.Default(None))
-
-    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, fechaNacimiento, zona, codigoPostal, horaContactoTel, piso, dpto, celular, horaContactoCel, base) <> (Venta.tupled, Venta.unapply)
+    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, fechaNacimiento, zona, codigoPostal, horaContactoTel, piso, dpto, celular, horaContactoCel, base, empresa, cuit, tresPorciento) <> (Venta.tupled, Venta.unapply)
 
   }
 
@@ -177,14 +177,14 @@ object Schemas {
     def dni = column[Int]("id_venta")
     def estado = column[String]("estado", O.Length(50))
     def fecha = column[DateTime]("fecha", O.Default(DateTime.now))
-
-    def pk = primaryKey("pkestados", (user, dni, estado))
+    def observacion = column[Option[String]]("observacion", O.Default(None))
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def userFk = foreignKey("fk_user_estado", user, usuarios)(_.user)
 
     def ventaFk = foreignKey("fk_venta_estado", dni, ventas)(_.dni)
 
-    def * = (user, dni, estado, fecha) <> (Estado.tupled, Estado.unapply)
+    def * = (user, dni, estado, fecha, observacion, id) <> (Estado.tupled, Estado.unapply)
   }
 
   val estados = TableQuery[Estados]
@@ -242,12 +242,11 @@ object Schemas {
     def cantidadEmpleados =  column[Option[String]]("cantidad_empleados", O.Default(None))
     def horaEntrada =  column[Option[String]]("hora_entrada", O.Default(None))
     def horaSalida =  column[Option[String]]("hora_salida", O.Default(None))
-    def cuit =  column[Option[Int]]("cuit", O.Default(None))
-    def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
+
 
     def ventaFk = foreignKey("fk_venta_auditoria", dni, ventas)(_.dni)
 
-    def * = (dni, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida, cuit, tresPorciento) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (dni, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]
