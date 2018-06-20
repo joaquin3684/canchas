@@ -27,12 +27,12 @@ object VentaRepository extends Estados {
 
   }
 
-  def all(user: String)(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
+  def all(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado)]] = {
     val query = {
       for {
         e <- estados.filter( x => x.user === user && x.estado === CREADO)
         v <- ventas.filter(_.dni === e.dni)
-      } yield v
+      } yield (v,e)
     }
     Db.db.run(query.result)
   }

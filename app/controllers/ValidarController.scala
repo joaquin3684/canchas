@@ -41,7 +41,14 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = ValidacionRepository.ventasAValidar(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
-    val json = jsonMapper.toJson(ventas)
+    val v = ventas.map{ x =>
+      val sV = jsonMapper.toJsonString(x._1)
+      val vNode = jsonMapper.getJsonNode(sV)
+      jsonMapper.putElement(vNode, "fechaCreacion", x._2.toIsoDateTimeString)
+      vNode
+    }
+
+    val json = jsonMapper.toJson(v)
     Ok(json)
   }
 
