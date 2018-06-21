@@ -73,7 +73,10 @@ object Db {
       PerfilPantalla("admin", "validacion"),
       PerfilPantalla("admin", "logistica"),
       PerfilPantalla("admin", "auditoria"),
-      PerfilPantalla("admin", "administracionVenta")
+      PerfilPantalla("admin", "administracionVenta"),
+      PerfilPantalla("operador", "auditoria"),
+      PerfilPantalla("operador", "venta"),
+
     ),
 
     Schemas.pantallasRutas ++= Seq(
