@@ -5,15 +5,15 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
 import akka.http.scaladsl.model.DateTime
-import models.{Auditoria, Estado}
+import models.{Auditoria, Estado, Estados}
 import play.api.mvc.{AbstractController, ControllerComponents}
-import repositories.{AuditoriaRepository}
+import repositories.AuditoriaRepository
 import services.JsonMapper
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, jsonMapperAction: JsonMapperAction, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc) with Estados{
 
   def all = getAuthAction {implicit request =>
     val futureVentas = AuditoriaRepository.all(request.user)
@@ -35,14 +35,15 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     request.body.file("audio").map { picture =>
 
       val dni = request.body.dataParts.get("dni").get.head.toInt
+      val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
+      val recuperacion = if (request.body.dataParts.get("recuperable").isDefined) request.body.dataParts.get("recuperable").get.head.toBoolean else false
 
       val estado = request.body.dataParts.get("estado").get.head match {
-        case "ok" => Estado(request.user, dni, "Auditoria aprobada", DateTime.now)
-        case "rechazo" => Estado(request.user, dni, "Auditoria rechazada", DateTime.now)
-        case "observado" => Estado(request.user, dni, "Auditoria observada", DateTime.now)
+        case "ok" => Estado(request.user, dni, AUDITORIA_APROBADA, DateTime.now)
+        case "rechazo" =>      Estado(request.user, dni, RECHAZO_AUDITORIA, DateTime.now, recuperacion, observacion)
+        case "observado" => Estado(request.user, dni, AUDITORIA_OBSERVADA, DateTime.now, false, observacion)
       }
 
-      val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
       val empresa = if(request.body.dataParts.get("empresa").isDefined) Some(request.body.dataParts.get("empresa").get.head) else None
       val direccion = if(request.body.dataParts.get("direccion").isDefined) Some(request.body.dataParts.get("direccion").get.head) else None
       val localidad = if(request.body.dataParts.get("localidad").isDefined) Some(request.body.dataParts.get("localidad").get.head) else None

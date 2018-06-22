@@ -102,7 +102,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       jsonMapper.putElement(node, "estado", VISITA_CREADA)
 
       val visitaEsperada = jsonMapper.fromJson[Visita](node.toString).copy(id = visitaObtenida.id)
-      val estadoEsperado = Estado("200", 432, VISITA_CREADA, DateTime.now, None, estadoObtenido.id)
+      val estadoEsperado = Estado("200", 432, VISITA_CREADA, DateTime.now, false, None, estadoObtenido.id)
 
       assert(estadoEsperado == estadoObtenido)
       assert(visitaObtenida == visitaEsperada)
@@ -140,7 +140,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       val bodyText = contentAsString(result)
 
       val estadoNuevo = Db.runWithAwait(estados.filter( e => e.dni === 432 && e.estado === VISITA_CONFIRMADA).result.head)
-      val estadoEsperado = Estado("200", 432, VISITA_CONFIRMADA, DateTime.now, None, estadoNuevo.id)
+      val estadoEsperado = Estado("200", 432, VISITA_CONFIRMADA, DateTime.now, false, None, estadoNuevo.id)
 
       assert(estadoEsperado == estadoNuevo)
     }
@@ -192,7 +192,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       val estadoObtenido = Db.runWithAwait(estados.filter(e => e.dni === 432 && e.estado === VISITA_REPACTADA).result.head)
 
       val visitaEsperada = jsonMapper.fromJson[Visita](node.toString).copy(id = visitaObtenida.id)
-      val estadoEsperado = Estado("200", 432, VISITA_REPACTADA, DateTime.now, None, estadoObtenido.id)
+      val estadoEsperado = Estado("200", 432, VISITA_REPACTADA, DateTime.now, false, None, estadoObtenido.id)
 
       assert(visitaObtenida == visitaEsperada)
       assert(estadoObtenido == estadoEsperado)
@@ -205,14 +205,15 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
         """
         {
           "dni": 432,
-          "observacion": "200"
+          "observacion": "200",
+          "recuperable": true
 
         }
         """)
 
       val jsonMapper = new JsonMapper
       val node = jsonMapper.getJsonNode(json.toString())
-
+      val recuperable = jsonMapper.getAndRemoveElement(node, "recuperable").toBoolean
 
       val ventasEsperadas = Seq(
         Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
@@ -236,7 +237,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       val bodyText = contentAsString(result)
 
       val estadoObtenido = Db.runWithAwait(estados.filter( e => e.dni === 432 && e.estado === RECHAZO_LOGISTICA).result.head)
-      val estadoEsperado = Estado("200", 432, RECHAZO_LOGISTICA, DateTime.now, Some("200"), estadoObtenido.id)
+      val estadoEsperado = Estado("200", 432, RECHAZO_LOGISTICA, DateTime.now, recuperable, Some("200"), estadoObtenido.id)
 
       assert(estadoObtenido == estadoEsperado)
     }

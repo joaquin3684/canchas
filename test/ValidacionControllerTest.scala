@@ -38,12 +38,10 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
 
 
       val Some(result) = route(app, FakeRequest(GET, "/validacion/ventasAValidar").withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
-      val b = contentAsString(result)
+      val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
 
-      val jsonMapper = new JsonMapper
-      val ventasObtenidas = jsonMapper.fromJson[Seq[Venta]](b)
 
-      assert(ventasEsperadas.take(1) == ventasObtenidas)
+      assert(cantidadFilas == 1)
 
     }
 
@@ -64,17 +62,62 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "dni": 432
           }
         """)
+
+
+      val jsonCodemFalse = Json.parse(
+        """
+        {
+          "codem": false,
+          "superr": true,
+          "afip": true,
+          "motivoCodem": "hijo discapacitado",
+          "motivoSuper": null,
+          "motivoAfip": null,
+          "capitas": 4,
+          "dni": 435
+          }
+        """)
+
+      val jsonSuperFalse = Json.parse(
+        """
+        {
+          "codem": true,
+          "superr": false,
+          "afip": true,
+          "motivoCodem": null,
+          "motivoSuper": "impagos 2",
+          "motivoAfip": null,
+          "capitas": 4,
+          "dni": 436
+          }
+        """)
+
+      val jsonMasDeUnoFalse = Json.parse(
+        """
+        {
+          "codem": false,
+          "superr": false,
+          "afip": true,
+          "motivoCodem": "discapacitado",
+          "motivoSuper": "pepe",
+          "motivoAfip": null,
+          "capitas": 4,
+          "dni": 437
+          }
+        """)
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
         Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
         Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
         Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 432, CREADO, DateTime.now),
         Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 436, CREADO, DateTime.now)
+        Estado("200", 436, CREADO, DateTime.now),
+        Estado("200", 437, CREADO, DateTime.now),
       )
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
@@ -84,16 +127,48 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
 
       val Some(result) = route(app, FakeRequest(POST, "/validacion/validar").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
       val bodyText = contentAsString(result)
-      val estado = Db.runWithAwait(estados.filter( x => x.dni === 432 && x.estado === VALIDADO).result.head)
-      val validacion = Db.runWithAwait(validaciones.filter(x => x.dni === 432).result.head)
-      val estadoEsperado = Estado("200", 432, VALIDADO, DateTime.now, None, estado.id)
-      val validacionEsperada = Validacion(432, true, true, true, 4, None, None, None)
+
+      val Some(result2) = route(app, FakeRequest(POST, "/validacion/validar").withJsonBody(jsonCodemFalse).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val bodyText2 = contentAsString(result2)
+
+      val Some(result3) = route(app, FakeRequest(POST, "/validacion/validar").withJsonBody(jsonSuperFalse).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val bodyText3 = contentAsString(result3)
+
+      val Some(result4) = route(app, FakeRequest(POST, "/validacion/validar").withJsonBody(jsonMasDeUnoFalse).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val bodyText4 = contentAsString(result4)
+
+      val estadoValidado = Db.runWithAwait(estados.filter( x => x.dni === 432 && x.estado === VALIDADO).result.head)
+      val estadoRechazoCodem = Db.runWithAwait(estados.filter( x => x.dni === 435 && x.estado === RECHAZO_VALIDACION).result.head)
+      val estadoRechazoSuper = Db.runWithAwait(estados.filter( x => x.dni === 436 && x.estado === RECHAZO_VALIDACION).result.head)
+      val estadoRechazoVarios = Db.runWithAwait(estados.filter( x => x.dni === 437 && x.estado === RECHAZO_VALIDACION).result.head)
+
+
+      val validacionValidada = Db.runWithAwait(validaciones.filter(x => x.dni === 432).result.head)
+      val validacionRechazoCodem = Db.runWithAwait(validaciones.filter(x => x.dni === 435).result.head)
+      val validacionRechazoSuper = Db.runWithAwait(validaciones.filter(x => x.dni === 436).result.head)
+      val validacionRechazoVarios = Db.runWithAwait(validaciones.filter(x => x.dni === 437).result.head)
+
+
+      val estadoEsperadoValidado = Estado("200", 432, VALIDADO, DateTime.now, false, None, estadoValidado.id)
+      val estadoEsperadoRechazoCodem = Estado("200", 435, RECHAZO_VALIDACION, DateTime.now, false, Some("hijo discapacitado"), estadoRechazoCodem.id)
+      val estadoEsperadoRechazoSuper = Estado("200", 436, RECHAZO_VALIDACION, DateTime.now, true, Some("impagos 2"), estadoRechazoSuper.id)
+      val estadoEsperadoRechazoVarios = Estado("200", 437, RECHAZO_VALIDACION, DateTime.now, false, Some("discapacitado + pepe"), estadoRechazoVarios.id)
+
+      val validacionEsperadaValidada = Validacion(432, true, true, true, 4, None, None, None)
+      val validacionEsperadaRechazoCodem = Validacion(435, false, true, true, 4, Some("hijo discapacitado"), None, None)
+      val validacionEsperadaRechazoSuper = Validacion(436, true, false, true, 4, None, Some("impagos 2"), None)
+      val validacionEsperadaRechazoVarios = Validacion(437, false, false, true, 4, Some("discapacitado"), Some("pepe"), None)
 
 
       status(result) mustEqual OK
-      bodyText mustBe "validado"
-      assert(estado == estadoEsperado)
-      assert(validacion == validacionEsperada)
+      assert(estadoValidado == estadoEsperadoValidado)
+      assert(estadoRechazoCodem == estadoEsperadoRechazoCodem)
+      assert(estadoRechazoSuper == estadoEsperadoRechazoSuper)
+      assert(estadoRechazoVarios == estadoEsperadoRechazoVarios)
+      assert(validacionValidada == validacionEsperadaValidada)
+      assert(validacionRechazoCodem == validacionEsperadaRechazoCodem)
+      assert(validacionRechazoSuper == validacionEsperadaRechazoSuper)
+      assert(validacionRechazoVarios == validacionEsperadaRechazoVarios)
 
     }
 
@@ -186,7 +261,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
 
       val estado = Db.runWithAwait(estados.filter( e => e.dni === 1234 && e.estado === CREADO).result.head)
 
-      val estadoEsperado = Estado(user, ventaEsperada.dni, CREADO, fechaCreacion, None, estado.id)
+      val estadoEsperado = Estado(user, ventaEsperada.dni, CREADO, fechaCreacion, false, None, estado.id)
 
       assert(estadoEsperado == estado)
       assert(ventaEsperada == venta)

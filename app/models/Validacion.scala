@@ -1,8 +1,7 @@
 package models
 
 import akka.http.scaladsl.model.DateTime
-
-case class Validacion(
+case class Validacion (
                        dni: Int,
                        codem: Boolean,
                        superr: Boolean,
@@ -18,8 +17,13 @@ case class Validacion(
 
      if(h.forall(_ == true))
       Estado(user, dni, "Validado", DateTime.now)
-    else
-      Estado(user, dni, "Rechazo por validador", DateTime.now)
+     else {
+       val motivo = Seq(motivoAfip, motivoCodem, motivoSuper).filter(_.isDefined).map(_.get).mkString(" + ")
+       if(codem)
+         Estado(user, dni,"Rechazo por validacion" , DateTime.now, true, Some(motivo))
+       else
+         Estado(user, dni, "Rechazo por validacion", DateTime.now, false, Some(motivo))
+     }
 
   }
 }

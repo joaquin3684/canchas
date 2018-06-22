@@ -93,7 +93,8 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val rootNode = request.rootNode
     val dni = rootNode.get("dni").asInt
     val observacion = if(rootNode.get("observacion").toString.isEmpty) None else Some(jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "observacion").toString)
-    val estadoNuevo = Estado(request.user, dni, RECHAZO_LOGISTICA, DateTime.now, observacion)
+    val recuperable = rootNode.get("recuperable").asBoolean
+    val estadoNuevo = Estado(request.user, dni, RECHAZO_LOGISTICA, DateTime.now, recuperable, observacion)
 
     val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)

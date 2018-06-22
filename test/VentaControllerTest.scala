@@ -59,7 +59,7 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
       val f = jsonMaper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "fechaCreacion")
       val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
       val ventaEsperada = jsonMaper.fromJson[Venta](rootNode.toString)
-      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion, None, estado.id)
+      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion, false, None, estado.id)
 
       assert(ventaEsperada == venta)
       assert(estadoEsperado == estado)
@@ -83,9 +83,8 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
       val Some(result) = route(app, FakeRequest(GET, "/venta/all").withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
-      val jsonString = contentAsJson(result).toString()
-      val ventasObtenidas = jsonMaper.fromJson[Seq[Venta]](jsonString)
-      assert(ventasEsperadas == ventasObtenidas)
+      val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
+      assert(cantidadFilas == 3)
 
     }
 

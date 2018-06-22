@@ -92,7 +92,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
 
     val estadoNuevo = estado match {
       case "pagada" => Estado(request.user, dni, PAGADA, DateTime.now)
-      case "rechazada" => Estado(request.user, dni, RECHAZO_ADMINISTRACION, DateTime.now, Some(observacion))
+      case "rechazada" => Estado(request.user, dni, RECHAZO_ADMINISTRACION, DateTime.now, false, Some(observacion))
       case "pendiente auditoria" => Estado(request.user, dni, PRESENTADA, DateTime.fromIsoDateTimeString(fecha).get)
     }
 

@@ -7,6 +7,7 @@ case class Estado(
                  dni: Int,
                  estado: String,
                  fecha: DateTime,
+                 recuperable: Boolean = false,
                  observacion: Option[String] = None,
                  id: Long = 0
                  ) {

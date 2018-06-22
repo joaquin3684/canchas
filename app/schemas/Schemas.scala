@@ -177,6 +177,7 @@ object Schemas {
     def dni = column[Int]("id_venta")
     def estado = column[String]("estado", O.Length(50))
     def fecha = column[DateTime]("fecha", O.Default(DateTime.now))
+    def recuperable = column[Boolean]("recuperable", O.Default(false))
     def observacion = column[Option[String]]("observacion", O.Default(None))
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
@@ -184,7 +185,7 @@ object Schemas {
 
     def ventaFk = foreignKey("fk_venta_estado", dni, ventas)(_.dni)
 
-    def * = (user, dni, estado, fecha, observacion, id) <> (Estado.tupled, Estado.unapply)
+    def * = (user, dni, estado, fecha, recuperable, observacion, id) <> (Estado.tupled, Estado.unapply)
   }
 
   val estados = TableQuery[Estados]
