@@ -34,6 +34,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
       jsonMapper.putElement(node, "perfil", x._4)
       jsonMapper.putElement(node, "capitas", x._2.toString)
       jsonMapper.putElement(node, "nombreUsuario", x._3)
+      jsonMapper.putElement(node, "fechaCreacion", x._5.toIsoDateTimeString)
       node
 
     }.distinct
