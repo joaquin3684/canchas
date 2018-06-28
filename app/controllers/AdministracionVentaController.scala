@@ -1,5 +1,6 @@
 package controllers
 
+import java.nio.file.Paths
 import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
@@ -59,7 +60,17 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
   }
 
   def ventasPagadas = getAuthAction { implicit request =>
-    Ok("anda")
+    implicit val obs : Seq[String] = request.obrasSociales
+    val future = AdministracionVentaRepository.ventasPagadas
+    val ventasPag = Await.result(future, Duration.Inf)
+    val v = ventasPag.map { x =>
+      val a = jsonMapper.toJsonString(x._1)
+      val node = jsonMapper.getJsonNode(a)
+      jsonMapper.putElement(node, "fechaPresentacion", x._2.toIsoDateTimeString())
+      node
+    }
+    val ventas = jsonMapper.toJson(v)
+    Ok(ventas)
   }
 
   def completarVenta = (authAction andThen checkObs) { implicit request =>
@@ -103,7 +114,38 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     Ok("venta analizada")
   }
 
-  def digitalizarArchivos = (authAction andThen checkObs) { implicit request =>
-    Ok("anda")
+  def digitalizarArchivos = getAuthAction(parse.multipartFormData) { implicit request =>
+
+    val dni = request.body.dataParts.get("dni").get.head.toInt
+    val solReq = request.body.file("solicitudTraspaso").map { picture =>
+
+
+      val rutaTraspaso = "public/images/solicitudesTraspaso/"+ dni + ".jpg"
+      val filename = Paths.get(picture.filename).getFileName
+
+      picture.ref.moveTo(Paths.get(rutaTraspaso), replace = true)
+      Ok
+    }.getOrElse(BAD_REQUEST)
+    val recReq = request.body.file("recibo").map { picture =>
+
+
+      val rutaRecibo = "public/images/recibos/"+ dni + ".jpg"
+      val filename = Paths.get(picture.filename).getFileName
+
+      picture.ref.moveTo(Paths.get(rutaRecibo), replace = true)
+      Ok
+    }.getOrElse{BAD_REQUEST}
+    val dniRec = request.body.file("dniFile").map { picture =>
+
+
+      val rutaDni = "public/images/dnis/"+ dni + ".jpg"
+      val filename = Paths.get(picture.filename).getFileName
+
+      picture.ref.moveTo(Paths.get(rutaDni), replace = true)
+      Ok
+    }.getOrElse(BAD_REQUEST)
+
+    val a = Seq(solReq, recReq, dniRec)
+    if(a.forall(_ == Ok)) Ok("digitalizado") else BadRequest("hubo un error al surbir algun archivo")
   }
 }
