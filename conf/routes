@@ -101,3 +101,16 @@ POST /administracionVenta/analizarPresentacion controllers.AdministracionVentaCo
 GET /administracionVenta/ventasPagadas      controllers.AdministracionVentaController.ventasPagadas
 
 POST /administracionVenta/digitalizarArchivos controllers.AdministracionVentaController.digitalizarArchivos
+
+# ADMINISTRACION DE VENTA
+
+GET /recuperarVenta/all                     controllers.RecuperarVentaController.ventasRecuperables
+
+POST /recuperarVenta/recuperar              controllers.RecuperarVentaController.recuperar
+
+POST /recuperarVenta/rechazo                controllers.RecuperarVentaController.rechazo
+
+# ESTADISTICAS
+
+POST /estadistica/general                    controllers.EstadisticaController.general
+
