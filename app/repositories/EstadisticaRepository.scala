@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.DateTime
 import scala.concurrent.Future
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{auditorias, estados,visitas, usuarios, usuariosPerfiles, validaciones, ventas}
+import schemas.Schemas.{auditorias, estados, visitas, usuarios, usuariosPerfiles, validaciones, ventas}
 import slick.jdbc.GetResult
 
 object EstadisticaRepository extends Estados {
@@ -41,5 +41,11 @@ object EstadisticaRepository extends Estados {
 
     Db.db.run(q.result)
 
+  }
+
+  def states() : Future[Seq[Estado]] = {
+    val q = sql"""select estados.* from estados group by estado""".as[Estado]
+
+    Db.db.run(q)
   }
 }

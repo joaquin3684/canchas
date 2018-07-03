@@ -114,3 +114,5 @@ POST /recuperarVenta/rechazo                controllers.RecuperarVentaController
 
 POST /estadistica/general                    controllers.EstadisticaController.general
 
+GET /estadistica/estados                     controllers.EstadisticaController.estados
+

@@ -65,4 +65,11 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
     Ok(ventas)
   }
 
+
+  def estados = getAuthAction {implicit request =>
+    val future = EstadisticaRepository.states
+    val estados = Await.result(future, Duration.Inf)
+
+    Ok(jsonMapper.toJson(estados))
+  }
 }
