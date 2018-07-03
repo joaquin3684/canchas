@@ -22,8 +22,11 @@ object RecuperacionVentaRepository extends Estados{
 
     val obsSql = obs.mkString("'", "', '", "'")
 
-    val q = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, estados.* from ventas
+    val q = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, estados.*, usuario_perfil.perfil from ventas
                join estados on ventas.dni = estados.id_venta
+               join usuarios on usuarios.user = estados.user
+               join usuario_perfil on usuarios.user = usuario_perfil.user
+
             where (estados.estado = '#$RECHAZO_LOGISTICA'
              or estados.estado = '#$RECHAZO_AUDITORIA' or (estados.estado = '#$RECHAZO_VALIDACION' and (estados.observacion <> 'Hijo discapacitado' and estados.observacion <> 'Muchos hijos' and estados.observacion like 'cantidad impagos%'))) and estados.recuperable = true and ventas.id_obra_social in (#$obsSql)
      """.as[(Venta, Estado)]
