@@ -46,6 +46,13 @@ object LogisticaRepository extends Estados{
     Db.db.run(fullquery.transactionally)
   }
 
+  def confirmarVisita(idVisita: Long, estado: Estado) = {
+    val vi = visitas.filter(_.id === idVisita).map(_.estado).update(VISITA_CONFIRMADA)
+    val es = estados += estado
+    val fullquery = DBIO.seq(vi, es)
+    Db.db.run(fullquery.transactionally)
+  }
+
   def rechazar(visita: Visita) = {
     val es = Estado(visita.user, visita.dni, RECHAZO_LOGISTICA, DateTime.now)
     val e = estados += es

@@ -114,7 +114,9 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       val json = Json.parse(
         """
         {
-          "dni": 432
+          "dni": 432,
+          "idVisita": 1,
+          "user": "200"
         }
         """)
 
@@ -133,16 +135,25 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
         Estado("200", 437, RECHAZO_VALIDACION, DateTime.now),
       )
 
+      val visitasEsperadas = Seq(
+        Visita(1, 432, "200", "2", "2", "2", "2", None, DateTime.now, "20","a"),
+      )
+
+
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
+      Db.runWithAwait(visitas ++= visitasEsperadas)
 
       val Some(result) = route(app, FakeRequest(POST, "/logistica/confirmarVisita").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
       val bodyText = contentAsString(result)
 
       val estadoNuevo = Db.runWithAwait(estados.filter( e => e.dni === 432 && e.estado === VISITA_CONFIRMADA).result.head)
+      val visitaObtenida = Db.runWithAwait(visitas.filter(_.id === 1.toLong).result.head)
       val estadoEsperado = Estado("200", 432, VISITA_CONFIRMADA, DateTime.now, false, None, estadoNuevo.id)
 
+
       assert(estadoEsperado == estadoNuevo)
+      assert(visitaObtenida == visitasEsperadas.take(1).head.copy(estado = VISITA_CONFIRMADA))
     }
 
     "repactar visita" in {

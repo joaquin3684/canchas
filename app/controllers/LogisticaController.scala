@@ -61,10 +61,11 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val rootNode = request.rootNode
 
     val dni = rootNode.get("dni").asInt
-
+    val idVisita = rootNode.get("idVisita").asLong
     val estadoNuevo = Estado(request.user, dni, VISITA_CONFIRMADA, DateTime.now)
 
-    val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
+
+    val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("confirmada")
