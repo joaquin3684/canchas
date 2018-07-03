@@ -110,7 +110,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 432, VALIDADO, DateTime.now),
         Estado("200", 432, CREADO, DateTime.now),
         Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
         Estado("200", 435, CREADO, DateTime.now),

@@ -46,7 +46,7 @@ object AdministracionVentaRepository extends Estados{
       e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.dni in estados.filter(x => x.estado === PRESENTADA).map(_.dni)))
       v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
       vali <- validaciones.filter(_.dni === v.dni)
-      e2 <- estados.filter(x => x.estado === CREADO && (v.dni in estados.filter(x => x.estado === VISITA_CONFIRMADA).map(_.dni)))
+      e2 <- estados.filter(x => x.estado === CREADO && x.dni === v.dni)
       u <- usuarios.filter(_.user === e2.user)
       up <- usuariosPerfiles.filter(_.idUsuario === u.user)
     } yield (v, vali.capitas, u.nombre, up.idPerfil, e2.fecha)
@@ -55,12 +55,12 @@ object AdministracionVentaRepository extends Estados{
       e <- estados.filter( x => x.estado === VALIDADO && !(x.dni in estados.filter(x => x.estado === PRESENTADA).map(_.dni)))
       v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
       vali <- validaciones.filter(_.dni === v.dni)
-      e2 <- estados.filter(x => x.estado === CREADO && (v.dni in estados.filter(x => x.estado === VISITA_CONFIRMADA).map(_.dni)))
+      e2 <- estados.filter(x => x.estado === CREADO && x.dni === v.dni)
       u <- usuarios.filter(_.user === e2.user)
       up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador")
     } yield (v, vali.capitas, u.nombre, up.idPerfil, e2.fecha)
 
-    val unionQuery = query ++ query2
+    val unionQuery = query2 ++ query
 
     Db.db.run(unionQuery.result)
   }
