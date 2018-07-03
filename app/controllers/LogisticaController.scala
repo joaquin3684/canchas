@@ -75,16 +75,17 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVisita = LogisticaRepository.getVisita(dni)
     val visita = Await.result(futureVisita, Duration.Inf)
-    val rootNode = jsonMapper.mapper.createObjectNode
+
+/*    val rootNode = jsonMapper.mapper.createObjectNode
     rootNode.put("dni", visita.dni)
     rootNode.put("direccion", visita.direccion)
     rootNode.put("entreCalles", visita.entreCalles)
     rootNode.put("lugar", visita.lugar)
     rootNode.put("localidad", visita.localidad)
     rootNode.put("observacion", visita.observacion.get)
-    rootNode.put("fecha", visita.fecha.toIsoDateTimeString)
+    rootNode.put("fecha", visita.fecha.toIsoDateTimeString)*/
 
-    val visitaJson = jsonMapper.toJson(rootNode)
+    val visitaJson = jsonMapper.toJson(visita)
 
     Ok(visitaJson)
   }
