@@ -43,8 +43,8 @@ object EstadisticaRepository extends Estados {
 
   }
 
-  def states() : Future[Seq[Estado]] = {
-    val q = sql"""select estados.* from estados group by estado""".as[Estado]
+  def states() : Future[Seq[String]] = {
+    val q = sql"""select estados.estado from estados group by estados.estado""".as[String]
 
     Db.db.run(q)
   }
