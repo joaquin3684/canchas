@@ -77,7 +77,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
 
     val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
     val empresa = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "empresa")
-    val cuit = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "cuit").toInt
+    val cuit = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "cuit")
     val tresPorciento = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "tresPorciento").toDouble
 
     val future = AdministracionVentaRepository.completarVenta(dni, empresa, cuit, tresPorciento)
@@ -104,14 +104,33 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
 
     val estadoNuevo = estado match {
       case "pagada" => Estado(request.user, dni, PAGADA, DateTime.now)
-      case "rechazada" => Estado(request.user, dni, RECHAZO_ADMINISTRACION, DateTime.now, false, Some(observacion))
-      case "pendiente auditoria" => Estado(request.user, dni, PRESENTADA, DateTime.fromIsoDateTimeString(fecha).get)
+      case "rechazada" => Estado(request.user, dni, RECHAZO_PRESENTACION, DateTime.now, false, Some(observacion))
+      case "pendiente auditoria" => Estado(request.user, dni, "estado auxiliar", DateTime.now)
     }
 
     val future = AdministracionVentaRepository.analizarPresentacion(estadoNuevo)
     Await.result(future, Duration.Inf)
 
     Ok("venta analizada")
+  }
+
+  def rechazar = (authAction andThen checkObs) { implicit request =>
+    val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
+    val tipoRechazo = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "recuperable").toBoolean
+    val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion")
+    val estado = Estado(request.user, dni, RECHAZO_ADMINISTRACION, DateTime.now, tipoRechazo, Some(observacion))
+    val future = VentaRepository.agregarEstado(estado)
+    Await.result(future, Duration.Inf)
+    Ok("rechazado")
+  }
+
+  def ventasRechazables = getAuthAction { implicit request =>
+    implicit val obs : Seq[String] = request.obrasSociales
+    val future = AdministracionVentaRepository.ventasRechazables
+    val ventasR = Await.result(future, Duration.Inf)
+
+    val ventas = jsonMapper.toJson(ventasR)
+    Ok(ventas)
   }
 
   def digitalizarArchivos = getAuthAction(parse.multipartFormData) { implicit request =>

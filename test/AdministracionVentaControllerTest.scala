@@ -56,7 +56,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         {
           "dni": 432,
           "empresa": "200",
-          "cuit": 200,
+          "cuit": "200",
           "tresPorciento": 200.32
         }
         """)
@@ -65,7 +65,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val node = jsonMapper.getJsonNode(json.toString)
       val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(node, "dni")
       val jempresa = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(node, "empresa")
-      val jcuit = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(node, "cuit").toInt
+      val jcuit = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(node, "cuit")
       val jtresPorciento = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(node, "tresPorciento").toDouble
 
 
@@ -103,9 +103,9 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some(32), Some(45.3)),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some(32), Some(45.3)),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some(32), Some(45.3)),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
         Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
@@ -131,6 +131,44 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
 
       val Some(result) = route(app, FakeRequest(GET, "/administracionVenta/ventasPresentables").withHeaders("My-Authorization" -> Token.header))
+      val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
+
+      assert(cantidadFilas == 2)
+      status(result) mustBe OK
+
+    }
+    "ventas rechazables" in {
+      Db.inicializarDb
+
+      val ventasEsperadas = Seq(
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+      )
+      val estadosEsperados = Seq(
+        Estado("200", 432, VALIDADO, DateTime.now),
+        Estado("200", 432, CREADO, DateTime.now),
+        Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 435, CREADO, DateTime.now),
+        Estado("200", 436, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 436, PRESENTADA, DateTime.now),
+        Estado("200", 438, VALIDADO, DateTime.now),
+      )
+
+      val validacionesEsperadas = Seq(
+        Validacion(432, true, true, true, 4, None, None, None),
+        Validacion(435, true, true, true, 4, None, None, None),
+        Validacion(436, true, true, true, 4, None, None, None),
+      )
+
+      Db.runWithAwait(ventas ++= ventasEsperadas)
+      Db.runWithAwait(estados ++= estadosEsperados)
+      Db.runWithAwait(validaciones ++= validacionesEsperadas)
+
+
+      val Some(result) = route(app, FakeRequest(GET, "/administracionVenta/ventasRechazables").withHeaders("My-Authorization" -> Token.header))
       val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
 
       assert(cantidadFilas == 2)
@@ -276,11 +314,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val pendiente = contentAsString(result3)
 
       val estadoPagadoObtenido = Db.runWithAwait(estados.filter(_.estado === PAGADA).result.head)
-      val estadoRechazadoObtenido = Db.runWithAwait(estados.filter(_.estado === RECHAZO_ADMINISTRACION).result.head)
+      val estadoRechazadoObtenido = Db.runWithAwait(estados.filter(_.estado === RECHAZO_PRESENTACION).result.head)
       val estadoPresentadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === PRESENTADA && x.dni === 436).result.head)
 
       val estadoPagadoEsperado = Estado("200", 432, PAGADA, DateTime.now, false, None, estadoPagadoObtenido.id)
-      val estadoRechazadoEsperado = Estado("200", 435, RECHAZO_ADMINISTRACION, DateTime.now, false, Some("estooo"), estadoRechazadoObtenido.id)
+      val estadoRechazadoEsperado = Estado("200", 435, RECHAZO_PRESENTACION, DateTime.now, false, Some("estooo"), estadoRechazadoObtenido.id)
       val estadoPresentadoEsperado = Estado("200", 436, PRESENTADA, fechaPresentacionNueva, false, None, estadoPresentadoObtenido.id)
 
       assert(estadoPagadoObtenido == estadoPagadoEsperado)
@@ -289,6 +327,60 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       status(result1) mustBe OK
       status(result2) mustBe OK
       status(result3) mustBe OK
+
+    }
+    "rechazar" in {
+      Db.inicializarDb
+
+      val jsonRecuperable = Json.parse(
+        """
+           {
+              "dni": 432,
+              "recuperable": true,
+              "observacion": "hola"
+            }
+
+        """)
+
+      val jsonNoRecuperable = Json.parse(
+        """
+           {
+              "dni": 435,
+              "recuperable": false,
+              "observacion": "estooo"
+              }
+
+        """)
+
+      val ventasEsperadas = Seq(
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+      )
+      val estadosEsperados = Seq(
+        Estado("200", 432, PRESENTADA, DateTime.now, false, None, 1),
+        Estado("200", 435, PRESENTADA, DateTime.now, false, None, 2),
+        Estado("200", 436, PRESENTADA, DateTime.now, false, None, 3),
+        Estado("200", 432, CREADO, DateTime.now),
+        Estado("200", 438, VALIDADO, DateTime.now),
+      )
+
+      Db.runWithAwait(ventas ++= ventasEsperadas)
+      Db.runWithAwait(estados ++= estadosEsperados)
+
+      val Some(result1) = route(app, FakeRequest(POST, "/administracionVenta/rechazar").withJsonBody(jsonRecuperable).withHeaders("My-Authorization" -> Token.header))
+      val pagada = contentAsString(result1)
+
+      val Some(result2) = route(app, FakeRequest(POST, "/administracionVenta/rechazar").withJsonBody(jsonNoRecuperable).withHeaders("My-Authorization" -> Token.header))
+      val rechazada = contentAsString(result2)
+
+      val estadosRechazoAdmin = Db.runWithAwait(estados.filter(_.estado === RECHAZO_ADMINISTRACION).result)
+
+      assert(estadosRechazoAdmin.length == 2)
+      status(result1) mustBe OK
+      status(result2) mustBe OK
 
     }
   }

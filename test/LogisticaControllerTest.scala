@@ -18,6 +18,34 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
 
   "LogisticaController" should {
 
+    "ventas sin visitas" in {
+      Db.inicializarDb
+
+      val ventasEsperadas = Seq(
+        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+      )
+      val estadosEsperados = Seq(
+        Estado("200", 432, AUDITORIA_APROBADA, DateTime.now),
+        Estado("200", 435, AUDITORIA_APROBADA, DateTime.now),
+        Estado("200", 436, VISITA_CREADA, DateTime.now),
+        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 437, RECHAZO_VALIDACION, DateTime.now),
+      )
+
+      Db.runWithAwait(ventas ++= ventasEsperadas)
+      Db.runWithAwait(estados ++= estadosEsperados)
+
+      val Some(result) = route(app, FakeRequest(GET, "/logistica/ventasSinVisita").withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
+
+      assert(cantidadFilas == 2)
+      status(result) mustBe OK
+    }
+
     "ventas a trabajar para generar las visitas" in {
       Db.inicializarDb
 

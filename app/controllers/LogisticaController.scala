@@ -40,6 +40,12 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
   }
 
+  def ventasSinVisita = getAuthAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val futureVentas = LogisticaRepository.ventasSinVisita
+    val ven = Await.result(futureVentas, Duration.Inf)
+    Ok(jsonMapper.toJson(ven))
+  }
 
   def ventasATrabajar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
@@ -71,6 +77,20 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     Ok("confirmada")
   }
 
+
+  def enviarACall = (authAction andThen checkObs) { implicit request =>
+
+    val rootNode = request.rootNode
+
+    val dni = rootNode.get("dni").asInt
+    val idVisita = rootNode.get("idVisita").asLong
+
+    val futureEstado = LogisticaRepository.enviarACall(idVisita, dni)
+    Await.result(futureEstado, Duration.Inf)
+
+    Ok("enviadoACall")
+  }
+
   def getVisita(dni: Int) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVisita = LogisticaRepository.getVisita(dni)
@@ -97,11 +117,19 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val observacion = if(rootNode.get("observacion").toString.isEmpty) None else Some(jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "observacion").toString)
     val recuperable = rootNode.get("recuperable").asBoolean
     val estadoNuevo = Estado(request.user, dni, RECHAZO_LOGISTICA, DateTime.now, recuperable, observacion)
-
     val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("rechazado")
+  }
+
+
+  def asignarUsuario = (authAction andThen checkObs) {implicit request =>
+    val idVisita = request.rootNode.get("idVisita").asInt
+    val usuario = request.rootNode.get("user").toString
+    val future = LogisticaRepository.asignarUsuario(usuario, idVisita)
+    Await.result(future, Duration.Inf)
+    Ok("asignado")
   }
 
   def repactarVisita = authAction { implicit request =>

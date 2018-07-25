@@ -66,11 +66,15 @@ POST /logistica/repactarVisita      controllers.LogisticaController.repactarVisi
 
 POST /logistica/rechazar            controllers.LogisticaController.rechazar
 
-# GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
+GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
 
 GET /logistica/ventasATrabajar     controllers.LogisticaController.ventasATrabajar
 
 GET /logistica/all                  controllers.LogisticaController.all
+
+POST /logistica/asignarUsuario      controllers.LogisticaController.asignarUsuario
+
+POST /logistica/enviarAlCall        controllers.LogisticaController.enviarACall
 
 # GET /logistica/getAll/:dni           controllers.LogisticaController.getVisitas(dni: Int)
 
@@ -102,7 +106,11 @@ GET /administracionVenta/ventasPagadas      controllers.AdministracionVentaContr
 
 POST /administracionVenta/digitalizarArchivos controllers.AdministracionVentaController.digitalizarArchivos
 
-# ADMINISTRACION DE VENTA
+GET /administracionVenta/ventasRechazables     controllers.AdministracionVentaController.ventasRechazables
+
+POST /administracionVenta/rechazar              controllers.AdministracionVentaController.rechazar
+
+# RECUPERACION DE VENTA
 
 GET /recuperarVenta/all                     controllers.RecuperarVentaController.ventasRecuperables
 

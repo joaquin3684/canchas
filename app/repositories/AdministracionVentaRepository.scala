@@ -15,6 +15,26 @@ object AdministracionVentaRepository extends Estados{
     ts => DateTime(ts.getTime)
   )
 
+
+  def ventasRechazables(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
+    val query = for {
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.dni in estados.filter(x => x.estado === PRESENTADA).map(_.dni)))
+      v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
+    }yield v
+
+    val query2 = for{
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.dni in estados.filter(x => x.estado === PRESENTADA).map(_.dni)))
+      v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
+      e2 <- estados.filter( x => x.estado === CREADO && x.dni === v.dni)
+      u <- usuarios.filter(_.user === e2.user)
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador")
+    } yield v
+
+    val unionQuery = query ++ query2
+
+    Db.db.run(unionQuery.result)
+  }
+
   def ventasIncompletas(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
 
     val query = for{
@@ -35,7 +55,7 @@ object AdministracionVentaRepository extends Estados{
     Db.db.run(unionQuery.result)
   }
 
-  def completarVenta(dni: Int, empresa: String, cuit: Int, tresPorciento: Double) = {
+  def completarVenta(dni: Int, empresa: String, cuit: String, tresPorciento: Double) = {
     val audiUp = ventas.filter(_.dni === dni).map( x => (x.empresa, x.cuit, x.tresPorciento)).update((Some(empresa), Some(cuit), Some(tresPorciento)))
     Db.db.run(audiUp)
   }
@@ -81,7 +101,7 @@ object AdministracionVentaRepository extends Estados{
   }
 
   def analizarPresentacion(estado: Estado) = {
-    val query = if(estado.estado == PRESENTADA) estados.filter( x => x.dni === estado.dni && x.estado === PRESENTADA).map(_.fecha).update(estado.fecha) else estados += estado
+    val query = if(estado.estado == "estado auxiliar") estados.filter( x => x.dni === estado.dni && x.estado === PRESENTADA).delete else estados += estado
     Db.db.run(query)
 
   }

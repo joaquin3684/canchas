@@ -1,6 +1,7 @@
 package schemas
 
 import java.sql.Timestamp
+
 import java.time.{Instant, ZoneOffset}
 
 import akka.http.scaladsl.model.DateTime
@@ -159,7 +160,7 @@ object Schemas {
     def celular = column[Option[String]]("celular", O.Default(None))
     def horaContactoCel = column[Option[String]]("hora_contacto_cel", O.Default(None))
     def base = column[Option[String]]("base", O.Default(None))
-    def cuit =  column[Option[Int]]("cuit", O.Default(None))
+    def cuit =  column[Option[String]]("cuit", O.Default(None))
     def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
     def empresa =  column[Option[String]]("empresa", O.Default(None))
 
