@@ -24,7 +24,8 @@ object Db {
     sqlu"SET FOREIGN_KEY_CHECKS = 1",
     Schemas.usuarios ++= Seq(
       Usuario("200", "200", "200".bcrypt, "200", None),
-      Usuario("300", "300", "300".bcrypt, "300", None)
+      Usuario("300", "300", "300".bcrypt, "300", None),
+      Usuario("400", "400", "400".bcrypt, "400", None)
     ),
     Schemas.perfiles ++= Seq(
       Perfil("admin"),
@@ -34,7 +35,8 @@ object Db {
 
     Schemas.usuariosPerfiles ++= Seq(
       UsuarioPerfil("200", "admin"),
-      UsuarioPerfil("300", "admin")
+      UsuarioPerfil("300", "admin"),
+      UsuarioPerfil("400", "operador")
     ),
 
 
@@ -50,6 +52,9 @@ object Db {
       UsuarioObraSocial("200", "osde"),
       UsuarioObraSocial("300", "osde"),
       UsuarioObraSocial("300", "medicus"),
+      UsuarioObraSocial("400", "medicus"),
+      UsuarioObraSocial("400", "osde"),
+      UsuarioObraSocial("400", "cobertec"),
     ),
 
     Schemas.pantallas ++= Seq(
@@ -57,6 +62,7 @@ object Db {
       Pantalla("venta"),
       Pantalla("validacion"),
       Pantalla("logistica"),
+      Pantalla("logisticaOper"),
       Pantalla("auditoria"),
       Pantalla("administracionVenta"),
       Pantalla("recuperarVenta"),
@@ -79,8 +85,10 @@ object Db {
       PerfilPantalla("admin", "administracionVenta"),
       PerfilPantalla("admin", "recuperarVenta"),
       PerfilPantalla("admin", "estadistica"),
+      PerfilPantalla("admin", "logisticaOper"),
+      PerfilPantalla("operador", "logisticaOper"),
       PerfilPantalla("operador", "auditoria"),
-      PerfilPantalla("operador", "venta"),
+      PerfilPantalla("operador", "venta")
 
     ),
 

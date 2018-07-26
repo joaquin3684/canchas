@@ -313,17 +313,18 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val Some(result3) = route(app, FakeRequest(POST, "/administracionVenta/analizarPresentacion").withJsonBody(jsonPendiente).withHeaders("My-Authorization" -> Token.header))
       val pendiente = contentAsString(result3)
 
-      val estadoPagadoObtenido = Db.runWithAwait(estados.filter(_.estado === PAGADA).result.head)
-      val estadoRechazadoObtenido = Db.runWithAwait(estados.filter(_.estado === RECHAZO_PRESENTACION).result.head)
-      val estadoPresentadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === PRESENTADA && x.dni === 436).result.head)
 
+      val estadoPagadoObtenido = Db.runWithAwait(estados.filter(_.estado === PAGADA).result.head)
       val estadoPagadoEsperado = Estado("200", 432, PAGADA, DateTime.now, false, None, estadoPagadoObtenido.id)
+
+      val estadoRechazadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === RECHAZO_PRESENTACION).result.head)
       val estadoRechazadoEsperado = Estado("200", 435, RECHAZO_PRESENTACION, DateTime.now, false, Some("estooo"), estadoRechazadoObtenido.id)
-      val estadoPresentadoEsperado = Estado("200", 436, PRESENTADA, fechaPresentacionNueva, false, None, estadoPresentadoObtenido.id)
+
+      val estadoPresentadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === PRESENTADA && x.dni === 436).result.headOption)
 
       assert(estadoPagadoObtenido == estadoPagadoEsperado)
       assert(estadoRechazadoObtenido == estadoRechazadoEsperado)
-      assert(estadoPresentadoObtenido == estadoPresentadoEsperado)
+      assert(!estadoPresentadoObtenido.isDefined)
       status(result1) mustBe OK
       status(result2) mustBe OK
       status(result3) mustBe OK

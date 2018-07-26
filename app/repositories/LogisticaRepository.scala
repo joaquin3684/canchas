@@ -21,7 +21,7 @@ object LogisticaRepository extends Estados{
   implicit val impVenta = GetResult( r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, DateTime(r.nextTimestamp().getTime),r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<))
 
   def asignarUsuario(usuario: String, idVisita: Long) = {
-    Db.db.run(visitas.filter(_.id === idVisita).map(_.user).update(usuario))
+    Db.db.run(visitas.filter(_.id === idVisita).map(_.user).update(Some(usuario)))
   }
 
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
@@ -36,17 +36,15 @@ object LogisticaRepository extends Estados{
     Db.db.run(query.result)
   }
 
-  def create(visita: Visita) = {
+  def create(visita: Visita, es: Estado) = {
     val vi = visitas += visita
-    val es = Estado(visita.user, visita.dni, VISITA_CREADA, DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
   }
 
-  def repactar(visita: Visita) = {
+  def repactar(visita: Visita, es: Estado) = {
     val vi = visitas += visita
-    val es = Estado(visita.user, visita.dni, VISITA_REPACTADA, DateTime.now)
     val e = estados += es
     val fullquery = DBIO.seq(vi, e)
     Db.db.run(fullquery.transactionally)
@@ -63,30 +61,23 @@ object LogisticaRepository extends Estados{
     Db.db.run(estados.filter(x => x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA).delete)
   }
 
-
-  def rechazar(visita: Visita) = {
-    val es = Estado(visita.user, visita.dni, RECHAZO_LOGISTICA, DateTime.now)
-    val e = estados += es
-    Db.db.run(e)
-  }
-
   def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
     val p = sql"""select ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base
                                 horaContactoTel,
-              Case when (visitas.user IS NULL ) then 'Pendiente'
+              Case when (visitas.id_user IS NULL ) then 'Pendiente'
               else 'Confirmar' END AS is_a_senior
                from ventas
         join estados on ventas.dni = estados.id_venta
         join visitas on visitas.id_venta = ventas.dni
         where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
          estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
-         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = ADDDATE(CURDATE(), INTERVAL 1 DAY) and visita.id = (select id from visitas order by fecha asc limit 1))
+         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = CURDATE() and visitas.id = (select id from visitas order by fecha asc limit 1))
          or ((estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
                           estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
-                          ventas.id_obra_social in (#$obsSql) and visitas.user IS NOT NULL and visita.id = (select id from visitas order by fecha asc limit 1)  ))
-         group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel,ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, Case when (visitas.user IS NULL ) then 'Pendiente'
+                          ventas.id_obra_social in (#$obsSql) and visitas.id_user IS NOT NULL and visitas.id = (select id from visitas order by fecha asc limit 1)  ))
+         group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel,ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, Case when (visitas.id_user IS NULL ) then 'Pendiente'
                               else 'Confirmar' END
       """.as[(Venta, String)]
 

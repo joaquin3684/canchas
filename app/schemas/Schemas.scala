@@ -195,7 +195,7 @@ object Schemas {
 
      def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
      def dni = column[Int]("id_venta")
-     def user = column[String]("id_user", O.Length(50))
+     def user = column[Option[String]]("id_user", O.Default(None))
      def lugar= column[String]("lugar")
      def direccion= column[String]("direccion")
      def entreCalles= column[String]("entre_calles")
@@ -206,9 +206,9 @@ object Schemas {
      def estado= column[String]("estado")
 
      def ventaFk = foreignKey("fk_venta_visita", dni, ventas)(_.dni)
-     def userFk = foreignKey("fk_user_visita", user, usuarios)(_.user)
+     def userFk = foreignKey("fk_user_visita", user, usuarios)(_.user.?)
 
-     def * = (id, dni, user, lugar, direccion, entreCalles, localidad, observacion, fecha, hora, estado) <> (Visita.tupled, Visita.unapply)
+     def * = (id, dni, lugar, direccion, entreCalles, localidad, observacion, fecha, hora, estado, user) <> (Visita.tupled, Visita.unapply)
   }
 
   val visitas = TableQuery[Visitas]

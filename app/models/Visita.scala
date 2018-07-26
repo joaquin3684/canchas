@@ -5,7 +5,6 @@ import akka.http.scaladsl.model.DateTime
 case class Visita(
                  id: Long,
                  dni: Int,
-                 user: String,
                  lugar: String,
                  direccion: String,
                  entreCalles: String,
@@ -13,7 +12,8 @@ case class Visita(
                  observacion: Option[String],
                  fecha: DateTime,
                  hora: String,
-                 estado: String
-                 ) {
+                 estado: String,
+                 user: Option[String] = None
+) {
 
 }

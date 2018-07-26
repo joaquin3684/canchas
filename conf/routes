@@ -58,7 +58,7 @@ PUT /validacion/updateVenta/:dni   controllers.ValidarController.modificarVenta(
 
 # LOGISTICA
 
-POST /logistica/generarVisita       controllers.LogisticaController.altaVisita
+POST /logisticaOper/generarVisita       controllers.LogisticaController.altaVisita
 
 POST /logistica/confirmarVisita     controllers.LogisticaController.confirmarVisita
 
@@ -66,7 +66,7 @@ POST /logistica/repactarVisita      controllers.LogisticaController.repactarVisi
 
 POST /logistica/rechazar            controllers.LogisticaController.rechazar
 
-GET /logistica/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
+GET /logisticaOper/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
 
 GET /logistica/ventasATrabajar     controllers.LogisticaController.ventasATrabajar
 

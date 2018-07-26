@@ -29,11 +29,11 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
 
     jsonMapper.putElement(rootNode, "estado", VISITA_CREADA)
-    jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
+    val es = Estado(request.user, visita.dni, VISITA_CREADA, DateTime.now)
 
-    val futureVisita = LogisticaRepository.create(visita)
+    val futureVisita = LogisticaRepository.create(visita, es)
     Await.result(futureVisita, Duration.Inf)
 
     Ok("visita creada")
@@ -137,11 +137,11 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val rootNode = request.rootNode
 
     jsonMapper.putElement(rootNode, "estado", VISITA_REPACTADA)
-    jsonMapper.putElement(rootNode, "user", request.user)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
+    val es = Estado(request.user, visita.dni, VISITA_REPACTADA, DateTime.now)
 
-    val futureVisita = LogisticaRepository.repactar(visita)
+    val futureVisita = LogisticaRepository.repactar(visita, es)
     Await.result(futureVisita, Duration.Inf)
 
     Ok("visita repactada")

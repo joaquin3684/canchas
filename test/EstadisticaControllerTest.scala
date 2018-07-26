@@ -56,8 +56,8 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       )
 
       val visitasEsperadas = Seq(
-        Visita(1, 432, "200", "2", "2", "3", "2", None, DateTime.now, "a", "creada"),
-        Visita(1, 435, "200", "2", "2", "3", "2", None, DateTime.now, "a", "creada"),
+        Visita(1, 432, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
+        Visita(1, 435, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
       )
 
 
