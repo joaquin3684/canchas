@@ -15,14 +15,6 @@ import scala.concurrent.duration.Duration
 class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc) with Estados{
 
 
-/*  def ventasSinVisita = getAuthAction {implicit request =>
-    implicit val obs: Seq[String] = request.obrasSociales
-    val futureVentas = LogisticaRepository.ventasSinVisita
-    val ven= Await.result(futureVentas, Duration.Inf)
-    val ventas = jsonMapper.toJson(ven)
-    Ok(ventas)
-  }*/
-
   def altaVisita = (authAction andThen checkObs) { implicit request =>
 
     val rootNode = request.rootNode
@@ -96,14 +88,6 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val futureVisita = LogisticaRepository.getVisita(dni)
     val visita = Await.result(futureVisita, Duration.Inf)
 
-/*    val rootNode = jsonMapper.mapper.createObjectNode
-    rootNode.put("dni", visita.dni)
-    rootNode.put("direccion", visita.direccion)
-    rootNode.put("entreCalles", visita.entreCalles)
-    rootNode.put("lugar", visita.lugar)
-    rootNode.put("localidad", visita.localidad)
-    rootNode.put("observacion", visita.observacion.get)
-    rootNode.put("fecha", visita.fecha.toIsoDateTimeString)*/
 
     val visitaJson = jsonMapper.toJson(visita)
 
@@ -126,7 +110,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
   def asignarUsuario = (authAction andThen checkObs) {implicit request =>
     val idVisita = request.rootNode.get("idVisita").asInt
-    val usuario = request.rootNode.get("user").toString
+    val usuario = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "user").toString
     val future = LogisticaRepository.asignarUsuario(usuario, idVisita)
     Await.result(future, Duration.Inf)
     Ok("asignado")

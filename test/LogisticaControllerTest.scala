@@ -136,7 +136,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
         """
         {
           "user": "200",
-          "idVisita": 2,
+          "idVisita": 1,
           "dni": 436
         }
         """)
@@ -270,7 +270,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       Db.runWithAwait(estados ++= estadosEsperados)
       Db.runWithAwait(visitas ++= visitasEsperadas)
 
-      val Some(result) = route(app, FakeRequest(POST, "/logistica/confirmarVisita").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val Some(result) = route(app, FakeRequest(POST, "/logistica/confirmarVisita").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
       val bodyText = contentAsString(result)
 
       val estadoNuevo = Db.runWithAwait(estados.filter( e => e.dni === 432 && e.estado === VISITA_CONFIRMADA).result.head)
