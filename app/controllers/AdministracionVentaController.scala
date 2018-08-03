@@ -99,7 +99,6 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val estado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "estado")
     val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion")
-    val fecha = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaPresentacion")
 
 
     val estadoNuevo = estado match {
