@@ -53,7 +53,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
 
       val rutaAudio = "public/images/"+ dni + ".mp3"
-      val auditoria = Auditoria(dni, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida)
+      val auditoria = Auditoria(idVenta, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida)
 
       val futureVenta = AuditoriaRepository.auditar(auditoria, estado)
       Await.result(futureVenta, Duration.Inf)
