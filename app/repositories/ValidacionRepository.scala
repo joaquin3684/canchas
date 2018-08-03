@@ -17,9 +17,9 @@ object ValidacionRepository extends Estados {
     ts => DateTime(ts.getTime)
   )
 
-  def checkObraSocial(dni: Int)(implicit obs: Seq[String]): Option[Venta] =  {
+  def checkObraSocial(id: Long)(implicit obs: Seq[String]): Option[Venta] =  {
 
-    val v = Db.db.run(ventas.filter( v => v.idObraSocial.inSetBind(obs) && v.dni === dni).result.headOption)
+    val v = Db.db.run(ventas.filter( v => v.idObraSocial.inSetBind(obs) && v.id === id).result.headOption)
     Await.result(v, Duration.Inf)
   }
 
@@ -27,7 +27,7 @@ object ValidacionRepository extends Estados {
     val query = {
       for {
         e <- estados.filter( x => x.user === user && (x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION))
-        v <- ventas.filter(_.dni === e.dni)
+        v <- ventas.filter(_.id === e.idVenta)
       } yield v
     }
     Db.db.run(query.result)
@@ -37,8 +37,8 @@ object ValidacionRepository extends Estados {
   def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime)]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === CREADO && !(x.dni in estados.filter(x => x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION).map(_.dni)))
-        v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
+        e <- estados.filter(x => x.estado === CREADO && !(x.idVenta in estados.filter(x => x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION).map(_.idVenta)))
+        v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       } yield (v, e.fecha)
     }
     Db.db.run(query.result)

@@ -28,13 +28,13 @@ object EstadisticaRepository extends Estados {
     val q = for {
       (((((((v, e), e2), u), p), vis), vali),audi) <-
       ventas.filter(x => x.idObraSocial.inSetBind(obs))
-        .join(estados).on(_.dni === _.dni)
-          .join(estados.filter(x => (x.fecha between(fechaDesde, fechaHasta)) && x.estado === CREADO)).on(_._1.dni === _.dni)
+        .join(estados).on(_.id === _.idVenta)
+          .join(estados.filter(x => (x.fecha between(fechaDesde, fechaHasta)) && x.estado === CREADO)).on(_._1.id === _.idVenta)
             .join(usuarios).on(_._2.user === _.user)
               .join(usuariosPerfiles).on(_._2.user === _.idUsuario)
-                .joinLeft(visitas).on(_._1._1._1._1.dni === _.dni)
-                  .joinLeft(validaciones).on(_._1._1._1._1._1.dni === _.dni)
-                    .joinLeft(auditorias).on(_._1._1._1._1._1._1.dni === _.dni)
+                .joinLeft(visitas).on(_._1._1._1._1.id === _.idVenta)
+                  .joinLeft(validaciones).on(_._1._1._1._1._1.id === _.idVenta)
+                    .joinLeft(auditorias).on(_._1._1._1._1._1._1.id === _.idVenta)
 
 
     } yield(v, e, vis, vali, audi, u, p.idPerfil)

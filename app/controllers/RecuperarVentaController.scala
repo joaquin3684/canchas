@@ -43,4 +43,28 @@ class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMappe
     Await.result(future, Duration.Inf)
     Ok("venta rechazada")
   }
+
+  def ventasParaMarcarComoRecuperar = getAuthAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val future = RecuperacionVentaRepository.ventasParaQueSeRecuperen
+    val ventasRec = Await.result(future, Duration.Inf)
+    val v = ventasRec.map { x =>
+
+      val a = jsonMapper.toJsonString(x._1)
+      val node = jsonMapper.getJsonNode(a)
+      val es = jsonMapper.toJsonString(x._2)
+      jsonMapper.putElement(node, "estado", es)
+      node
+    }.distinct
+    val ventas = jsonMapper.toJson(v)
+    Ok(ventas)
+  }
+
+  def marcarParaRecuperar = (authAction andThen checkObs){ implicit request =>
+    val idEstado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idEstado").toLong
+    val future = RecuperacionVentaRepository.marcarParaRecuperar(idEstado)
+    Await.result(future, Duration.Inf)
+    Ok("venta enviada a call")
+  }
+
 }

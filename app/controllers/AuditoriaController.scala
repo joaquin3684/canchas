@@ -33,15 +33,15 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
   def upload = getAuthAction(parse.multipartFormData) { implicit request =>
 
     request.body.file("audio").map { picture =>
-
       val dni = request.body.dataParts.get("dni").get.head.toInt
+      val idVenta = request.body.dataParts.get("idVenta").get.head.toLong
       val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
       val recuperacion = if (request.body.dataParts.get("recuperable").isDefined) request.body.dataParts.get("recuperable").get.head.toBoolean else false
 
       val estado = request.body.dataParts.get("estado").get.head match {
-        case "ok" => Estado(request.user, dni, AUDITORIA_APROBADA, DateTime.now)
-        case "rechazo" =>      Estado(request.user, dni, RECHAZO_AUDITORIA, DateTime.now, recuperacion, observacion)
-        case "observado" => Estado(request.user, dni, AUDITORIA_OBSERVADA, DateTime.now, false, observacion)
+        case "ok" => Estado(request.user, idVenta, AUDITORIA_APROBADA, DateTime.now)
+        case "rechazo" =>      Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperacion, observacion)
+        case "observado" => Estado(request.user, idVenta, AUDITORIA_OBSERVADA, DateTime.now, false, observacion)
       }
 
       val empresa = if(request.body.dataParts.get("empresa").isDefined) Some(request.body.dataParts.get("empresa").get.head) else None

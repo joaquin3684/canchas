@@ -75,12 +75,12 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
 
   def completarVenta = (authAction andThen checkObs) { implicit request =>
 
-    val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val empresa = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "empresa")
     val cuit = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "cuit")
     val tresPorciento = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "tresPorciento").toDouble
 
-    val future = AdministracionVentaRepository.completarVenta(dni, empresa, cuit, tresPorciento)
+    val future = AdministracionVentaRepository.completarVenta(idVenta, empresa, cuit, tresPorciento)
     Await.result(future, Duration.Inf)
     Ok("venta completada")
   }
@@ -88,24 +88,24 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
   def presentarVentas = authAction { implicit request =>
     val fechaString = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaPresentacion")
     val fechaPresentacion = DateTime.fromIsoDateTimeString(fechaString).get
-    val dnis = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dnis")
-    val documentos = jsonMapper.fromJson[Seq[Int]](dnis)
+    val ids = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "ids")
+    val documentos = jsonMapper.fromJson[Seq[Long]](ids)
     val future = AdministracionVentaRepository.presentarVentas(documentos, fechaPresentacion, request.user)
     Await.result(future, Duration.Inf)
     Ok("ventas presentadas")
   }
 
   def analizarPresentacion = (authAction andThen checkObs) { implicit request =>
-    val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val estado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "estado")
     val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion")
     val fecha = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaPresentacion")
 
 
     val estadoNuevo = estado match {
-      case "pagada" => Estado(request.user, dni, PAGADA, DateTime.now)
-      case "rechazada" => Estado(request.user, dni, RECHAZO_PRESENTACION, DateTime.now, false, Some(observacion))
-      case "pendiente auditoria" => Estado(request.user, dni, "estado auxiliar", DateTime.now)
+      case "pagada" => Estado(request.user, idVenta, PAGADA, DateTime.now)
+      case "rechazada" => Estado(request.user, idVenta, RECHAZO_PRESENTACION, DateTime.now, false, Some(observacion))
+      case "pendiente auditoria" => Estado(request.user, idVenta, "estado auxiliar", DateTime.now)
     }
 
     val future = AdministracionVentaRepository.analizarPresentacion(estadoNuevo)
@@ -115,10 +115,10 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
   }
 
   def rechazar = (authAction andThen checkObs) { implicit request =>
-    val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val tipoRechazo = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "recuperable").toBoolean
     val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion")
-    val estado = Estado(request.user, dni, RECHAZO_ADMINISTRACION, DateTime.now, tipoRechazo, Some(observacion))
+    val estado = Estado(request.user, idVenta, RECHAZO_ADMINISTRACION, DateTime.now, tipoRechazo, Some(observacion))
     val future = VentaRepository.agregarEstado(estado)
     Await.result(future, Duration.Inf)
     Ok("rechazado")

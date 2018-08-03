@@ -27,9 +27,9 @@ object LogisticaRepository extends Estados{
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === AUDITORIA_APROBADA && !(x.dni in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.dni)))
-        v <- ventas.filter(x => x.dni === e.dni && x.idObraSocial.inSetBind(obs))
-        e2 <- estados.filter(x => x.estado === CREADO && e.dni === x.dni)
+        e <- estados.filter(x => x.estado === AUDITORIA_APROBADA && !(x.idVenta in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.idVenta)))
+        v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
+        e2 <- estados.filter(x => x.estado === CREADO && e.idVenta === x.idVenta)
         u <- usuariosPerfiles.filter(x => x.idUsuario === e2.user && x.idPerfil === "operador")
       } yield v
     }
@@ -57,8 +57,8 @@ object LogisticaRepository extends Estados{
     Db.db.run(fullquery.transactionally)
   }
 
-  def enviarACall(idVisita: Long, dni: Int) = {
-    Db.db.run(estados.filter(x => x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA).delete)
+  def enviarACall(idVisita: Long, idVenta: Long) = {
+    Db.db.run(estados.filter(x => x.idVenta === idVenta && (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA)).delete)
   }
 
   def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String)]] = {
@@ -69,14 +69,14 @@ object LogisticaRepository extends Estados{
               Case when (visitas.id_user IS NULL ) then 'Pendiente'
               else 'Confirmar' END AS is_a_senior
                from ventas
-        join estados on ventas.dni = estados.id_venta
-        join visitas on visitas.id_venta = ventas.dni
+        join estados on ventas.id = estados.id_venta
+        join visitas on visitas.id_venta = ventas.id
         where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
          estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
-         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = CURDATE() and visitas.id = (select id from visitas where id_venta = ventas.dni order by fecha asc limit 1))
+         ventas.id_obra_social in (#$obsSql) and DATE(visitas.fecha) = CURDATE() and visitas.id = (select id from visitas where id_venta = ventas.id order by fecha asc limit 1))
          or ((estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
                           estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
-                          ventas.id_obra_social in (#$obsSql) and visitas.id_user IS NOT NULL and visitas.id = (select id from visitas where id_venta = ventas.dni order by fecha asc limit 1)  ))
+                          ventas.id_obra_social in (#$obsSql) and visitas.id_user IS NOT NULL and visitas.id = (select id from visitas where id_venta = ventas.id order by fecha asc limit 1)  ))
          group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel,ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, Case when (visitas.id_user IS NULL ) then 'Pendiente'
                               else 'Confirmar' END
       """.as[(Venta, String)]
@@ -86,27 +86,27 @@ object LogisticaRepository extends Estados{
 
 
 
-  def getVisitas(dni: Int)(implicit obs: Seq[String]): Future[Seq[Visita]] = {
+  def getVisitas(id: Long)(implicit obs: Seq[String]): Future[Seq[Visita]] = {
     val query = {
       for {
-        v <- ventas.filter(x => x.dni === dni && x.idObraSocial.inSetBind(obs))
-        vis <- visitas.filter(x => x.dni === v.dni)
+        v <- ventas.filter(x => x.id === id && x.idObraSocial.inSetBind(obs))
+        vis <- visitas.filter(x => x.idVenta === v.id)
       } yield  vis
     }
     Db.db.run(query.result)
   }
 
-  def getVisita(dni: Int)(implicit obs: Seq[String]): Future[Visita] = {
+  def getVisita(idVenta: Long)(implicit obs: Seq[String]): Future[Visita] = {
 
-    Db.db.run(visitas.filter(_.dni === dni).sortBy(_.id.desc).result.head)
+    Db.db.run(visitas.filter(_.idVenta === idVenta).sortBy(_.id.desc).result.head)
   }
 
   def all(user: String): Future[Seq[(Venta, Visita)]] = {
     val query = {
       for {
-        e <- estados.filter(x => (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA || x.estado === VISITA_CONFIRMADA || x.estado === RECHAZO_LOGISTICA) && x.user === user ).map(_.dni)
-        v <- ventas.filter(x => x.dni === e )
-        vis <- visitas.filter(_.dni === v.dni)
+        e <- estados.filter(x => (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA || x.estado === VISITA_CONFIRMADA || x.estado === RECHAZO_LOGISTICA) && x.user === user ).map(_.idVenta)
+        v <- ventas.filter(x => x.id === e )
+        vis <- visitas.filter(_.idVenta === v.id)
       } yield (v, vis)
     }
 

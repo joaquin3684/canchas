@@ -25,15 +25,15 @@ class AuditoriaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
       val jsonMaper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None,None, None, None, 1),
+        Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None,None,None, None, 2),
+        Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None,None,None, None, 3),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 432, VALIDADO, DateTime.now),
-        Estado("200", 436, RECHAZO_VALIDACION, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 1, VALIDADO, DateTime.now),
+        Estado("200", 3, RECHAZO_VALIDACION, DateTime.now),
       )
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
@@ -55,15 +55,15 @@ class AuditoriaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
         val jsonMaper = new JsonMapper
 
         val ventasEsperadas = Seq(
-          Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-          Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-          Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+          Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 1),
+          Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
+          Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
         )
         val estadosEsperados = Seq(
-          Estado("200", 432, CREADO, DateTime.now),
-          Estado("200", 435, CREADO, DateTime.now),
-          Estado("200", 432, AUDITORIA_APROBADA, DateTime.now),
-          Estado("300", 436, AUDITORIA_APROBADA, DateTime.now),
+          Estado("200", 1, CREADO, DateTime.now),
+          Estado("200", 2, CREADO, DateTime.now),
+          Estado("200", 1, AUDITORIA_APROBADA, DateTime.now),
+          Estado("300", 3, AUDITORIA_APROBADA, DateTime.now),
         )
         Db.runWithAwait(ventas ++= ventasEsperadas)
         Db.runWithAwait(estados ++= estadosEsperados)

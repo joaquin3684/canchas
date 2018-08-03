@@ -1,7 +1,7 @@
 package models
 
 case class Auditoria(
-                      dni: Int,
+                      idVenta: Long,
                       audio: String,
                       observacion: Option[String],
                       empresa: Option[String],

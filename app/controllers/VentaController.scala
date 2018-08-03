@@ -4,15 +4,16 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction}
 import akka.http.scaladsl.model.DateTime
-import models.Venta
+import models.{Estado, Estados, Venta}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.VentaRepository
 import services.JsonMapper
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.util.{Failure, Success}
 
-class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc){
+class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, val authAction: AuthenticatedAction, val getAuthAction: GetAuthenticatedAction) extends AbstractController(cc) with Estados{
 
   def create = authAction { implicit request =>
 
@@ -23,7 +24,14 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
     val venta = jsonMapper.fromJson[Venta](ventasJson)
     if(request.obrasSociales.contains(venta.idObraSocial)) {
       val futureVenta = VentaRepository.create(venta, userName, fechaCreacion)
-      Await.result(futureVenta, Duration.Inf)
+
+      futureVenta onComplete {
+        case Success(venta) => {
+          val futEs = VentaRepository.agregarEstado(Estado(userName, venta.id, CREADO, fechaCreacion))
+          Await.result(futEs, Duration.Inf)
+      }
+        case Failure(t) => throw new RuntimeException("hubo un problema al cargar la venta")
+      }
       Ok("creado")
     } else throw new RuntimeException("obra social erronea")
   }
@@ -40,6 +48,23 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
     }
     val json = jsonMapper.toJson(v)
     Ok(json)
-
   }
+
+ /* def checkDniExistence = authAction { implicit request =>
+    val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
+    val future = VentaRepository.checkDni(dni)
+    val v = Await.result(future, Duration.Inf)
+    if(v.isDefined)
+    {
+      val js = jsonMapper.toJsonString(v.get._1)
+      val vNode = jsonMapper.getJsonNode(js)
+      val esjs = jsonMapper.toJsonString(v.get._2)
+      val esNode = jsonMapper.getJsonNode(esjs)
+      jsonMapper.addNode("estado", esNode, vNode)
+      Ok(jsonMapper.toJson(vNode.toString))
+    } else {
+
+      Ok("la venta no esta registrada")
+    }
+  }*/
 }

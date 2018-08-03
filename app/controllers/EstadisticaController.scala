@@ -31,22 +31,22 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
       val a = jsonMapper.toJsonString(x)
       val node = jsonMapper.getJsonNode(a)
 
-      val es = ventasEst.filter(_._2.dni == x.dni).map(_._2).distinct
+      val es = ventasEst.filter(_._2.idVenta == x.id).map(_._2).distinct
       val esJ = jsonMapper.toJsonString(es)
       val esNode = jsonMapper.getJsonNode(esJ)
       jsonMapper.addNode("estados", esNode, node)
 
-      val vali = ventasEst.filter(v => v._4.isDefined && v._4.get.dni == x.dni).map(_._4.get).distinct.headOption
+      val vali = ventasEst.filter(v => v._4.isDefined && v._4.get.idVenta == x.id).map(_._4.get).distinct.headOption
       val valiJ = jsonMapper.toJsonString(vali)
       val valiNode = jsonMapper.getJsonNode(valiJ)
       jsonMapper.addNode("validacion", valiNode, node)
 
-      val vis = ventasEst.filter(v => v._3.isDefined && v._3.get.dni == x.dni).map(_._3.get).distinct
+      val vis = ventasEst.filter(v => v._3.isDefined && v._3.get.idVenta == x.id).map(_._3.get).distinct
       val visJ = jsonMapper.toJsonString(vis)
       val visNode = jsonMapper.getJsonNode(visJ)
       jsonMapper.addNode("visitas", visNode, node)
 
-      val audi = ventasEst.filter(v => v._5.isDefined && v._5.get.dni == x.dni).map(_._5.get).distinct.headOption
+      val audi = ventasEst.filter(v => v._5.isDefined && v._5.get.idVenta == x.id).map(_._5.get).distinct.headOption
       val audiJ = jsonMapper.toJsonString(audi)
       val audiNode = jsonMapper.getJsonNode(audiJ)
       jsonMapper.addNode("auditoria", audiNode, node)

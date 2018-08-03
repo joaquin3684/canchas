@@ -2,11 +2,12 @@ package schemas
 
 import java.sql.Timestamp
 
-import java.time.{Instant, ZoneOffset}
-
 import akka.http.scaladsl.model.DateTime
 import models.{UsuarioPerfil, _}
 import slick.jdbc.MySQLProfile.api._
+import shapeless._
+import slickless._
+
 
 object Schemas {
 
@@ -141,7 +142,7 @@ object Schemas {
 
   class Ventas(tag:Tag) extends Table[Venta](tag, "ventas") {
 
-    def dni = column[Int]("dni", O.PrimaryKey)
+    def dni = column[Int]("dni")
     def nombre = column[String]("nombre")
     def nacionalidad = column[String]("nacionalidad")
     def domicilio = column[String]("domicilio")
@@ -163,10 +164,13 @@ object Schemas {
     def cuit =  column[Option[String]]("cuit", O.Default(None))
     def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
     def empresa =  column[Option[String]]("empresa", O.Default(None))
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
 
     def obsFk = foreignKey("fk_venta_obs", idObraSocial, obrasSociales)(_.nombre)
 
-    def * = (dni, nombre, nacionalidad, domicilio, localidad, telefono, cuil, estadoCivil, edad, idObraSocial, fechaNacimiento, zona, codigoPostal, horaContactoTel, piso, dpto, celular, horaContactoCel, base, empresa, cuit, tresPorciento) <> (Venta.tupled, Venta.unapply)
+    def * = (dni :: nombre :: nacionalidad :: domicilio :: localidad :: telefono :: cuil :: estadoCivil :: edad :: idObraSocial :: fechaNacimiento :: zona :: codigoPostal :: horaContactoTel :: piso :: dpto :: celular :: horaContactoCel :: base :: empresa :: cuit :: tresPorciento :: id :: HNil).mappedWith(Generic[Venta])
+
 
   }
 
@@ -175,18 +179,19 @@ object Schemas {
   class Estados(tag:Tag) extends Table[Estado](tag, "estados") {
 
     def user = column[String]("user", O.Length(50))
-    def dni = column[Int]("id_venta")
+    def idVenta = column[Long]("id_venta")
     def estado = column[String]("estado", O.Length(50))
     def fecha = column[DateTime]("fecha", O.Default(DateTime.now))
     def recuperable = column[Boolean]("recuperable", O.Default(false))
+    def paraRecuperar = column[Boolean]("para_recuperar", O.Default(false))
     def observacion = column[Option[String]]("observacion", O.Default(None))
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def userFk = foreignKey("fk_user_estado", user, usuarios)(_.user)
 
-    def ventaFk = foreignKey("fk_venta_estado", dni, ventas)(_.dni)
+    def ventaFk = foreignKey("fk_venta_estado", idVenta, ventas)(_.id)
 
-    def * = (user, dni, estado, fecha, recuperable, observacion, id) <> (Estado.tupled, Estado.unapply)
+    def * = (user, idVenta, estado, fecha, recuperable, observacion, id, paraRecuperar) <> (Estado.tupled, Estado.unapply)
   }
 
   val estados = TableQuery[Estados]
@@ -194,7 +199,7 @@ object Schemas {
   class Visitas(tag: Tag) extends Table[Visita](tag, "visitas") {
 
      def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-     def dni = column[Int]("id_venta")
+     def idVenta = column[Long]("id_venta")
      def user = column[Option[String]]("id_user", O.Default(None))
      def lugar= column[String]("lugar")
      def direccion= column[String]("direccion")
@@ -205,17 +210,17 @@ object Schemas {
      def hora = column[String]("hora")
      def estado= column[String]("estado")
 
-     def ventaFk = foreignKey("fk_venta_visita", dni, ventas)(_.dni)
+     def ventaFk = foreignKey("fk_venta_visita", idVenta, ventas)(_.id)
      def userFk = foreignKey("fk_user_visita", user, usuarios)(_.user.?)
 
-     def * = (id, dni, lugar, direccion, entreCalles, localidad, observacion, fecha, hora, estado, user) <> (Visita.tupled, Visita.unapply)
+     def * = (id, idVenta, lugar, direccion, entreCalles, localidad, observacion, fecha, hora, estado, user) <> (Visita.tupled, Visita.unapply)
   }
 
   val visitas = TableQuery[Visitas]
 
   class Validaciones(tag: Tag) extends Table[Validacion](tag, "validaciones") {
 
-    def dni = column[Int]("id_venta", O.PrimaryKey)
+    def idVenta = column[Long]("id_venta", O.PrimaryKey)
     def codem = column[Boolean]("codem")
     def superr = column[Boolean]("super")
     def afip = column[Boolean]("afip")
@@ -225,9 +230,9 @@ object Schemas {
     def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
 
 
-    def ventaFk = foreignKey("fk_venta_validacion", dni, ventas)(_.dni)
+    def ventaFk = foreignKey("fk_venta_validacion", idVenta, ventas)(_.id)
 
-    def * = (dni, codem, superr, afip, capitas, motivoCodem, motivoSuper, motivoAfip) <> (Validacion.tupled, Validacion.unapply)
+    def * = (idVenta, codem, superr, afip, capitas, motivoCodem, motivoSuper, motivoAfip) <> (Validacion.tupled, Validacion.unapply)
   }
 
   val validaciones = TableQuery[Validaciones]
@@ -235,7 +240,7 @@ object Schemas {
   class Auditorias(tag: Tag) extends Table[Auditoria](tag, "auditorias") {
 
 
-    def dni =  column[Int]("id_venta", O.PrimaryKey)
+    def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def audio =  column[String]("audio")
     def observacion =  column[Option[String]]("obsevacion", O.Default(None))
     def empresa =  column[Option[String]]("empresa", O.Default(None))
@@ -246,9 +251,9 @@ object Schemas {
     def horaSalida =  column[Option[String]]("hora_salida", O.Default(None))
 
 
-    def ventaFk = foreignKey("fk_venta_auditoria", dni, ventas)(_.dni)
+    def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
 
-    def * = (dni, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (idVenta, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]

@@ -23,7 +23,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     jsonMapper.putElement(rootNode, "estado", VISITA_CREADA)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
-    val es = Estado(request.user, visita.dni, VISITA_CREADA, DateTime.now)
+    val es = Estado(request.user, visita.idVenta, VISITA_CREADA, DateTime.now)
 
     val futureVisita = LogisticaRepository.create(visita, es)
     Await.result(futureVisita, Duration.Inf)
@@ -58,9 +58,9 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     val rootNode = request.rootNode
 
-    val dni = rootNode.get("dni").asInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val idVisita = rootNode.get("idVisita").asLong
-    val estadoNuevo = Estado(request.user, dni, VISITA_CONFIRMADA, DateTime.now)
+    val estadoNuevo = Estado(request.user, idVenta, VISITA_CONFIRMADA, DateTime.now)
 
 
     val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo)
@@ -74,18 +74,18 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     val rootNode = request.rootNode
 
-    val dni = rootNode.get("dni").asInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val idVisita = rootNode.get("idVisita").asLong
 
-    val futureEstado = LogisticaRepository.enviarACall(idVisita, dni)
+    val futureEstado = LogisticaRepository.enviarACall(idVisita, idVenta)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("enviadoACall")
   }
 
-  def getVisita(dni: Int) = getAuthAction { implicit request =>
+  def getVisita(idVenta: Long) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val futureVisita = LogisticaRepository.getVisita(dni)
+    val futureVisita = LogisticaRepository.getVisita(idVenta)
     val visita = Await.result(futureVisita, Duration.Inf)
 
 
@@ -97,10 +97,10 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
   def rechazar = (authAction andThen checkObs) { implicit request =>
 
     val rootNode = request.rootNode
-    val dni = rootNode.get("dni").asInt
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val observacion = if(rootNode.get("observacion").toString.isEmpty) None else Some(jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "observacion").toString)
     val recuperable = rootNode.get("recuperable").asBoolean
-    val estadoNuevo = Estado(request.user, dni, RECHAZO_LOGISTICA, DateTime.now, recuperable, observacion)
+    val estadoNuevo = Estado(request.user, idVenta, RECHAZO_LOGISTICA, DateTime.now, recuperable, observacion)
     val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
@@ -123,7 +123,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     jsonMapper.putElement(rootNode, "estado", VISITA_REPACTADA)
 
     val visita = jsonMapper.fromJson[Visita](rootNode.toString)
-    val es = Estado(request.user, visita.dni, VISITA_REPACTADA, DateTime.now)
+    val es = Estado(request.user, visita.idVenta, VISITA_REPACTADA, DateTime.now)
 
     val futureVisita = LogisticaRepository.repactar(visita, es)
     Await.result(futureVisita, Duration.Inf)
@@ -149,7 +149,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val a = ventass.map{x =>
         val j = jsonMapper.toJsonString(x)
         val vNode = jsonMapper.getJsonNode(j)
-        val h = jsonMapper.toJsonString(visitas.filter(_.dni == x.dni))
+        val h = jsonMapper.toJsonString(visitas.filter(_.idVenta == x.id))
         val visNode = jsonMapper.getJsonNode(h)
         jsonMapper.addNode("visitas", visNode, vNode)
        vNode

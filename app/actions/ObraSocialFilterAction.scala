@@ -18,8 +18,8 @@ case class ObraSocialFilterAction @Inject()(parser: BodyParsers.Default)(implici
   def filter[A](request: UserRequest[A]) = Future.successful {
     implicit val obs: Seq[String] = request.obrasSociales
     val metodo = request.method
-    val dni = if(metodo == "PUT") request.uri.split("/").last.toInt else request.rootNode.get("dni").asInt
-    val futureCheckObs = VentaRepository.checkObraSocial(dni)
+    val idVenta = if(metodo == "PUT") request.uri.split("/").last.toInt else request.rootNode.get("idVenta").asLong
+    val futureCheckObs = VentaRepository.checkObraSocial(idVenta)
     val check = Await.result(futureCheckObs, Duration.Inf)
     if (check.nonEmpty)
       None

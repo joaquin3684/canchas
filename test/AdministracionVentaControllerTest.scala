@@ -29,11 +29,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 436, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 437, RECHAZO_VALIDACION, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 2, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 3, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 4, RECHAZO_VALIDACION, DateTime.now),
+        Estado("200", 5, VALIDADO, DateTime.now),
       )
 
 
@@ -54,6 +54,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val json = Json.parse(
         """
         {
+          "idVenta": 1,
           "dni": 432,
           "empresa": "200",
           "cuit": "200",
@@ -77,11 +78,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 436, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 437, RECHAZO_VALIDACION, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 2, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 3, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 4, RECHAZO_VALIDACION, DateTime.now),
+        Estado("200", 5, VALIDADO, DateTime.now),
       )
 
 
@@ -93,7 +94,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val Some(result) = route(app, FakeRequest(POST, "/administracionVenta/completarVenta").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
       val cantidadFilas = contentAsString(result)
 
-      val ventaObtenida = Db.runWithAwait(ventas.filter(_.dni === 432).result.head)
+      val ventaObtenida = Db.runWithAwait(ventas.filter(_.id === 1.toLong).result.head)
       val ventaEsperada = ventaObtenida.copy(empresa = Some(jempresa), cuit = Some(jcuit), tresPorciento = Some(jtresPorciento))
       assert(ventaObtenida == ventaEsperada)
       status(result) mustBe OK
@@ -110,19 +111,19 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, VALIDADO, DateTime.now),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 436, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 436, PRESENTADA, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, VALIDADO, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 2, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 3, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 3, PRESENTADA, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       val validacionesEsperadas = Seq(
-        Validacion(432, true, true, true, 4, None, None, None),
-        Validacion(435, true, true, true, 4, None, None, None),
-        Validacion(436, true, true, true, 4, None, None, None),
+        Validacion(1, true, true, true, 4, None, None, None),
+        Validacion(2, true, true, true, 4, None, None, None),
+        Validacion(3, true, true, true, 4, None, None, None),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -148,19 +149,19 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, VALIDADO, DateTime.now),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 435, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 436, VISITA_CONFIRMADA, DateTime.now),
-        Estado("200", 436, PRESENTADA, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, VALIDADO, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 2, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 3, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 3, PRESENTADA, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       val validacionesEsperadas = Seq(
-        Validacion(432, true, true, true, 4, None, None, None),
-        Validacion(435, true, true, true, 4, None, None, None),
-        Validacion(436, true, true, true, 4, None, None, None),
+        Validacion(1, true, true, true, 4, None, None, None),
+        Validacion(2, true, true, true, 4, None, None, None),
+        Validacion(3, true, true, true, 4, None, None, None),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -181,7 +182,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val json = Json.parse(
         """
            {
-            "dnis": [ 432, 435, 436 ],
+            "ids": [ 1, 2, 3 ],
             "fechaPresentacion": "2018-02-04T20:20:10"
             }
 
@@ -197,12 +198,12 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.runWithAwait(ventas ++= ventasEsperadas)
 
       val estadosEsperados = Seq(
-        Estado("200", 432, PRESENTADA, DateTime.now, false, None, 1),
-        Estado("200", 435, PRESENTADA, DateTime.now, false, None, 2),
-        Estado("200", 436, PRESENTADA, DateTime.now, false, None, 3),
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
+        Estado("200", 2, PRESENTADA, DateTime.now, false, None, 2),
+        Estado("200", 3, PRESENTADA, DateTime.now, false, None, 3),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       val Some(result) = route(app, FakeRequest(POST, "/administracionVenta/presentarVentas").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
@@ -210,7 +211,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
       val estadosObtenidos = Db.runWithAwait(estados.filter(_.estado === PRESENTADA).result).toList
 
-      assert(estadosObtenidos.map(x => (x.user, x.dni, x.estado, x.observacion, x.id)) == estadosEsperados.take(3).map(x => (x.user, x.dni, x.estado, x.observacion, x.id)))
+      assert(estadosObtenidos.map(x => (x.user, x.idVenta, x.estado, x.observacion, x.id)) == estadosEsperados.take(3).map(x => (x.user, x.idVenta, x.estado, x.observacion, x.id)))
       status(result) mustBe OK
 
     }
@@ -226,12 +227,12 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, PRESENTADA, DateTime.now, false, None, 1),
-        Estado("200", 435, PRESENTADA, DateTime.now, false, None, 2),
-        Estado("200", 436, PRESENTADA, DateTime.now, false, None, 3),
-        Estado("200", 436, PAGADA, DateTime.now),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
+        Estado("200", 2, PRESENTADA, DateTime.now, false, None, 2),
+        Estado("200", 3, PRESENTADA, DateTime.now, false, None, 3),
+        Estado("200", 3, PAGADA, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -251,6 +252,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val jsonPagada = Json.parse(
         """
            {
+              "idVenta": 1,
               "dni": 432,
               "estado": "pagada",
               "observacion": null,
@@ -262,6 +264,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val jsonRechazada = Json.parse(
         """
            {
+              "idVenta": 2,
               "dni": 435,
               "estado": "rechazada",
               "observacion": "estooo",
@@ -273,6 +276,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val jsonPendiente = Json.parse(
         """
            {
+              "idVenta": 3,
               "dni": 436,
               "estado": "pendiente auditoria",
               "observacion": null,
@@ -294,11 +298,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, PRESENTADA, DateTime.now, false, None, 1),
-        Estado("200", 435, PRESENTADA, DateTime.now, false, None, 2),
-        Estado("200", 436, PRESENTADA, DateTime.now, false, None, 3),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
+        Estado("200", 2, PRESENTADA, DateTime.now, false, None, 2),
+        Estado("200", 3, PRESENTADA, DateTime.now, false, None, 3),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -315,12 +319,12 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
 
       val estadoPagadoObtenido = Db.runWithAwait(estados.filter(_.estado === PAGADA).result.head)
-      val estadoPagadoEsperado = Estado("200", 432, PAGADA, DateTime.now, false, None, estadoPagadoObtenido.id)
+      val estadoPagadoEsperado = Estado("200", 1, PAGADA, DateTime.now, false, None, estadoPagadoObtenido.id)
 
       val estadoRechazadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === RECHAZO_PRESENTACION).result.head)
-      val estadoRechazadoEsperado = Estado("200", 435, RECHAZO_PRESENTACION, DateTime.now, false, Some("estooo"), estadoRechazadoObtenido.id)
+      val estadoRechazadoEsperado = Estado("200", 2, RECHAZO_PRESENTACION, DateTime.now, false, Some("estooo"), estadoRechazadoObtenido.id)
 
-      val estadoPresentadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === PRESENTADA && x.dni === 436).result.headOption)
+      val estadoPresentadoObtenido = Db.runWithAwait(estados.filter(x => x.estado === PRESENTADA && x.idVenta === 3.toLong).result.headOption)
 
       assert(estadoPagadoObtenido == estadoPagadoEsperado)
       assert(estadoRechazadoObtenido == estadoRechazadoEsperado)
@@ -336,6 +340,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val jsonRecuperable = Json.parse(
         """
            {
+              "idVenta": 1,
               "dni": 432,
               "recuperable": true,
               "observacion": "hola"
@@ -346,6 +351,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val jsonNoRecuperable = Json.parse(
         """
            {
+              "idVenta": 2,
               "dni": 435,
               "recuperable": false,
               "observacion": "estooo"
@@ -361,11 +367,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, PRESENTADA, DateTime.now, false, None, 1),
-        Estado("200", 435, PRESENTADA, DateTime.now, false, None, 2),
-        Estado("200", 436, PRESENTADA, DateTime.now, false, None, 3),
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 438, VALIDADO, DateTime.now),
+        Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
+        Estado("200", 2, PRESENTADA, DateTime.now, false, None, 2),
+        Estado("200", 3, PRESENTADA, DateTime.now, false, None, 3),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 4, VALIDADO, DateTime.now),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)

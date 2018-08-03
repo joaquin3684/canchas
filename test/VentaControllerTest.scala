@@ -50,8 +50,8 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
 
       val Some(result) = route(app, FakeRequest(POST, "/venta/create").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
       val b = contentAsString(result)
-      val venta = Db.runWithAwait(ventas.filter(_.dni === 1234).result.head)
-      val estado = Db.runWithAwait(estados.filter(_.dni === 1234).result.head)
+      val venta = Db.runWithAwait(ventas.filter(_.id === 1.toLong).result.head)
+      val estado = Db.runWithAwait(estados.filter(_.idVenta === 1.toLong).result.head)
 
       val jsonMaper = new JsonMapper
       val rootNode = jsonMaper.getJsonNode(json.toString)
@@ -59,9 +59,9 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
       val f = jsonMaper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "fechaCreacion")
       val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
       val ventaEsperada = jsonMaper.fromJson[Venta](rootNode.toString)
-      val estadoEsperado = Estado(user, ventaEsperada.dni, "Creado", fechaCreacion, false, None, estado.id)
+      val estadoEsperado = Estado(user, 1, "Creado", fechaCreacion, false, None, estado.id)
 
-      assert(ventaEsperada == venta)
+      assert(ventaEsperada.copy(id = 1) == venta)
       assert(estadoEsperado == estado)
     }
 
@@ -76,9 +76,9 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
         Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
      )
       val estadosEsperados = Seq(
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 436, CREADO, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 3, CREADO, DateTime.now),
       )
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
@@ -88,6 +88,55 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
 
     }
 
+    "checkDniExistence" in {
+      Db.inicializarDb
+      val json = Json.parse(
+        """
+        {
+          "dni": 432
 
+          }
+        """)
+
+      val json2 = Json.parse(
+        """
+        {
+          "dni": 467
+
+          }
+        """)
+      val jsonMaper = new JsonMapper
+
+      val ventasEsperadas = Seq(
+        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe3", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(434, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+      )
+      val estadosEsperados = Seq(
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 3, CREADO, DateTime.now),
+        Estado("200", 4, CREADO, DateTime.now),
+      )
+      Db.runWithAwait(ventas ++= ventasEsperadas)
+      Db.runWithAwait(estados ++= estadosEsperados)
+      val Some(result) = route(app, FakeRequest(POST, "/venta/existenciaDni").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
+      val jsonResult = contentAsJson(result)
+      val vNode = jsonMaper.getJsonNode(jsonResult.toString)
+
+      val estado = jsonMaper.getAndRemoveElement(vNode, "estado")
+
+
+
+      val es = jsonMaper.fromJson[Estado](estado)
+      val venta = jsonMaper.fromJson[Venta](vNode.toString)
+
+      val Some(result2) = route(app, FakeRequest(POST, "/venta/existenciaDni").withJsonBody(json2).withHeaders("My-Authorization" -> Token.header))
+      val texto = contentAsString(result2)
+
+      assert(texto == "la venta no esta registrada")
+
+    }
   }
 }

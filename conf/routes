@@ -46,6 +46,8 @@ POST /venta/create                  controllers.VentaController.create
 
 GET /venta/all                      controllers.VentaController.all
 
+#POST /venta/existenciaDni           controllers.VentaController.checkDniExistence
+
 # VALIDACION
 
 POST /validacion/validar            controllers.ValidarController.validar
@@ -117,6 +119,10 @@ GET /recuperarVenta/all                     controllers.RecuperarVentaController
 POST /recuperarVenta/recuperar              controllers.RecuperarVentaController.recuperar
 
 POST /recuperarVenta/rechazo                controllers.RecuperarVentaController.rechazo
+
+GET /recuperarVenta/ventasParaPoderRecuperar controllers.RecuperarVentaController.ventasParaMarcarComoRecuperar
+
+POST /recuperarVenta/marcarParaRecuperar    controllers.RecuperarVentaController.marcarParaRecuperar
 
 # ESTADISTICAS
 

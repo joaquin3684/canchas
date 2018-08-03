@@ -29,35 +29,35 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
         Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
-        Estado("200", 432, CREADO, DateTime.now),
-        Estado("200", 432, VALIDADO, DateTime.now),
-        Estado("200", 432, AUDITORIA_APROBADA, DateTime.now),
-        Estado("200", 432, VISITA_CREADA, DateTime.now),
-        Estado("200", 432, VISITA_CONFIRMADA, DateTime.now),
+        Estado("200", 1, CREADO, DateTime.now),
+        Estado("200", 1, VALIDADO, DateTime.now),
+        Estado("200", 1, AUDITORIA_APROBADA, DateTime.now),
+        Estado("200", 1, VISITA_CREADA, DateTime.now),
+        Estado("200", 1, VISITA_CONFIRMADA, DateTime.now),
 
-        Estado("200", 435, CREADO, DateTime.now),
-        Estado("200", 435, VALIDADO, DateTime.now),
-        Estado("200", 435, AUDITORIA_APROBADA, DateTime.now),
-        Estado("200", 435, VISITA_CREADA, DateTime.now),
-        Estado("200", 435, RECHAZO_LOGISTICA, DateTime.now),
+        Estado("200", 2, CREADO, DateTime.now),
+        Estado("200", 2, VALIDADO, DateTime.now),
+        Estado("200", 2, AUDITORIA_APROBADA, DateTime.now),
+        Estado("200", 2, VISITA_CREADA, DateTime.now),
+        Estado("200", 2, RECHAZO_LOGISTICA, DateTime.now),
 
-        Estado("200", 436, CREADO, DateTime.now, true),
-        Estado("200", 436, VALIDADO, DateTime.now),
-        Estado("200", 436, AUDITORIA_APROBADA, DateTime.now),
+        Estado("200", 3, CREADO, DateTime.now, true),
+        Estado("200", 3, VALIDADO, DateTime.now),
+        Estado("200", 3, AUDITORIA_APROBADA, DateTime.now),
 
-        Estado("200", 437, CREADO, DateTime.now, true, Some("cantidad impagos 25")),
-        Estado("200", 438, CREADO, DateTime.now, true, Some("meses de traspaso 2")),
+        Estado("200", 4, CREADO, DateTime.now, true, Some("cantidad impagos 25")),
+        Estado("200", 5, CREADO, DateTime.now, true, Some("meses de traspaso 2")),
       )
 
       val validacionesEsperadas = Seq(
-        Validacion(432, true, true, true, 4, None, None, None),
-        Validacion(435, true, true, true, 4, None, None, None),
-        Validacion(436, true, true, true, 4, None, None, None),
+        Validacion(1, true, true, true, 4, None, None, None),
+        Validacion(2, true, true, true, 4, None, None, None),
+        Validacion(3, true, true, true, 4, None, None, None),
       )
 
       val visitasEsperadas = Seq(
-        Visita(1, 432, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
-        Visita(1, 435, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
+        Visita(1, 1, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
+        Visita(1, 2, "2", "2", "3", "2", None, DateTime.now, "a", "creada", None),
       )
 
 
