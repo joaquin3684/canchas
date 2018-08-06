@@ -22,11 +22,11 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, CREADO, DateTime.now),
@@ -50,9 +50,15 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       )
 
       val validacionesEsperadas = Seq(
-        Validacion(1, true, true, true, 4, None, None, None),
-        Validacion(2, true, true, true, 4, None, None, None),
-        Validacion(3, true, true, true, 4, None, None, None),
+        Validacion(1, true, true, true, None, None, None),
+        Validacion(2, true, true, true, None, None, None),
+        Validacion(3, true, true, true, None, None, None),
+      )
+
+      val auditoriasEsperadas = Seq(
+        Auditoria(1, "a", 3),
+        Auditoria(2, "a", 3),
+        Auditoria(3, "a", 3),
       )
 
       val visitasEsperadas = Seq(
@@ -65,6 +71,7 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       Db.runWithAwait(estados ++= estadosEsperados)
       Db.runWithAwait(validaciones ++= validacionesEsperadas)
       Db.runWithAwait(visitas ++= visitasEsperadas)
+      Db.runWithAwait(auditorias ++= auditoriasEsperadas)
 
 
       /*val Some(result) = route(app, FakeRequest(GET, "/recuperarVenta/all").withHeaders("My-Authorization" -> Token.header))

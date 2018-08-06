@@ -152,7 +152,7 @@ object Schemas {
     def estadoCivil = column[String]("estadoCivil")
     def edad = column[Int]("edad")
     def idObraSocial = column[String]("id_obra_social", O.Length(50))
-    def fechaNacimiento =  column[DateTime]("fecha_nacimiento")
+    def fechaNacimiento =  column[Option[DateTime]]("fecha_nacimiento")
     def zona =  column[String]("zona")
     def codigoPostal =  column[Int]("codigo_postal")
     def horaContactoTel =  column[String]("hora_contacto_tel")
@@ -224,7 +224,6 @@ object Schemas {
     def codem = column[Boolean]("codem")
     def superr = column[Boolean]("super")
     def afip = column[Boolean]("afip")
-    def capitas = column[Int]("capitas")
     def motivoCodem = column[Option[String]]("motivo_codem", O.Default(None))
     def motivoSuper = column[Option[String]]("motivo_super", O.Default(None))
     def motivoAfip = column[Option[String]]("motivo_afip", O.Default(None))
@@ -232,7 +231,7 @@ object Schemas {
 
     def ventaFk = foreignKey("fk_venta_validacion", idVenta, ventas)(_.id)
 
-    def * = (idVenta, codem, superr, afip, capitas, motivoCodem, motivoSuper, motivoAfip) <> (Validacion.tupled, Validacion.unapply)
+    def * = (idVenta, codem, superr, afip, motivoCodem, motivoSuper, motivoAfip) <> (Validacion.tupled, Validacion.unapply)
   }
 
   val validaciones = TableQuery[Validaciones]
@@ -242,6 +241,9 @@ object Schemas {
 
     def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def audio =  column[String]("audio")
+    def capitas = column[Int]("capitas")
+    def audio2 = column[Option[String]]("audio2")
+    def audio3 = column[Option[String]]("audio3")
     def observacion =  column[Option[String]]("obsevacion", O.Default(None))
     def empresa =  column[Option[String]]("empresa", O.Default(None))
     def direccion =  column[Option[String]]("direccion", O.Default(None))
@@ -253,7 +255,7 @@ object Schemas {
 
     def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
 
-    def * = (idVenta, audio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (idVenta, audio, capitas, audio2, audio3, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]

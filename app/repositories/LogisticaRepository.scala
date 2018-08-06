@@ -18,7 +18,7 @@ object LogisticaRepository extends Estados{
     ts => DateTime(ts.getTime)
   )
 
-  implicit val impVenta = GetResult( r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, DateTime(r.nextTimestamp().getTime),r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
+  implicit val impVenta = GetResult( r => Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, Some(DateTime(r.nextTimestamp().getTime)),r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
 
   def asignarUsuario(usuario: String, idVisita: Long) = {
     Db.db.run(visitas.filter(_.id === idVisita).map(_.user).update(Some(usuario)))

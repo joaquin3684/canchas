@@ -22,9 +22,9 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina","tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, CREADO, DateTime.now),
@@ -58,8 +58,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "afip": true,
           "motivoCodem": null,
           "motivoSuper": null,
-          "motivoAfip": null,
-          "capitas": 4
+          "motivoAfip": null
           }
         """)
 
@@ -73,8 +72,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "afip": true,
           "motivoCodem": "hijo discapacitado",
           "motivoSuper": null,
-          "motivoAfip": null,
-          "capitas": 4
+          "motivoAfip": null
           }
         """)
 
@@ -87,8 +85,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "afip": true,
           "motivoCodem": null,
           "motivoSuper": "impagos 2",
-          "motivoAfip": null,
-          "capitas": 4
+          "motivoAfip": null
           }
         """)
 
@@ -101,17 +98,16 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "afip": true,
           "motivoCodem": "discapacitado",
           "motivoSuper": "pepe",
-          "motivoAfip": null,
-          "capitas": 4
+          "motivoAfip": null
           }
         """)
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, CREADO, DateTime.now),
@@ -154,10 +150,10 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val estadoEsperadoRechazoSuper = Estado("200", 3, RECHAZO_VALIDACION, DateTime.now, true, Some("impagos 2"), estadoRechazoSuper.id)
       val estadoEsperadoRechazoVarios = Estado("200", 4, RECHAZO_VALIDACION, DateTime.now, false, Some("discapacitado + pepe"), estadoRechazoVarios.id)
 
-      val validacionEsperadaValidada = Validacion(1, true, true, true, 4, None, None, None)
-      val validacionEsperadaRechazoCodem = Validacion(2, false, true, true, 4, Some("hijo discapacitado"), None, None)
-      val validacionEsperadaRechazoSuper = Validacion(3, true, false, true, 4, None, Some("impagos 2"), None)
-      val validacionEsperadaRechazoVarios = Validacion(4, false, false, true, 4, Some("discapacitado"), Some("pepe"), None)
+      val validacionEsperadaValidada = Validacion(1, true, true, true, None, None, None)
+      val validacionEsperadaRechazoCodem = Validacion(2, false, true, true, Some("hijo discapacitado"), None, None)
+      val validacionEsperadaRechazoSuper = Validacion(3, true, false, true, None, Some("impagos 2"), None)
+      val validacionEsperadaRechazoVarios = Validacion(4, false, false, true, Some("discapacitado"), Some("pepe"), None)
 
 
       status(result) mustEqual OK
@@ -180,9 +176,9 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 1),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 1),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VALIDADO, DateTime.now),
@@ -235,9 +231,9 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(467, "marcela Jordan", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "Sur", 47, "20hs", None, None, None, None, None, None, None, None, 1),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", DateTime.now, "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
+        Venta(467, "marcela Jordan", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "Sur", 47, "20hs", None, None, None, None, None, None, None, None, 1),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, CREADO, DateTime.now),

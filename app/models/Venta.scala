@@ -13,7 +13,7 @@ case class Venta(
                 estadoCivil: String,
                 edad: Int,
                 idObraSocial: String,
-                fechaNacimiento: DateTime,
+                fechaNacimiento: Option[DateTime],
                 zona: String,
                 codigoPostal: Int,
                 horaContactoTel: String,

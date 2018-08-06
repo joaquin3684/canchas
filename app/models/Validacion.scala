@@ -6,7 +6,6 @@ case class Validacion (
                        codem: Boolean,
                        superr: Boolean,
                        afip: Boolean,
-                       capitas: Int,
                        motivoCodem: Option[String],
                        motivoSuper: Option[String],
                        motivoAfip: Option[String],

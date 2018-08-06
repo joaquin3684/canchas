@@ -34,6 +34,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
     request.body.file("audio").map { picture =>
       val dni = request.body.dataParts.get("dni").get.head.toInt
+      val capitas = request.body.dataParts.get("capitas").get.head.toInt
       val idVenta = request.body.dataParts.get("idVenta").get.head.toLong
       val observacion = if (request.body.dataParts.get("observacion").isDefined) Some(request.body.dataParts.get("observacion").get.head) else None
       val recuperacion = if (request.body.dataParts.get("recuperable").isDefined) request.body.dataParts.get("recuperable").get.head.toBoolean else false
@@ -53,7 +54,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
 
 
       val rutaAudio = "public/images/"+ dni + ".mp3"
-      val auditoria = Auditoria(idVenta, rutaAudio, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida)
+      val auditoria = Auditoria(idVenta, rutaAudio, capitas, None, None, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida)
 
       val futureVenta = AuditoriaRepository.auditar(auditoria, estado)
       Await.result(futureVenta, Duration.Inf)
