@@ -74,7 +74,7 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
       val Some(result) = route(app, FakeRequest(GET, "/recuperarVenta/ventasParaPoderRecuperar").withHeaders("My-Authorization" -> Token.header))
       val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
 
-      assert(cantidadFilas == 3)
+      assert(cantidadFilas == 2)
       status(result) mustBe OK
 
     }

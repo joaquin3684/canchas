@@ -26,13 +26,13 @@ object VentaRepository extends Estados {
 
   }
 
-  def checkDni(dni: Int): Future[Option[(Venta, Estado)]] = {
+  def checkDni(dni: Int): Future[Seq[(Venta, Estado)]] = {
     val q = for {
-      v <- ventas.filter(x => x.dni === dni).sortBy(_.id.asc).take(1)
-      e <- estados.filter(x => x.idVenta === v.id).sortBy(_.id.asc).take(1)
+      v <- ventas.filter(x => x.dni === dni)
+      e <- estados.filter(x => x.idVenta === v.id)
     } yield (v, e)
 
-    Db.db.run(q.result.headOption)
+    Db.db.run(q.result)
   }
 
   def create(venta: Venta, user: String, fecha: DateTime) = {

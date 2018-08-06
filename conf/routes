@@ -46,7 +46,7 @@ POST /venta/create                  controllers.VentaController.create
 
 GET /venta/all                      controllers.VentaController.all
 
-#POST /venta/existenciaDni           controllers.VentaController.checkDniExistence
+POST /venta/existenciaDni           controllers.VentaController.checkDniExistence
 
 # VALIDACION
 

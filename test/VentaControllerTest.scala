@@ -122,15 +122,10 @@ class VentaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Estados
       Db.runWithAwait(ventas ++= ventasEsperadas)
       Db.runWithAwait(estados ++= estadosEsperados)
       val Some(result) = route(app, FakeRequest(POST, "/venta/existenciaDni").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
-      val jsonResult = contentAsJson(result)
-      val vNode = jsonMaper.getJsonNode(jsonResult.toString)
 
-      val estado = jsonMaper.getAndRemoveElement(vNode, "estado")
+      status(result) mustEqual OK
 
 
-
-      val es = jsonMaper.fromJson[Estado](estado)
-      val venta = jsonMaper.fromJson[Venta](vNode.toString)
 
       val Some(result2) = route(app, FakeRequest(POST, "/venta/existenciaDni").withJsonBody(json2).withHeaders("My-Authorization" -> Token.header))
       val texto = contentAsString(result2)

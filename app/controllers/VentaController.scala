@@ -50,15 +50,18 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
     Ok(json)
   }
 
- /* def checkDniExistence = authAction { implicit request =>
+  def checkDniExistence = authAction { implicit request =>
     val dni = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "dni").toInt
     val future = VentaRepository.checkDni(dni)
     val v = Await.result(future, Duration.Inf)
-    if(v.isDefined)
+    if(!v.isEmpty)
     {
-      val js = jsonMapper.toJsonString(v.get._1)
+      val venta = v.map(_._1).sortBy(- _.id).head
+      val estado = v.map(_._2).filter(_.idVenta == venta.id).sortBy(- _.id)
+
+      val js = jsonMapper.toJsonString(venta)
       val vNode = jsonMapper.getJsonNode(js)
-      val esjs = jsonMapper.toJsonString(v.get._2)
+      val esjs = jsonMapper.toJsonString(estado)
       val esNode = jsonMapper.getJsonNode(esjs)
       jsonMapper.addNode("estado", esNode, vNode)
       Ok(jsonMapper.toJson(vNode.toString))
@@ -66,5 +69,5 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
 
       Ok("la venta no esta registrada")
     }
-  }*/
+  }
 }
