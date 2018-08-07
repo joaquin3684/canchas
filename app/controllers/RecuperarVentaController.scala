@@ -39,7 +39,8 @@ class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMappe
 
   def rechazo = (authAction andThen checkObs){ implicit request =>
     val idEstado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idEstado").toLong
-    val future = RecuperacionVentaRepository.rechazarVenta(idEstado)
+    val obs = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion").toString
+    val future = RecuperacionVentaRepository.rechazarVenta(idEstado, obs)
     Await.result(future, Duration.Inf)
     Ok("venta rechazada")
   }

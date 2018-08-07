@@ -17,6 +17,7 @@ object AdministracionVentaRepository extends Estados{
 
 
   def ventasRechazables(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
+
     val query = for {
       e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
@@ -27,7 +28,7 @@ object AdministracionVentaRepository extends Estados{
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador")
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador venta")
     } yield v
 
     val unionQuery = query ++ query2
@@ -47,7 +48,7 @@ object AdministracionVentaRepository extends Estados{
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && (x.empresa.isEmpty || x.cuit.isEmpty || x.tresPorciento.isEmpty))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador")
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador venta")
     } yield v
 
     val unionQuery = query ++ query2
@@ -77,7 +78,7 @@ object AdministracionVentaRepository extends Estados{
       audi <- auditorias.filter(_.idVenta === v.id)
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador")
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "operador venta")
     } yield (v, audi.capitas, u.nombre, up.idPerfil, e2.fecha)
 
     val unionQuery = query2 ++ query

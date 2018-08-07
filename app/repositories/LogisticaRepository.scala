@@ -30,7 +30,7 @@ object LogisticaRepository extends Estados{
         e <- estados.filter(x => x.estado === AUDITORIA_APROBADA && !(x.idVenta in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.idVenta)))
         v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
         e2 <- estados.filter(x => x.estado === CREADO && e.idVenta === x.idVenta)
-        u <- usuariosPerfiles.filter(x => x.idUsuario === e2.user && x.idPerfil === "operador")
+        u <- usuariosPerfiles.filter(x => x.idUsuario === e2.user && x.idPerfil === "operador venta")
       } yield v
     }
     Db.db.run(query.result)

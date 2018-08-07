@@ -72,8 +72,8 @@ object RecuperacionVentaRepository extends Estados{
     Db.db.run(estados.filter(_.id === idEstado).delete)
   }
 
-  def rechazarVenta(idEstado: Long) = {
-    Db.db.run(estados.filter(_.id === idEstado).map(x => x.recuperable).update(false))
+  def rechazarVenta(idEstado: Long, observacion: String) = {
+    Db.db.run(estados.filter(_.id === idEstado).map(x => (x.observacion, x.recuperable)).update((Some(observacion), false)))
   }
 
   def marcarParaRecuperar(idEstado: Long) = {

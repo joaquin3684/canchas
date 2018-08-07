@@ -29,14 +29,17 @@ object Db {
     ),
     Schemas.perfiles ++= Seq(
       Perfil("admin"),
-      Perfil("operador"),
+      Perfil("operador venta"),
+      Perfil("operador auditoria"),
+      Perfil("operador logistica"),
+      Perfil("operador validacion"),
       Perfil("supervisor")
     ),
 
     Schemas.usuariosPerfiles ++= Seq(
       UsuarioPerfil("200", "admin"),
       UsuarioPerfil("300", "admin"),
-      UsuarioPerfil("400", "operador")
+      UsuarioPerfil("400", "operador venta")
     ),
 
 
@@ -86,9 +89,10 @@ object Db {
       PerfilPantalla("admin", "recuperarVenta"),
       PerfilPantalla("admin", "estadistica"),
       PerfilPantalla("admin", "logisticaOper"),
-      PerfilPantalla("operador", "logisticaOper"),
-      PerfilPantalla("operador", "auditoria"),
-      PerfilPantalla("operador", "venta")
+      PerfilPantalla("operador logistica", "logisticaOper"),
+      PerfilPantalla("operador auditoria", "auditoria"),
+      PerfilPantalla("operador venta", "venta"),
+      PerfilPantalla("operador validacion", "validacion")
 
     ),
 

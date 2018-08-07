@@ -179,7 +179,8 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
         {
           "idVenta": 1,
           "dni": 432,
-          "idEstado": 1
+          "idEstado": 1,
+          "observacion": "holaa"
         }
         """)
 
@@ -213,6 +214,7 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
 
       val estadoEsperado = Db.runWithAwait(estados.filter(x => x.idVenta === 1.toLong && x.estado === RECHAZO_LOGISTICA).result.head)
       assert(estadoEsperado.recuperable == false)
+      assert(estadoEsperado.observacion == Some("holaa"))
       status(result) mustBe OK
 
     }
