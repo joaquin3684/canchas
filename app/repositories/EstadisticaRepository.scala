@@ -48,4 +48,16 @@ object EstadisticaRepository extends Estados {
 
     Db.db.run(q)
   }
+
+  def estadisticasVisitas(fechaDesde: DateTime, fechaHasta: DateTime, desdeVisita: DateTime, hastaVisita: DateTime)(implicit obs:Seq[String]): Future[Seq[(Visita, Venta, Estado)]] = {
+    val q = for {
+      vis <- visitas.filter(x => (x.fecha between(desdeVisita, hastaVisita)))
+      v <- ventas.filter(x => x.idObraSocial.inSetBind(obs) && vis.idVenta === x.id )
+      e <- estados.filter(x => x.idVenta === v.id)
+      e2 <- estados.filter( x => (x.fecha between(fechaDesde, fechaHasta)) && x.estado === CREADO && x.idVenta === v.id)
+    } yield (vis, v, e)
+
+    Db.db.run(q.result)
+
+  }
 }

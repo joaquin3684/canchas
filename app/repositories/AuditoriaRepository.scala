@@ -3,15 +3,17 @@ import scala.concurrent.Future
 
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, ventas, auditorias}
+import schemas.Schemas.{estados, ventas, auditorias, usuariosPerfiles}
 
 object AuditoriaRepository extends Estados {
 
-  def ventasParaAuditar()(implicit obs: Seq[String]) : Future[Seq[Venta]]= {
+  def ventasParaAuditar()(implicit obs: Seq[String]) : Future[Seq[(Venta, String)]]= {
     val query = for {
-      e <- estados.filter(x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA || x. estado === RECHAZO_AUDITORIA).map(_.idVenta)))
+      e <- estados.filter(x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA || x.estado === RECHAZO_AUDITORIA).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
-    } yield v
+      e2 <- estados.filter(x => x.estado === CREADO && v.id === x.idVenta)
+      up <- usuariosPerfiles.filter(x => x.idUsuario === e2.user)
+    } yield (v, up.idPerfil)
     Db.db.run(query.result)
   }
 

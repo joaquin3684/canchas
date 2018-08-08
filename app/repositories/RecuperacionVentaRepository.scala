@@ -26,18 +26,13 @@ object RecuperacionVentaRepository extends Estados{
       e <- estados.filter(x =>
         (x.estado === RECHAZO_LOGISTICA ||
           x.estado === RECHAZO_AUDITORIA ||
-          (x.estado === RECHAZO_VALIDACION && (x.observacion like "cantidad impagos%") || (x.observacion like "meses de traspaso%"))) &&
+          x.estado === RECHAZO_VALIDACION ||
+          x.estado === RECHAZO_ADMINISTRACION) &&
       x.recuperable === true && x.paraRecuperar === true)
       v <- ventas.filter( x => x.idObraSocial.inSetBind(obs) && x.id === e.idVenta)
 
     } yield (v, e)
 
-/*
-    val q = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, estados.user, estados.id_venta, estados.estado, estados.fecha, estados.recuperable, estados.observacion, estados.id, estados.para_recuperar from ventas
-               join estados on ventas.id = estados.id_venta
-            where (estados.estado = '#$RECHAZO_LOGISTICA'
-             or estados.estado = '#$RECHAZO_AUDITORIA' or (estados.estado = '#$RECHAZO_VALIDACION' and (estados.observacion <> 'Hijo discapacitado' and estados.observacion <> 'Muchos hijos' and (estados.observacion like 'cantidad impagos%' or estados.observacion like 'meses de traspaso%')))) and estados.recuperable = true and estados.para_recuperar = true and ventas.id_obra_social in (#$obsSql)
-     """.as[(Venta, Estado)]*/
     Db.db.run(a.result)
 
   }
@@ -50,20 +45,12 @@ object RecuperacionVentaRepository extends Estados{
       e <- estados.filter(x =>
         (x.estado === RECHAZO_LOGISTICA ||
           x.estado === RECHAZO_AUDITORIA ||
-          (x.estado === RECHAZO_VALIDACION && (x.observacion like "cantidad impagos%") || (x.observacion like "meses de traspaso%"))) &&
+          x.estado === RECHAZO_VALIDACION ||
+          x.estado === RECHAZO_ADMINISTRACION) &&
           x.recuperable === true && x.paraRecuperar === false)
       v <- ventas.filter( x => x.idObraSocial.inSetBind(obs) && x.id === e.idVenta)
 
     } yield (v, e)
-
-
-/*
-    val q = sql"""select ventas.*,  estados.* from ventas
-               join estados on ventas.id = estados.id_venta
-            where (estados.estado = '#$RECHAZO_LOGISTICA'
-             or estados.estado = '#$RECHAZO_AUDITORIA' or (estados.estado = '#$RECHAZO_VALIDACION' and (estados.observacion <> 'Hijo discapacitado' and estados.observacion <> 'Muchos hijos' and estados.observacion like 'cantidad impagos%'))) and estados.recuperable = true and ventas.id_obra_social in (#$obsSql)
-     """.as[(Venta, Estado)]
-*/
 
     Db.db.run(a.result)
   }

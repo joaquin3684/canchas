@@ -107,4 +107,26 @@ object UsuarioRepository {
   def getPerfiles : Future[Seq[Perfil]] = {
     Db.db.run(perfiles.result)
   }
+
+  def usuariosLogistica : Future[Seq[Usuario]] = {
+    val q = for {
+      up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "cadete")
+      u <- usuarios.filter(x => x.user === up.idUsuario)
+
+    } yield u
+
+    Db.db.run(q.result)
+  }
+
+  def usuariosCreacion : Future[Seq[Usuario]] = {
+    val q = for {
+      up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "externo")
+      u <- usuarios.filter(x => x.user === up.idUsuario)
+
+    } yield u
+
+    Db.db.run(q.result)
+  }
+
+
 }

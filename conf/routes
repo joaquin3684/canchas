@@ -35,6 +35,9 @@ POST /usuario/cambiarPasswordPropia controllers.UsuarioController.cambiarPasswor
 
 POST /usuario/cambiarPassword       controllers.UsuarioController.cambiarPassword
 
+GET /usuario/paraCreacion           controllers.UsuarioController.paraCreacion
+
+GET /usuario/paraLogistica           controllers.UsuarioController.paraLogistica
 
 # LOGIN
 
@@ -130,3 +133,4 @@ POST /estadistica/general                    controllers.EstadisticaController.g
 
 GET /estadistica/estados                     controllers.EstadisticaController.estados
 
+POST /estadistica/visitas                    controllers.EstadisticaController.visitas

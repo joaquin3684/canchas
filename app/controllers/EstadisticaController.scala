@@ -72,4 +72,37 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
     Ok(jsonMapper.toJson(estados))
   }
+
+  def visitas = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fvdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesdeVisita")
+    val fvhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHastaVisita")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val fechaDesdeVisita = DateTime.fromIsoDateTimeString(fvdesde).get
+    val fechaHastaVisita = DateTime.fromIsoDateTimeString(fvhasta).get
+
+    val future = EstadisticaRepository.estadisticasVisitas(fechaDesde, fechaHasta, fechaDesdeVisita, fechaHastaVisita)
+    val v = Await.result(future, Duration.Inf)
+
+    val vis = v.map(_._1).distinct
+
+    val venta = vis.map{ x =>
+      val a = jsonMapper.toJsonString(x)
+      val node = jsonMapper.getJsonNode(a)
+
+      val e = v.filter(_._3.idVenta == x.idVenta).sortBy(- _._3.id).map(_._3.estado).headOption
+      val ven = v.filter(_._2.id == x.idVenta).map(_._2).head
+      jsonMapper.putElement(node, "estado", e.getOrElse(""))
+      jsonMapper.putElement(node, "prestadora", ven.idObraSocial)
+      jsonMapper.putElement(node, "base", ven.base.getOrElse(""))
+
+      node
+
+    }
+
+    Ok(jsonMapper.toJson(venta))
+  }
 }

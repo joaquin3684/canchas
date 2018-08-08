@@ -25,7 +25,11 @@ object Db {
     Schemas.usuarios ++= Seq(
       Usuario("200", "200", "200".bcrypt, "200", None),
       Usuario("300", "300", "300".bcrypt, "300", None),
-      Usuario("400", "400", "400".bcrypt, "400", None)
+      Usuario("400", "400", "400".bcrypt, "400", None),
+      Usuario("vendedora", "vendedora", "vendedora".bcrypt, "vendedora", None),
+      Usuario("cadete", "cadete", "cadete".bcrypt, "cadete", None),
+      Usuario("externo", "externo", "externo".bcrypt, "externo", None),
+      Usuario("promotora", "promotora", "promotora".bcrypt, "promotora", None),
     ),
     Schemas.perfiles ++= Seq(
       Perfil("admin"),
@@ -33,7 +37,11 @@ object Db {
       Perfil("operador auditoria"),
       Perfil("operador logistica"),
       Perfil("operador validacion"),
-      Perfil("supervisor")
+      Perfil("supervisor"),
+      Perfil("vendedora"),
+      Perfil("cadete"),
+      Perfil("externo"),
+      Perfil("promotora")
     ),
 
     Schemas.usuariosPerfiles ++= Seq(
