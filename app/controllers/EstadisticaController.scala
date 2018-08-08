@@ -105,4 +105,13 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
     Ok(jsonMapper.toJson(venta))
   }
+
+
+  def archivos = getAuthAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val future = EstadisticaRepository.archivos
+    val arch = Await.result(future, Duration.Inf)
+    Ok(jsonMapper.toJson(arch))
+
+  }
 }

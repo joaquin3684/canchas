@@ -47,7 +47,11 @@ object Db {
     Schemas.usuariosPerfiles ++= Seq(
       UsuarioPerfil("200", "admin"),
       UsuarioPerfil("300", "admin"),
-      UsuarioPerfil("400", "operador venta")
+      UsuarioPerfil("400", "operador venta"),
+      UsuarioPerfil("vendedora", "vendedora"),
+      UsuarioPerfil("cadete", "cadete"),
+      UsuarioPerfil("externo", "externo"),
+      UsuarioPerfil("promotora", "promotora")
     ),
 
 

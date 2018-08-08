@@ -60,4 +60,15 @@ object EstadisticaRepository extends Estados {
     Db.db.run(q.result)
 
   }
+
+  def archivos(implicit obs:Seq[String]): Future[Seq[Venta]] = {
+    val q = for {
+      v <- ventas.filter(x => x.idObraSocial.inSetBind(obs))
+      e <- estados.filter(x => x.idVenta === v.id && (x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA || x.estado === RECHAZO_AUDITORIA))
+
+    } yield v
+
+    Db.db.run(q.result)
+  }
+
 }
