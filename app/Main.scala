@@ -24,7 +24,11 @@ import slick.jdbc.GetResult
 
 object Main extends App {
 
-Db.inicializarDb
+  val pat = "(?<=-)(OK|RP|RT|OB)(?=-)".r
+  val str = "CLAUDIO MANURP-AM-OK-1.mp3"
+  println(pat findFirstIn str)
+
+
 }
 
 

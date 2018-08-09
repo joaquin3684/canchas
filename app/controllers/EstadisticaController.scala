@@ -107,20 +107,36 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
   }
 
 
-  def archivos = getAuthAction { implicit request =>
+  def archivos = authAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val future = EstadisticaRepository.archivos
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val future = EstadisticaRepository.archivos(fechaDesde, fechaHasta)
     val arch = Await.result(future, Duration.Inf)
     val ventas = arch.map(_._1).distinct
+    val pat = "(?<=-)(OK|RP|RT|OB)(?=-)".r
 
     val v = ventas.map { x =>
       val vs = jsonMapper.toJsonString(x)
       val vNode = jsonMapper.getJsonNode(vs)
 
+      val fecha = arch.find(a => a._1 == x).map(_._3)
+      val audi = arch.find(a => a._1 == x).map(_._2)
 
+      val es = (pat findFirstIn audi.get.audio1).get
+      jsonMapper.putElement(vNode, "fechaCreacion", fecha.get.toIsoDateString())
+      jsonMapper.putElement(vNode, "estado", es)
+      val as = jsonMapper.toJsonString(audi)
+      val aNode = jsonMapper.getJsonNode(as)
+
+      jsonMapper.addNode("auditoria", aNode, vNode)
+
+      vNode
 
     }
-    Ok(jsonMapper.toJson(arch))
+    Ok(jsonMapper.toJson(v))
 
   }
 }
