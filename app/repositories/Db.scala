@@ -88,7 +88,8 @@ object Db {
       Ruta("/obraSocial/all"),
       Ruta("/perfil/all"),
       Ruta("/venta/all"),
-      Ruta("/usuario/all"),
+      Ruta("/usuario/paraCreacion"),
+      Ruta("/usuario/paraLogistica"),
     ),
 
     Schemas.perfilesPantallas ++= Seq(

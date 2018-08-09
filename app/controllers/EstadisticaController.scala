@@ -111,6 +111,15 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
     implicit val obs: Seq[String] = request.obrasSociales
     val future = EstadisticaRepository.archivos
     val arch = Await.result(future, Duration.Inf)
+    val ventas = arch.map(_._1).distinct
+
+    val v = ventas.map { x =>
+      val vs = jsonMapper.toJsonString(x)
+      val vNode = jsonMapper.getJsonNode(vs)
+
+
+
+    }
     Ok(jsonMapper.toJson(arch))
 
   }

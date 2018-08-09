@@ -132,38 +132,12 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     Ok(ventas)
   }
 
-  def digitalizarArchivos = getAuthAction(parse.multipartFormData) { implicit request =>
+  def digitalizarArchivos = (authAction andThen checkObs) { implicit request =>
 
-    val dni = request.body.dataParts.get("dni").get.head.toInt
-    val solReq = request.body.file("solicitudTraspaso").map { picture =>
-
-
-      val rutaTraspaso = "public/images/solicitudesTraspaso/"+ dni + ".jpg"
-      val filename = Paths.get(picture.filename).getFileName
-
-      picture.ref.moveTo(Paths.get(rutaTraspaso), replace = true)
-      Ok
-    }.getOrElse(BAD_REQUEST)
-    val recReq = request.body.file("recibo").map { picture =>
-
-
-      val rutaRecibo = "public/images/recibos/"+ dni + ".jpg"
-      val filename = Paths.get(picture.filename).getFileName
-
-      picture.ref.moveTo(Paths.get(rutaRecibo), replace = true)
-      Ok
-    }.getOrElse{BAD_REQUEST}
-    val dniRec = request.body.file("dniFile").map { picture =>
-
-
-      val rutaDni = "public/images/dnis/"+ dni + ".jpg"
-      val filename = Paths.get(picture.filename).getFileName
-
-      picture.ref.moveTo(Paths.get(rutaDni), replace = true)
-      Ok
-    }.getOrElse(BAD_REQUEST)
-
-    val a = Seq(solReq, recReq, dniRec)
-    if(a.forall(_ == Ok)) Ok("digitalizado") else BadRequest("hubo un error al surbir algun archivo")
+    val idVenta = request.rootNode.get("idVenta").asLong()
+    val estado = Estado(request.user, idVenta, DIGITALIZADA, DateTime.now)
+    val future = VentaRepository.agregarEstado(estado)
+    Await.result(future, Duration.Inf)
+    Ok("digitalizado")
   }
 }

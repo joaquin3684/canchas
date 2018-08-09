@@ -109,7 +109,7 @@ object AdministracionVentaRepository extends Estados{
 
   def ventasPagadas(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime)]]= {
     val query = for{
-      e <- estados.filter( x => x.estado === PAGADA)
+      e <- estados.filter( x => x.estado === PAGADA && !(x.idVenta in estados.filter(x => x.estado === DIGITALIZADA ).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter(x => x.estado === PRESENTADA && x.idVenta === v.id)
     } yield (v, e2.fecha)
