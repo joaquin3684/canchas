@@ -112,7 +112,8 @@ object Db {
       PantallaRuta("usuario", "/obraSocial/all"),
       PantallaRuta("usuario", "/perfil/all"),
       PantallaRuta("venta", "/obraSocial/all"),
-      PantallaRuta("venta", "/usuario/all"),
+      PantallaRuta("venta", "/usuario/paraCreacion"),
+      PantallaRuta("logistica", "/usuario/paraLogistica"),
     ),
 
   )
