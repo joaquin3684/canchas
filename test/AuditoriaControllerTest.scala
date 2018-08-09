@@ -85,6 +85,7 @@ class AuditoriaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
           {
           "idVenta": 1,
            "capitas": 1,
+           "nombre": "PICASSO PABLO",
             "estado": "ok",
              "observacion": null,
               "cantidadAudios": 2,
@@ -103,6 +104,7 @@ class AuditoriaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
           {
           "idVenta": 3,
            "capitas": 1,
+            "nombre": "PICASSO PABLO",
             "estado": "ok",
              "observacion": null,
               "cantidadAudios": 2,

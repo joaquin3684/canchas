@@ -48,26 +48,36 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
 
     val cantAudios = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "cantidadAudios").toInt
     val estado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "estado").toString
+    val nombre = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "nombre").toString
     val idVenta = request.rootNode.get("idVenta").asLong()
     val observacion = request.rootNode.get("observacion").asText()
-    (1 to cantAudios).foreach { x =>
 
-      val ruta = "http://gestionarturnos.com/ventas/auditorias/" + idVenta + "/" + idVenta + x + ".mp3"
-      jsonMapper.putElement(request.rootNode, "audio"+x, ruta)
-    }
+
+
 
 
     val es =  estado match {
-      case "ok" => Estado(request.user, idVenta, AUDITORIA_APROBADA, DateTime.now)
+      case "ok" => (Estado(request.user, idVenta, AUDITORIA_APROBADA, DateTime.now), "OK")
       case "rechazo" =>    {
         val recuperable = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "recuperable").toBoolean
-        Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperable, Some(observacion))}
-      case "observado" => Estado(request.user, idVenta, AUDITORIA_OBSERVADA, DateTime.now, false, Some(observacion))
+        if(recuperable)
+          (Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperable, Some(observacion)), "RP" )
+        else
+          (Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperable, Some(observacion)), "RT")
+      }
+      case "observado" => (Estado(request.user, idVenta, AUDITORIA_OBSERVADA, DateTime.now, false, Some(observacion)), "OB")
     }
 
-    jsonMapper.removeElement(request.rootNode, "recuperable")
+
+    (1 to cantAudios).foreach { x =>
+
+      val ruta = "http://gestionarturnos.com/ventas/auditorias/" + idVenta + "/" + nombre + "-AM-"+ es._2 +"-" + x +".mp3"
+      jsonMapper.putElement(request.rootNode, "audio"+x, ruta)
+    }
+
+    if(estado != "rechazo") jsonMapper.removeElement(request.rootNode, "recuperable")
     val audi = jsonMapper.fromJson[Auditoria](request.rootNode.toString)
-    val futureVenta = AuditoriaRepository.auditar(audi, es)
+    val futureVenta = AuditoriaRepository.auditar(audi, es._1)
     Await.result(futureVenta, Duration.Inf)
 
     Ok("guardado")
