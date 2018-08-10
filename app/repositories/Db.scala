@@ -37,7 +37,10 @@ object Db {
       Perfil("OPERADOR AUDITORIA"),
       Perfil("OPERADOR LOGISTICA"),
       Perfil("OPERADOR VALIDACION"),
-      Perfil("SUPERVISOR"),
+      Perfil("SUPERVISOR CALL"),
+      Perfil("SUPERVISOR VENDEDORAS"),
+      Perfil("ADMINISTRADOR VENTAS"),
+      Perfil("SUPERVISOR LOGISTICA"),
       Perfil("VENDEDORA"),
       Perfil("CADETE"),
       Perfil("EXTERNO"),
@@ -84,14 +87,6 @@ object Db {
       Pantalla("estadistica")
     ),
 
-    Schemas.rutas ++= Seq(
-      Ruta("/obraSocial/all"),
-      Ruta("/perfil/all"),
-      Ruta("/venta/all"),
-      Ruta("/usuario/paraCreacion"),
-      Ruta("/usuario/paraLogistica"),
-    ),
-
     Schemas.perfilesPantallas ++= Seq(
       PerfilPantalla("ADMIN", "usuario"),
       PerfilPantalla("ADMIN", "venta"),
@@ -105,8 +100,33 @@ object Db {
       PerfilPantalla("OPERADOR LOGISTICA", "logisticaOper"),
       PerfilPantalla("OPERADOR AUDITORIA", "auditoria"),
       PerfilPantalla("OPERADOR VENTA", "venta"),
-      PerfilPantalla("OPERADOR VALIDACION", "validacion")
+      PerfilPantalla("OPERADOR VENTA", "recuperarVenta"),// solo la quedice recuperar la que dice enviar a call no
+      PerfilPantalla("SUPERVISOR CALL", "usuario"),
+      PerfilPantalla("SUPERVISOR CALL", "venta"),
+      PerfilPantalla("SUPERVISOR CALL", "validacion"),
+      PerfilPantalla("SUPERVISOR CALL", "logisticaOper"),
+      PerfilPantalla("SUPERVISOR CALL", "auditoria"),
+      PerfilPantalla("SUPERVISOR CALL", "recuperarVenta"),
+      PerfilPantalla("SUPERVISOR CALL", "estadistica"),
+      PerfilPantalla("SUPERVISOR VENDEDORAS", "venta"),
+      PerfilPantalla("SUPERVISOR VENDEDORAS", "validacion"),
+      PerfilPantalla("SUPERVISOR VENDEDORAS", "estadistica"),
+      PerfilPantalla("SUPERVISOR VENDEDORAS", "usuario"),
+      PerfilPantalla("ADMINISTRADOR VENTAS", "administracionVenta"),
+      PerfilPantalla("ADMINISTRADOR VENTAS", "estadistica"),
+      PerfilPantalla("ADMINISTRADOR VENTAS", "usuario"),
+      PerfilPantalla("SUPERVISOR LOGISTICA", "logistica"),
+      PerfilPantalla("SUPERVISOR LOGISTICA", "usuario")
 
+
+    ),
+
+    Schemas.rutas ++= Seq(
+      Ruta("/obraSocial/all"),
+      Ruta("/perfil/all"),
+      Ruta("/venta/all"),
+      Ruta("/usuario/paraCreacion"),
+      Ruta("/usuario/paraLogistica"),
     ),
 
     Schemas.pantallasRutas ++= Seq(
