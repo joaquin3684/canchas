@@ -57,15 +57,15 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
 
 
     val es =  estado match {
-      case "ok" => (Estado(request.user, idVenta, AUDITORIA_APROBADA, DateTime.now), "OK")
-      case "rechazo" =>    {
+      case "OK" => (Estado(request.user, idVenta, AUDITORIA_APROBADA, DateTime.now), "OK")
+      case "RECHAZO" =>    {
         val recuperable = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "recuperable").toBoolean
         if(recuperable)
           (Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperable, Some(observacion)), "RP" )
         else
           (Estado(request.user, idVenta, RECHAZO_AUDITORIA, DateTime.now, recuperable, Some(observacion)), "RT")
       }
-      case "observado" => (Estado(request.user, idVenta, AUDITORIA_OBSERVADA, DateTime.now, false, Some(observacion)), "OB")
+      case "OBSERVADO" => (Estado(request.user, idVenta, AUDITORIA_OBSERVADA, DateTime.now, false, Some(observacion)), "OB")
     }
 
 
