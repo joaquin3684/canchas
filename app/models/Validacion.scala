@@ -13,7 +13,8 @@ case class Validacion (
 
   def validar(user: String) : Estado = {
     val h = Seq(codem, superr, afip)
-
+    val pat = "CODIGO 4".r
+    //pat.findmotivoCodem.getOrElse("").
      if(h.forall(_ == true))
       Estado(user, idVenta, "Validado", DateTime.now)
      else {

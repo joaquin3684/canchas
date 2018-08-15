@@ -117,7 +117,8 @@ object Db {
       PerfilPantalla("ADMINISTRADOR VENTAS", "estadistica"),
       PerfilPantalla("ADMINISTRADOR VENTAS", "usuario"),
       PerfilPantalla("SUPERVISOR LOGISTICA", "logistica"),
-      PerfilPantalla("SUPERVISOR LOGISTICA", "usuario")
+      PerfilPantalla("SUPERVISOR LOGISTICA", "usuario"),
+      PerfilPantalla("SUPERVISOR LOGISTICA", "estadistica"),
 
 
     ),
