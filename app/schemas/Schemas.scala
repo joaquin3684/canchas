@@ -35,7 +35,7 @@ object Schemas {
     def email = column[String]("email")
     def password = column[String]("password")
     def nombre = column[String]("nombre")
-    def borrado = column[Option[Boolean]]("borrado")
+    def borrado = column[Boolean]("borrado")
 
     def * = (user, email, password, nombre, borrado) <> (Usuario.tupled, Usuario.unapply)
   }
@@ -237,7 +237,6 @@ object Schemas {
   val validaciones = TableQuery[Validaciones]
 
   class Auditorias(tag: Tag) extends Table[Auditoria](tag, "auditorias") {
-
 
     def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def audio =  column[String]("audio")

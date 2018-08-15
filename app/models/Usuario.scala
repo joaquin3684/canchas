@@ -7,7 +7,7 @@ case class Usuario(
                   email: String,
                   password: String,
                   nombre: String,
-                  borrado: Option[Boolean]
+                  borrado: Boolean = false
                   ) {
 
 }

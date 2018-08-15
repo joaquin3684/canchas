@@ -22,7 +22,7 @@ object UsuarioRepository {
 
     val query = {
       for {
-        u <- usuarios.filter(x => x.borrado.isEmpty && x.user === user)
+        u <- usuarios.filter(x => x.borrado === false && x.user === user)
         uo <- usuariosObrasSociales.filter( x => x.idObraSocial.inSetBind(obs) && x.idUsuario === user)
         o <- obrasSociales if o.nombre === uo.idObraSocial
         up <- usuariosPerfiles if up.idUsuario === user
@@ -37,7 +37,7 @@ object UsuarioRepository {
     val query = {
       for {
         uo <- usuariosObrasSociales.filter(x => x.idObraSocial.inSetBind(obs))
-        u <- usuarios.filter(x => x.borrado.isEmpty && x.user === uo.idUsuario)
+        u <- usuarios.filter(x => x.borrado === false && x.user === uo.idUsuario)
       } yield u
     }
     Db.db.run(query.result)
@@ -72,13 +72,13 @@ object UsuarioRepository {
   }
 
   def delete(user: String) = {
-    Db.db.run(usuarios.filter(_.user === user).map(_.borrado).update(Some(true)))
+    Db.db.run(usuarios.filter(_.user === user).map(_.borrado).update(true))
   }
 
   def validateCredentials(username: String): Future[Seq[(Usuario, ObraSocial, Pantalla, Perfil)]] = {
     val q = {
       for {
-          u <- usuarios.filter(_.user === username)
+          u <- usuarios.filter(x => x.user === username && x.borrado === false)
           uo <- usuariosObrasSociales.filter(_.idUsuario === u.user)
           o <- obrasSociales.filter(_.nombre === uo.idObraSocial)
           up <- usuariosPerfiles.filter(_.idUsuario === u.user)
@@ -111,7 +111,7 @@ object UsuarioRepository {
   def usuariosLogistica : Future[Seq[Usuario]] = {
     val q = for {
       up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "cadete")
-      u <- usuarios.filter(x => x.user === up.idUsuario)
+      u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
 
@@ -121,7 +121,7 @@ object UsuarioRepository {
   def usuariosCreacion : Future[Seq[Usuario]] = {
     val q = for {
       up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "externo")
-      u <- usuarios.filter(x => x.user === up.idUsuario)
+      u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
 

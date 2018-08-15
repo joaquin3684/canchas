@@ -37,6 +37,15 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     Ok(json)
   }
 
+  def ventasParaModificar = getAuthAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+
+    val futureVentas = ValidacionRepository.ventasModificables
+    val ventas = Await.result(futureVentas, Duration.Inf)
+    val json = jsonMapper.toJson(ventas.distinct)
+    Ok(json)  }
+
+
   def ventasAValidar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = ValidacionRepository.ventasAValidar(request.user)

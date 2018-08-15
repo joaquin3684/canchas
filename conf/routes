@@ -61,6 +61,8 @@ GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
 
 PUT /validacion/updateVenta/:dni   controllers.ValidarController.modificarVenta(dni: Int)
 
+GET /validacion/ventasAModificar    controllers.ValidarController.ventasParaModificar
+
 # LOGISTICA
 
 POST /logisticaOper/generarVisita       controllers.LogisticaController.altaVisita
