@@ -99,6 +99,7 @@ object Db {
       PerfilPantalla("ADMIN", "logisticaOper"),
       PerfilPantalla("OPERADOR LOGISTICA", "logisticaOper"),
       PerfilPantalla("OPERADOR AUDITORIA", "auditoria"),
+      PerfilPantalla("OPERADOR VALIDACION", "validacion"),
       PerfilPantalla("OPERADOR VENTA", "venta"),
       PerfilPantalla("OPERADOR VENTA", "recuperarVenta"),// solo la quedice recuperar la que dice enviar a call no
       PerfilPantalla("SUPERVISOR CALL", "usuario"),
