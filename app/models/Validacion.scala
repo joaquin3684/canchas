@@ -14,13 +14,13 @@ case class Validacion (
   def validar(user: String) : Estado = {
     val h = Seq(codem, superr, afip)
     val pat = "CODIGO 4".r
-    //pat.findmotivoCodem.getOrElse("").
      if(h.forall(_ == true))
-      Estado(user, idVenta, "Validado", DateTime.now)
-     else {
+    Estado(user, idVenta, "Validado", DateTime.now)
+    else {
        val motivo = Seq(motivoAfip, motivoCodem, motivoSuper).filter(_.isDefined).map(_.get).mkString(" + ")
        if(codem)
-         Estado(user, idVenta,"Rechazo por validacion" , DateTime.now, true, Some(motivo))
+         Estado(user, idVenta,"Rechazo por validacion" , DateTime.now, !pat.findFirstIn(motivoSuper.getOrElse("")).isDefined
+           , Some(motivo))
        else
          Estado(user, idVenta, "Rechazo por validacion", DateTime.now, false, Some(motivo))
      }
