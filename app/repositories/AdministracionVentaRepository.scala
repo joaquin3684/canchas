@@ -61,7 +61,7 @@ object AdministracionVentaRepository extends Estados{
     Db.db.run(audiUp)
   }
 
-  def ventasPresentables(implicit obs: Seq[String]) : Future[Seq[(Venta, Int, String, String, DateTime)]] = {
+  def ventasPresentables(implicit obs: Seq[String]) : Future[Seq[(Venta, Auditoria, String, String, DateTime)]] = {
 
     val query = for{
       e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
@@ -70,7 +70,7 @@ object AdministracionVentaRepository extends Estados{
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
       up <- usuariosPerfiles.filter(_.idUsuario === u.user)
-    } yield (v, audi.capitas, u.nombre, up.idPerfil, e2.fecha)
+    } yield (v, audi, u.nombre, up.idPerfil, e2.fecha)
 
     val query2 = for {
       e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
@@ -79,7 +79,7 @@ object AdministracionVentaRepository extends Estados{
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
       up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "OPERADOR VENTA")
-    } yield (v, audi.capitas, u.nombre, up.idPerfil, e2.fecha)
+    } yield (v, audi, u.nombre, up.idPerfil, e2.fecha)
 
     val unionQuery = query2 ++ query
 

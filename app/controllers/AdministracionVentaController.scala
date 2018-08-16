@@ -20,7 +20,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     val future = AdministracionVentaRepository.ventasIncompletas
     val ventasInc = Await.result(future, Duration.Inf)
 
-    val ventasIncompletas = jsonMapper.toJson(ventasInc)
+    val ventasIncompletas = jsonMapper.toJson(ventasInc.distinct)
     Ok(ventasIncompletas)
   }
 
@@ -31,9 +31,12 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     val v = ventasPres.map { x =>
 
       val a = jsonMapper.toJsonString(x._1)
+      val b = jsonMapper.toJsonString(x._2)
       val node = jsonMapper.getJsonNode(a)
+      val audiNode = jsonMapper.getJsonNode(b)
+
       jsonMapper.putElement(node, "perfil", x._4)
-      jsonMapper.putElement(node, "capitas", x._2.toString)
+      jsonMapper.addNode("auditoria", audiNode, node)
       jsonMapper.putElement(node, "nombreUsuario", x._3)
       jsonMapper.putElement(node, "fechaCreacion", x._5.toIsoDateTimeString)
       node
