@@ -19,12 +19,12 @@ object AdministracionVentaRepository extends Estados{
   def ventasRechazables(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
 
     val query = for {
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
     }yield v
 
     val query2 = for{
-      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
@@ -64,7 +64,7 @@ object AdministracionVentaRepository extends Estados{
   def ventasPresentables(implicit obs: Seq[String]) : Future[Seq[(Venta, Auditoria, String, String, DateTime)]] = {
 
     val query = for{
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
       audi <- auditorias.filter(_.idVenta === v.id)
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
@@ -73,7 +73,7 @@ object AdministracionVentaRepository extends Estados{
     } yield (v, audi, u.nombre, up.idPerfil, e2.fecha)
 
     val query2 = for {
-      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
       audi <- auditorias.filter(_.idVenta === v.id)
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
