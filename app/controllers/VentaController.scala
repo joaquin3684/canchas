@@ -57,7 +57,7 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
     if(!v.isEmpty)
     {
       val venta = v.map(_._1).sortBy(- _.id).head
-      val estado = v.map(_._2).filter(_.idVenta == venta.id).sortBy(- _.id)
+      val estado = v.map(_._2).filter(_.idVenta == venta.id).sortBy(- _.id).head
 
       val js = jsonMapper.toJsonString(venta)
       val vNode = jsonMapper.getJsonNode(js)
