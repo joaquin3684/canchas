@@ -27,7 +27,7 @@ object LogisticaRepository extends Estados{
   def ventasSinVisita()(implicit obs: Seq[String]): Future[Seq[Venta]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === AUDITORIA_APROBADA && !(x.idVenta in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.idVenta)))
+        e <- estados.filter(x => (x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA) && !(x.idVenta in estados.filter(x => x.estado === VISITA_CREADA || x.estado === RECHAZO_LOGISTICA).map(_.idVenta)))
         v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
         e2 <- estados.filter(x => x.estado === CREADO && e.idVenta === x.idVenta)
         u <- usuariosPerfiles.filter(x => x.idUsuario === e2.user && x.idPerfil === "OPERADOR VENTA")
