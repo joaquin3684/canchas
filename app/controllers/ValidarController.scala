@@ -22,13 +22,13 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     val venta = jsonMapper.fromJson[Validacion](request.rootNode.toString)
     val estadoNuevo = venta.validar(request.user)
 
+
     val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo)
 
     Await.result(futureV, Duration.Inf)
     Ok("validado")
 
   }
-
 
   def all = getAuthAction { implicit request =>
     val futureVentas = ValidacionRepository.all(request.user)

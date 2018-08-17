@@ -257,6 +257,8 @@ object Schemas {
     def * = (idVenta, audio, capitas, audio2, audio3, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
+
+
   val auditorias = TableQuery[Auditorias]
 
   val allSchemas = {
