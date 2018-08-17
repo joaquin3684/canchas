@@ -52,7 +52,7 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
       jsonMapper.addNode("auditoria", audiNode, node)
 
       val user = ventasEst.filter(_._1 == x ).map(_._6).distinct.head
-      val perfil = ventasEst.filter(x => x._6 == user).map(_._7).distinct.head
+      val perfil = ventasEst.filter(x => x._6 == user && (x._7 == "OPERADOR VENTA" || x._7 == "EXTERNO" || x._7 == "VENDEDORA" || x._7 == "PROMOTORA")).map(_._7).distinct.head
       val userJ = jsonMapper.toJsonString(user)
       val userNode = jsonMapper.getJsonNode(userJ)
       jsonMapper.putElement(userNode, "perfil", perfil)
