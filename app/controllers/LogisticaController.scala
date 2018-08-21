@@ -101,7 +101,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val observacion = if(rootNode.get("observacion").toString.isEmpty) None else Some(jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "observacion").toString)
     val recuperable = rootNode.get("recuperable").asBoolean
     val estadoNuevo = Estado(request.user, idVenta, RECHAZO_LOGISTICA, DateTime.now, recuperable, observacion)
-    val futureEstado = VentaRepository.agregarEstado(estadoNuevo)
+    val futureEstado = LogisticaRepository.rechazar(estadoNuevo)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("rechazado")

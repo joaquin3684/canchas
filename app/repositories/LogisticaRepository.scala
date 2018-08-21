@@ -57,6 +57,14 @@ object LogisticaRepository extends Estados{
     Db.db.run(fullquery.transactionally)
   }
 
+
+  def rechazar(estado: Estado) = {
+    val a = estados += estado
+    val b = estados.filter(x => x.idVenta === estado.idVenta && (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA)).delete
+    val fullquery = DBIO.seq(a, b)
+    Db.db.run(fullquery.transactionally)
+  }
+
   def enviarACall(idVisita: Long, idVenta: Long) = {
     Db.db.run(estados.filter(x => x.idVenta === idVenta && (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA)).delete)
   }
