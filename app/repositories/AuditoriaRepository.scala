@@ -3,7 +3,7 @@ import scala.concurrent.Future
 
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, ventas, auditorias, usuariosPerfiles}
+import schemas.Schemas.{estados, ventas, auditorias, usuariosPerfiles, datosEmpresas}
 
 object AuditoriaRepository extends Estados {
 
@@ -25,11 +25,18 @@ object AuditoriaRepository extends Estados {
     Db.db.run(query.result)
   }
 
-  def auditar(auditoria: Auditoria, estado: Estado) = {
+  def auditar(auditoria: Auditoria, estado: Estado, datos:DatosEmpresa, modificar: Boolean) = {
     val e = estados += estado
     val audi = auditorias += auditoria
-    val fullQuery = DBIO.seq(audi, e)
-    Db.db.run(fullQuery)
+    if(modificar) {
+      val d = datosEmpresas.filter(_.idVenta === datos.idVenta).update(datos)
+      val fullQuery = DBIO.seq(audi, e, d)
+      Db.db.run(fullQuery)
+    }
+    else {
+      val fullQuery = DBIO.seq(audi, e)
+      Db.db.run(fullQuery)
+    }
   }
 
 }

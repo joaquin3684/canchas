@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, validaciones, ventas}
+import schemas.Schemas.{estados, validaciones, ventas, datosEmpresas}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
@@ -57,11 +57,12 @@ object ValidacionRepository extends Estados {
 
   }
 
-  def validarVenta(validacion: Validacion, estado: Estado) = {
+  def validarVenta(validacion: Validacion, estado: Estado, datos: DatosEmpresa) = {
 
     val e = estados += estado
     val valid = validaciones += validacion
-    val fullQuery = DBIO.seq(valid, e)
+    val d = datosEmpresas += datos
+    val fullQuery = DBIO.seq(valid, e, d)
     Db.db.run(fullQuery)
   }
 

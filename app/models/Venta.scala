@@ -9,7 +9,7 @@ case class Venta(
                 domicilio: String,
                 localidad: String,
                 telefono: String,
-                cuil: String,
+                cuil: String = "",
                 estadoCivil: String,
                 edad: Int,
                 idObraSocial: String,

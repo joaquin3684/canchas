@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
 import akka.http.scaladsl.model.DateTime
-import models.{Auditoria, Estado, Estados}
+import models.{Auditoria, DatosEmpresa, Estado, Estados}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.AuditoriaRepository
 import services.JsonMapper
@@ -75,9 +75,15 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
       jsonMapper.putElement(request.rootNode, "audio"+x, ruta)
     }
 
+    val datos = jsonMapper.getAndRemoveElement(request.rootNode, "datosEmpresa")
+    val d = jsonMapper.fromJson[DatosEmpresa](datos)
+    val check = Seq(d.cantidadEmpleados, d.direccion, d.empresa, d.localidad, d.horaEntrada, d.horaSalida)
+    val modificar = check.exists(_.isDefined)
+
+
     if(estado != "rechazo") jsonMapper.removeElement(request.rootNode, "recuperable")
     val audi = jsonMapper.fromJson[Auditoria](request.rootNode.toString)
-    val futureVenta = AuditoriaRepository.auditar(audi, es._1)
+    val futureVenta = AuditoriaRepository.auditar(audi, es._1, d, modificar)
     Await.result(futureVenta, Duration.Inf)
 
     Ok("guardado")

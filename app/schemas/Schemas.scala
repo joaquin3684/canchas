@@ -244,6 +244,18 @@ object Schemas {
     def audio2 = column[Option[String]]("audio2")
     def audio3 = column[Option[String]]("audio3")
     def observacion =  column[Option[String]]("obsevacion", O.Default(None))
+
+    def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
+
+    def * = (idVenta, audio, capitas, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
+  }
+
+  val auditorias = TableQuery[Auditorias]
+
+
+  class DatosEmpresas(tag: Tag) extends Table[DatosEmpresa](tag, "datos_empresa") {
+
+    def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def empresa =  column[Option[String]]("empresa", O.Default(None))
     def direccion =  column[Option[String]]("direccion", O.Default(None))
     def localidad =  column[Option[String]]("localidad", O.Default(None))
@@ -252,14 +264,12 @@ object Schemas {
     def horaSalida =  column[Option[String]]("hora_salida", O.Default(None))
 
 
-    def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
+    def ventaFk = foreignKey("fk_venta_datos_empresa", idVenta, ventas)(_.id)
 
-    def * = (idVenta, audio, capitas, audio2, audio3, observacion, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (idVenta, empresa, direccion, localidad, cantidadEmpleados, horaEntrada, horaSalida) <> (DatosEmpresa.tupled, DatosEmpresa.unapply)
   }
 
-
-
-  val auditorias = TableQuery[Auditorias]
+  val datosEmpresas = TableQuery[DatosEmpresas]
 
   val allSchemas = {
       obrasSociales.schema ++
@@ -275,6 +285,7 @@ object Schemas {
       usuariosPerfiles.schema ++
       visitas.schema ++
       validaciones.schema ++
-      auditorias.schema
+      auditorias.schema ++
+      datosEmpresas.schema
   }
 }

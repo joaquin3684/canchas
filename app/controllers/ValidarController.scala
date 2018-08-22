@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import actions.{AuthenticatedAction, GetAuthenticatedAction, JsonMapperAction, ObraSocialFilterAction}
 import akka.http.scaladsl.model.DateTime
-import models.{Validacion, Venta}
+import models.{DatosEmpresa, Validacion, Venta}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.{ValidacionRepository, VentaRepository}
 import services.JsonMapper
@@ -18,12 +18,13 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
 
 
   def validar = (authAction andThen checkObs) { implicit request =>
-
+    val datos = jsonMapper.getAndRemoveElement(request.rootNode, "datosEmpresa")
+    val d = jsonMapper.fromJson[DatosEmpresa](datos)
     val venta = jsonMapper.fromJson[Validacion](request.rootNode.toString)
     val estadoNuevo = venta.validar(request.user)
 
 
-    val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo)
+    val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo, d)
 
     Await.result(futureV, Duration.Inf)
     Ok("validado")

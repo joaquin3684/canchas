@@ -22,11 +22,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VISITA_CONFIRMADA, DateTime.now),
@@ -71,11 +71,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VISITA_CONFIRMADA, DateTime.now),
@@ -104,11 +104,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VALIDADO, DateTime.now),
@@ -149,11 +149,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, Some("asdf"), Some("32"), Some(45.3)),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VALIDADO, DateTime.now),
@@ -202,11 +202,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
         """)
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -234,11 +234,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       Db.inicializarDb
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
@@ -268,7 +268,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
            {
               "idVenta": 1,
               "dni": 432,
-              "estado": "pagada",
+              "estado": "PAGADA",
               "observacion": null,
               "fechaPresentacion": null
             }
@@ -280,7 +280,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
            {
               "idVenta": 2,
               "dni": 435,
-              "estado": "rechazada",
+              "estado": "RECHAZADA",
               "observacion": "estooo",
               "fechaPresentacion": null
             }
@@ -292,7 +292,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
            {
               "idVenta": 3,
               "dni": 436,
-              "estado": "pendiente auditoria",
+              "estado": "PENDIENTE AUDITORIA",
               "observacion": null,
               "fechaPresentacion": "2017-02-03T20:20:20"
             }
@@ -305,11 +305,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
 
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
@@ -374,11 +374,11 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
         """)
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
-        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "osde", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(437, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
+        Venta(438, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, PRESENTADA, DateTime.now, false, None, 1),
