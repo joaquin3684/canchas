@@ -132,8 +132,8 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
         """
         {
           "idVenta": 1,
-          "dni": 432,
-          "idEstado": 1
+          "idEstado": 1,
+          "user": "300"
         }
         """)
 
@@ -151,6 +151,7 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
       )
       val estadosEsperados = Seq(
         Estado("200", 1, RECHAZO_LOGISTICA, DateTime.now, true),
+        Estado("200", 1, CREADO, DateTime.now, true),
         Estado("200", 2, VISITA_CONFIRMADA, DateTime.now),
         Estado("200", 3, VISITA_CONFIRMADA, DateTime.now),
         Estado("200", 4, RECHAZO_VALIDACION, DateTime.now),
@@ -165,8 +166,10 @@ class RecuperarVentaControllerTest extends PlaySpec with GuiceOneAppPerSuite wit
       val Some(result) = route(app, FakeRequest(POST, "/recuperarVenta/marcarParaRecuperar").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
       val cantidadFilas = contentAsString(result)
 
+      val estadoEsperado2 = Db.runWithAwait(estados.filter(x => x.idVenta === 1.toLong && x.estado === CREADO).result.head)
       val estadoEsperado = Db.runWithAwait(estados.filter(x => x.idVenta === 1.toLong && x.estado === RECHAZO_LOGISTICA).result.head)
       assert(estadoEsperado.paraRecuperar)
+      assert(estadoEsperado2.user == "300")
       status(result) mustBe OK
 
     }

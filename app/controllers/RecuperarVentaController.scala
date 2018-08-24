@@ -16,7 +16,7 @@ class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMappe
 
   def ventasRecuperables = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val future = RecuperacionVentaRepository.ventasRecuperables
+    val future = RecuperacionVentaRepository.ventasRecuperables(request.user)
     val ventasRec = Await.result(future, Duration.Inf)
     val v = ventasRec.map { x =>
 
@@ -63,7 +63,10 @@ class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMappe
 
   def marcarParaRecuperar = (authAction andThen checkObs){ implicit request =>
     val idEstado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idEstado").toLong
-    val future = RecuperacionVentaRepository.marcarParaRecuperar(idEstado)
+    val user = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "user").toString
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
+
+    val future = RecuperacionVentaRepository.marcarParaRecuperar(idEstado, user, idVenta)
     Await.result(future, Duration.Inf)
     Ok("venta enviada a call")
   }

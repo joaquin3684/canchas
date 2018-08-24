@@ -18,7 +18,7 @@ object RecuperacionVentaRepository extends Estados{
   implicit val impVenta = GetResult( r => (Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, Some(DateTime(r.nextTimestamp().getTime)),r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<), Estado(r.<<, r.<<, r.<<, DateTime(r.nextTimestamp().getTime), r.<<, r.<<, r.<<, r.<<)))
   //implicit val impEs = GetResult( r => Estado(r.<<, r.<<, r.<<, DateTime(r.nextTimestamp().getTime), r.<<, r.<<, r.<<, r.<<))
 
-  def ventasRecuperables(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado)]] = {
+  def ventasRecuperables(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
 
@@ -30,7 +30,7 @@ object RecuperacionVentaRepository extends Estados{
           x.estado === RECHAZO_ADMINISTRACION) &&
       x.recuperable === true && x.paraRecuperar === true)
       v <- ventas.filter( x => x.idObraSocial.inSetBind(obs) && x.id === e.idVenta)
-
+      e2 <- estados.filter(x => x.idVenta === v.id && x.user === user)
     } yield (v, e)
 
     Db.db.run(a.result)
@@ -63,8 +63,14 @@ object RecuperacionVentaRepository extends Estados{
     Db.db.run(estados.filter(_.id === idEstado).map(x => (x.observacion, x.recuperable)).update((Some(observacion), false)))
   }
 
-  def marcarParaRecuperar(idEstado: Long) = {
-    Db.db.run(estados.filter(_.id === idEstado).map(_.paraRecuperar).update(true))
+  def marcarParaRecuperar(idEstado: Long, user:String, idVenta: Long) = {
+
+    val a = estados.filter(_.id === idEstado).map(_.paraRecuperar).update(true)
+    val b = estados.filter(x => x.idVenta === idVenta && x.estado === CREADO).map(_.user).update(user)
+    val fullQuery = DBIO.seq(a, b)
+
+
+    Db.db.run(fullQuery.transactionally)
   }
 
 }
