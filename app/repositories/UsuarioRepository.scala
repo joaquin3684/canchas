@@ -108,9 +108,9 @@ object UsuarioRepository {
     Db.db.run(perfiles.result)
   }
 
-  def usuariosLogistica : Future[Seq[Usuario]] = {
+  def usuariosLogistica(perfil: String) : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "cadete")
+      up <- usuariosPerfiles.filter(x => x.idPerfil === perfil)
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
@@ -120,7 +120,7 @@ object UsuarioRepository {
 
   def usuariosCreacion : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === "vendedora" || x.idPerfil === "promotora" || x.idPerfil === "externo")
+      up <- usuariosPerfiles.filter(x => x.idPerfil === "VENDEDORA" || x.idPerfil === "PROMOTORA" || x.idPerfil === "EXTERNO")
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u

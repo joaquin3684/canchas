@@ -162,8 +162,9 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
   }
 
 
-  def paraLogistica = getAuthAction { implicit request =>
-    val future = UsuarioRepository.usuariosLogistica
+  def paraLogistica(perfil:String) = getAuthAction { implicit request =>
+
+    val future = UsuarioRepository.usuariosLogistica(perfil)
     val users = Await.result(future, Duration.Inf)
     val usuarios = jsonMapper.toJson(users)
     Ok(usuarios)
