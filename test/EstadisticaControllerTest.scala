@@ -56,9 +56,9 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a", 3),
-        Auditoria(2, "a", 3),
-        Auditoria(3, "a", 3),
+        Auditoria(1, "a", 3, "ds0"),
+        Auditoria(2, "a", 3, "ds0"),
+        Auditoria(3, "a", 3, "ds0"),
       )
 
       val visitasEsperadas = Seq(
@@ -130,9 +130,9 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a", 3),
-        Auditoria(2, "a", 3),
-        Auditoria(3, "a", 3),
+        Auditoria(1, "a", 3, "ds0"),
+        Auditoria(2, "a", 3, "ds0"),
+        Auditoria(3, "a", 3, "ds0"),
       )
 
       val visitasEsperadas = Seq(
@@ -202,9 +202,9 @@ class EstadisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with E
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "CLAUDIO MANURP-AM-OK-1.mp3", 3),
-        Auditoria(2, "CLAUDIO MANURP-AM-OK-1.mp3", 3),
-        Auditoria(3, "CLAUDIO MANURP-AM-OK-1.mp3", 3),
+        Auditoria(1, "CLAUDIO MANURP-AM-OK-1.mp3", 3, "ds0"),
+        Auditoria(2, "CLAUDIO MANURP-AM-OK-1.mp3", 3, "ds0"),
+        Auditoria(3, "CLAUDIO MANURP-AM-OK-1.mp3", 3, "ds0"),
       )
 
       val visitasEsperadas = Seq(

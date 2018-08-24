@@ -36,7 +36,13 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = LogisticaRepository.ventasSinVisita
     val ven = Await.result(futureVentas, Duration.Inf)
-    Ok(jsonMapper.toJson(ven))
+    val v = ven.map { x =>
+      val a = jsonMapper.toJsonString(x._1)
+      val vNode = jsonMapper.getJsonNode(x._2)
+      jsonMapper.putElement(vNode, "aderentes", x._2)
+      vNode
+    }
+    Ok(jsonMapper.toJson(v))
   }
 
   def ventasATrabajar = getAuthAction { implicit request =>
@@ -48,7 +54,8 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val venta = ven.map { x =>
       val obj = jsonMapper.mapper.createObjectNode()
       jsonMapper.addNode("venta", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._1)), obj)
-      jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._2)), obj)
+      jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._3)), obj)
+      jsonMapper.addNode("fechaVisita", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._2)), obj)
       obj
     }
     Ok(jsonMapper.toJson(venta))

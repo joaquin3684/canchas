@@ -73,11 +73,11 @@ class UsuarioControllerTest extends PlaySpec with GuiceOneAppPerSuite {
           "email": "500",
           "password": "200",
           "nombre": "700",
-          "obrasSociales":[{ "nombre": "cobertec" }, { "nombre" : "osde" }],
-          "perfiles":[{ "nombre": "admin" }]
+          "obrasSociales":[{ "nombre": "COBERTEC" }, { "nombre" : "MYC" }],
+          "perfiles":[{ "nombre": "ADMIN" }]
         }
         """)
-      val Some(result) = route(app, FakeRequest(PUT, "/usuario/update/200").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val Some(result) = route(app, FakeRequest(PUT, "/usuario/update/200").withJsonBody(json).withHeaders("My-Authorization" -> Token.header))
       contentAsString(result) mustEqual "modificado"
 
     }

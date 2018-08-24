@@ -26,8 +26,8 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
       val futureVenta = VentaRepository.create(venta, userName, fechaCreacion)
 
       futureVenta onComplete {
-        case Success(venta) => {
-          val futEs = VentaRepository.agregarEstado(Estado(userName, venta.id, CREADO, fechaCreacion))
+        case Success(ven) => {
+          val futEs = VentaRepository.agregarEstado(Estado(userName, ven.id, CREADO, fechaCreacion))
           Await.result(futEs, Duration.Inf)
       }
         case Failure(t) => throw new RuntimeException("hubo un problema al cargar la venta")

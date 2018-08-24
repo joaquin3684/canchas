@@ -241,13 +241,14 @@ object Schemas {
     def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def audio =  column[String]("audio")
     def capitas = column[Int]("capitas")
+    def adherentes = column[String]("adherentes")
     def audio2 = column[Option[String]]("audio2")
     def audio3 = column[Option[String]]("audio3")
     def observacion =  column[Option[String]]("obsevacion", O.Default(None))
 
     def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
 
-    def * = (idVenta, audio, capitas, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (idVenta, audio, capitas, adherentes, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]
