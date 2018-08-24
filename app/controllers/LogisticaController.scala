@@ -38,7 +38,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val ven = Await.result(futureVentas, Duration.Inf)
     val v = ven.map { x =>
       val a = jsonMapper.toJsonString(x._1)
-      val vNode = jsonMapper.getJsonNode(x._2)
+      val vNode = jsonMapper.getJsonNode(a)
       jsonMapper.putElement(vNode, "adherentes", x._2)
       vNode
     }
