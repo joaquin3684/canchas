@@ -63,7 +63,7 @@ object ValidacionRepository extends Estados {
     val valid = validaciones += validacion
     val d = datosEmpresas += datos
     val fullQuery = DBIO.seq(valid, e, d)
-    Db.db.run(fullQuery)
+    Db.db.run(fullQuery.transactionally)
   }
 
 
