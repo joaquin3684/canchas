@@ -37,6 +37,8 @@ POST /usuario/cambiarPassword       controllers.UsuarioController.cambiarPasswor
 
 GET /usuario/paraCreacion           controllers.UsuarioController.paraCreacion
 
+GET /usuario/paraModificacion           controllers.UsuarioController.paraModificacion
+
 GET /usuario/paraLogistica/:perfil           controllers.UsuarioController.paraLogistica(perfil: String)
 
 # LOGIN

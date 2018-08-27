@@ -43,8 +43,17 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
 
     val futureVentas = ValidacionRepository.ventasModificables
     val ventas = Await.result(futureVentas, Duration.Inf)
-    val json = jsonMapper.toJson(ventas.distinct)
-    Ok(json)  }
+
+    val v = ventas.map {x =>
+      val sv = jsonMapper.toJsonString(x._1)
+      val vNode = jsonMapper.getJsonNode(sv)
+      jsonMapper.putElement(vNode, "user", x._2.user)
+      jsonMapper.putElement(vNode, "fechaCreacion", x._2.fecha.toIsoDateTimeString())
+    }
+    val json = jsonMapper.toJson(v)
+
+    Ok(json)
+  }
 
 
   def ventasAValidar = getAuthAction { implicit request =>
@@ -55,6 +64,8 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
       val sV = jsonMapper.toJsonString(x._1)
       val vNode = jsonMapper.getJsonNode(sV)
       jsonMapper.putElement(vNode, "fechaCreacion", x._2.toIsoDateTimeString)
+
+
       vNode
     }
 

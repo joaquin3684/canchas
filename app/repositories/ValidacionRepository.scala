@@ -34,12 +34,12 @@ object ValidacionRepository extends Estados {
 
   }
 
-  def ventasModificables (implicit obs: Seq[String]): Future[Seq[Venta]]= {
+  def ventasModificables (implicit obs: Seq[String]): Future[Seq[(Venta, Estado)]]= {
     val query = {
       for {
         e <- estados.filter(x => x.estado =!= DIGITALIZADA && x.estado =!= RECHAZO_AUDITORIA && x.estado =!= RECHAZO_ADMINISTRACION && x.estado =!= RECHAZO_VALIDACION && x.estado =!= RECHAZO_LOGISTICA && x.estado =!= RECHAZO_PRESENTACION)
         v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
-      } yield v
+      } yield (v, e)
     }
     Db.db.run(query.result)
 

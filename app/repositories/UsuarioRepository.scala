@@ -128,5 +128,14 @@ object UsuarioRepository {
     Db.db.run(q.result)
   }
 
+  def usuariosModificacion : Future[Seq[Usuario]] = {
+    val q = for {
+      up <- usuariosPerfiles.filter(x => x.idPerfil === "VENDEDORA" || x.idPerfil === "PROMOTORA" || x.idPerfil === "EXTERNO" || x.idPerfil === "OPERADOR VENTA")
+      u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
+
+    } yield u
+
+    Db.db.run(q.result)
+  }
 
 }
