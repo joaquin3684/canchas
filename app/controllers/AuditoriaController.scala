@@ -74,6 +74,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
       val ruta = "http://gestionarturnos.com/ventas/auditorias/" + idVenta + "/" + nombre + "-AM-"+ es._2 +"-" + x +".mp3"
       jsonMapper.putElement(request.rootNode, "audio"+x, ruta)
     }
+    if(cantAudios == 0) jsonMapper.putElement(request.rootNode, "audio1", "")
 
     val datos = jsonMapper.getAndRemoveElement(request.rootNode, "datosEmpresa")
     val d = jsonMapper.fromJson[DatosEmpresa](datos)
