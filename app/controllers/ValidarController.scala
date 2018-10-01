@@ -63,8 +63,9 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     val v = ventas.map{ x =>
       val sV = jsonMapper.toJsonString(x._1)
       val vNode = jsonMapper.getJsonNode(sV)
-      jsonMapper.putElement(vNode, "fechaCreacion", x._2.toIsoDateTimeString)
-
+      val ejs = jsonMapper.toJsonString(x._2)
+      val vEstado = jsonMapper.getJsonNode(ejs)
+      jsonMapper.addNode("estado", vEstado, vNode)
 
       vNode
     }
