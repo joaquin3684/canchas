@@ -202,6 +202,7 @@ object Db {
       PerfilPantalla("SUPERVISOR LOGISTICA", "logistica"),
       PerfilPantalla("SUPERVISOR LOGISTICA", "usuario"),
       PerfilPantalla("SUPERVISOR LOGISTICA", "estadistica"),
+      PerfilPantalla("SUPERVISOR LOGISTICA", "logisticaOper"),
 
 
     ),

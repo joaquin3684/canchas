@@ -183,4 +183,11 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     val usuarios = jsonMapper.toJson(users)
     Ok(usuarios)
   }
+
+  def paraRecuperar = getAuthAction {implicit request =>
+    val future = UsuarioRepository.usuariosParaRecuperarVenta
+    val users = Await.result(future, Duration.Inf)
+    val usuarios = jsonMapper.toJson(users.distinct)
+    Ok(usuarios)
+  }
 }
