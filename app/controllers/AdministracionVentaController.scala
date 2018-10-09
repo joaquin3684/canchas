@@ -29,7 +29,8 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     val future = AdministracionVentaRepository.ventasPresentables
     val ventasPres = Await.result(future, Duration.Inf)
     val ventasA = ventasPres.map(_._1).distinct
-    val v = ventasA.map { x =>
+    val v = ventasA.map {
+      x =>
 
       val perfil = ventasPres.filter(v => v._1 == x && v._4 == "OPERADOR VENTA" || v._4 == "EXTERNO" || v._4 == "PROMOTORA" || v._4 == "VENDEDORA").map(_._4).head
       val nombreUsuario = ventasPres.filter(v => v._1 == x ).map(_._3).head

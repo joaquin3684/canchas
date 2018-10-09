@@ -69,7 +69,7 @@ object AdministracionVentaRepository extends Estados{
       audi <- auditorias.filter(_.idVenta === v.id)
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(_.idUsuario === u.user)
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && (x.idPerfil === "OPERADOR VENTA" || x.idPerfil === "EXTERNO" || x.idPerfil === "PROMOTORA" || x.idPerfil === "VENDEDORA"))
     } yield (v, audi, u.nombre, up.idPerfil, e2.fecha)
 
     val query2 = for {
@@ -78,7 +78,7 @@ object AdministracionVentaRepository extends Estados{
       audi <- auditorias.filter(_.idVenta === v.id)
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "OPERADOR VENTA")
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "OPERADOR VENTA" && (x.idPerfil === "EXTERNO" || x.idPerfil === "PROMOTORA" || x.idPerfil === "VENDEDORA"))
     } yield (v, audi, u.nombre, up.idPerfil, e2.fecha)
 
     val unionQuery = query2 ++ query
