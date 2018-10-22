@@ -24,7 +24,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     Ok(ventasIncompletas)
   }
 
-  /*def ventasPresentables = getAuthAction { implicit request =>
+  def ventasPresentables = getAuthAction { implicit request =>
     implicit val obs : Seq[String] = request.obrasSociales
     val future = AdministracionVentaRepository.ventasPresentables
     val ventasPres = Await.result(future, Duration.Inf)
@@ -49,9 +49,9 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     }.distinct
     val ventas = jsonMapper.toJson(v.distinct)
     Ok(ventas)
-  }*/
+  }
 
-  def ventasPresentables = getAuthAction { implicit request =>
+/*  def ventasPresentables = getAuthAction { implicit request =>
     implicit val obs : Seq[String] = request.obrasSociales
     val future = AdministracionVentaRepository.ventasPresentables
     val ventasPres = Await.result(future, Duration.Inf)
@@ -79,7 +79,7 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     }.distinct
     val ventas = jsonMapper.toJson(v.distinct)
     Ok(ventas)
-  }
+  }*/
 
 
 
