@@ -56,10 +56,10 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
       val vNode = jsonMapper.getJsonNode(jsonMapper.toJsonString(x._1))
       jsonMapper.addNode("venta", vNode, obj)
       jsonMapper.putElement(vNode, "adherentes", x._4)
-      jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._5)), obj)
+      jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._6)), obj)
       jsonMapper.addNode("horaVisita", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._3)), obj)
       jsonMapper.addNode("fechaVisita", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._2)), obj)
-      jsonMapper.addNode("usuario", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._6)), obj)
+      jsonMapper.addNode("usuario", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._5)), obj)
       obj
     }
     Ok(jsonMapper.toJson(venta))
