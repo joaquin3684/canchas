@@ -75,7 +75,7 @@ object LogisticaRepository extends Estados{
 
     val obsSql = obs.mkString("'", "', '", "'")
 
-    val p = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.capitas, ventas.pendiente_documentacion ventas.id, DATE_FORMAT(DATE(visitas.fecha), '%d/%m/%Y'), visitas.hora as horaVisita, auditorias.adherentes, usuarios.nombre,
+    val p = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.capitas, ventas.pendiente_documentacion, ventas.id, DATE_FORMAT(DATE(visitas.fecha), '%d/%m/%Y'), visitas.hora as horaVisita, auditorias.adherentes, usuarios.nombre,
               Case
               when visitas.id_user IS NULL then 'Pendiente'
                when ventas.pendiente_documentacion = 1 then 'Pendiente de doc'
