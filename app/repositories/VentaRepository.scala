@@ -65,12 +65,7 @@ object VentaRepository extends Estados {
 
   def modificarVenta(venta: Venta, idVenta:Long, user: String, fechaCreacion: DateTime) = {
 
-    val deleteEstado = estados.filter(e => e.idVenta === idVenta && e.estado === CREADO).delete
     val updateV = ventas.filter(_.id === idVenta).map( x => (x.dni, x.nombre, x.nacionalidad, x.domicilio, x.localidad, x.telefono, x.cuil, x.estadoCivil, x.edad, x.idObraSocial, x.fechaNacimiento, x.zona, x.codigoPostal, x.horaContactoTel, x.piso, x.dpto, x.celular, x.horaContactoCel, x.base, x.empresa, x.cuit, x.tresPorciento)).update((venta.dni, venta.nombre, venta.nacionalidad, venta.domicilio, venta.localidad, venta.telefono, venta.cuil, venta.estadoCivil, venta.edad, venta.idObraSocial, venta.fechaNacimiento, venta.zona, venta.codigoPostal, venta.horaContactoTel, venta.piso, venta.dpto, venta.celular, venta.horaContactoCel, venta.base, venta.empresa, venta.cuit, venta.tresPorciento))
-    val estadoModificado = Estado(user, idVenta, CREADO, fechaCreacion)
-    val updateEs = estados += estadoModificado
-    val fullQuery = DBIO.seq(deleteEstado, updateV, updateEs)
-
-    Db.db.run(fullQuery.transactionally)
+    Db.db.run(updateV)
   }
 }

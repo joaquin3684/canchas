@@ -164,12 +164,14 @@ object Schemas {
     def cuit =  column[Option[String]]("cuit", O.Default(None))
     def tresPorciento =  column[Option[Double]]("tres_porciento", O.Default(None))
     def empresa =  column[Option[String]]("empresa", O.Default(None))
+    def capitas = column[Option[Int]]("capitas", O.Default(None))
+    def pendienteDeDocumentacion = column[Option[Boolean]]("pendiente_documentacion", O.Default(None))
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
 
     def obsFk = foreignKey("fk_venta_obs", idObraSocial, obrasSociales)(_.nombre)
 
-    def * = (dni :: nombre :: nacionalidad :: domicilio :: localidad :: telefono :: cuil :: estadoCivil :: edad :: idObraSocial :: fechaNacimiento :: zona :: codigoPostal :: horaContactoTel :: piso :: dpto :: celular :: horaContactoCel :: base :: empresa :: cuit :: tresPorciento :: id :: HNil).mappedWith(Generic[Venta])
+    def * = (dni :: nombre :: nacionalidad :: domicilio :: localidad :: telefono :: cuil :: estadoCivil :: edad :: idObraSocial :: fechaNacimiento :: zona :: codigoPostal :: horaContactoTel :: piso :: dpto :: celular :: horaContactoCel :: base :: empresa :: cuit :: tresPorciento :: capitas :: pendienteDeDocumentacion :: id :: HNil).mappedWith(Generic[Venta])
 
 
   }
@@ -240,7 +242,6 @@ object Schemas {
 
     def idVenta =  column[Long]("id_venta", O.PrimaryKey)
     def audio =  column[String]("audio")
-    def capitas = column[Int]("capitas")
     def adherentes = column[String]("adherentes")
     def audio2 = column[Option[String]]("audio2")
     def audio3 = column[Option[String]]("audio3")
@@ -248,7 +249,7 @@ object Schemas {
 
     def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
 
-    def * = (idVenta, audio, capitas, adherentes, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (idVenta, audio, adherentes, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]

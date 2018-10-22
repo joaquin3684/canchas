@@ -6,7 +6,7 @@ import schemas.Schemas.{obrasSociales, pantallas, pantallasRutas, perfiles, perf
 
 import scala.concurrent.Future
 
-object UsuarioRepository {
+object UsuarioRepository extends Perfiles {
 
   def create(user: Usuario, obrasSociales: Seq[UsuarioObraSocial], perfiles: Seq[UsuarioPerfil]) = {
 
@@ -120,7 +120,7 @@ object UsuarioRepository {
 
   def usuariosCreacion : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === "VENDEDORA" || x.idPerfil === "PROMOTORA" || x.idPerfil === "EXTERNO")
+      up <- usuariosPerfiles.filter(x => x.idPerfil === VENDEDORA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO)
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
@@ -130,7 +130,7 @@ object UsuarioRepository {
 
   def usuariosModificacion : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === "VENDEDORA" || x.idPerfil === "PROMOTORA" || x.idPerfil === "EXTERNO" || x.idPerfil === "OPERADOR VENTA")
+      up <- usuariosPerfiles.filter(x => x.idPerfil === VENDEDORA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO || x.idPerfil === OPERADOR_VENTA)
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
@@ -140,7 +140,7 @@ object UsuarioRepository {
 
   def usuariosParaRecuperarVenta : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === "OPERADOR VALIDACION" || x.idPerfil === "OPERADOR LOGISTICA" || x.idPerfil === "OPERADOR AUDITORIA" || x.idPerfil === "OPERADOR VENTA")
+      up <- usuariosPerfiles.filter(x => x.idPerfil === OPERADOR_VALIDACION || x.idPerfil === OPERADOR_LOGISTICA || x.idPerfil === OPERADOR_AUDITORIA || x.idPerfil === OPERADOR_VENTA)
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u

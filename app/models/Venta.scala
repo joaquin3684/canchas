@@ -25,6 +25,8 @@ case class Venta(
                 empresa: Option[String] = None,
                 cuit: Option[String] = None,
                 tresPorciento: Option[Double] = None,
+                capitas: Option[Int] = None,
+                pendienteDoc: Option[Boolean] = None,
                 id: Long = 0
                 ) {
 

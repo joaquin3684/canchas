@@ -5,12 +5,11 @@ import java.sql.Timestamp
 import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, validaciones, ventas, datosEmpresas}
-
+import schemas.Schemas.{estados, validaciones, ventas, datosEmpresas, usuariosPerfiles}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
-object ValidacionRepository extends Estados {
+object ValidacionRepository extends Estados with Perfiles {
 
   implicit val localDateTimeMapping  = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.clicks),
@@ -46,23 +45,27 @@ object ValidacionRepository extends Estados {
   }
 
 
-  def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime, String)]] = {
+  def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime, String, String)]] = {
     val query = {
       for {
         e <- estados.filter(x => x.estado === CREADO && !(x.idVenta in estados.filter(x => x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION).map(_.idVenta)))
         v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
-      } yield (v, e.fecha, e.user)
+        up <- usuariosPerfiles.filter(x => e.user === x.idUsuario && (x.idPerfil === OPERADOR_VENTA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO || x.idPerfil === VENDEDORA))
+      } yield (v, e.fecha, e.user, up.idPerfil)
     }
     Db.db.run(query.result)
 
   }
 
-  def validarVenta(validacion: Validacion, estado: Estado, datos: DatosEmpresa) = {
+  def validarVenta(validacion: Validacion, estado: Estado, datos: DatosEmpresa, capitas: Int) = {
 
     val e = estados += estado
     val valid = validaciones += validacion
     val d = datosEmpresas += datos
-    val fullQuery = DBIO.seq(valid, e, d)
+    val v = ventas.filter(x => x.id === validacion.idVenta).map(_.capitas).update(Some(capitas))
+
+
+    val fullQuery = DBIO.seq(valid, e, d, v)
     Db.db.run(fullQuery.transactionally)
   }
 

@@ -51,10 +51,11 @@ object LogisticaRepository extends Estados{
     Db.db.run(fullquery.transactionally)
   }
 
-  def confirmarVisita(idVisita: Long, estado: Estado) = {
+  def confirmarVisita(idVisita: Long, estado: Estado, pendienteDeDoc: Boolean) = {
     val vi = visitas.filter(_.id === idVisita).map(_.estado).update(VISITA_CONFIRMADA)
     val es = estados += estado
-    val fullquery = DBIO.seq(vi, es)
+    val v = ventas.filter(_.id === estado.idVenta).map(_.pendienteDeDocumentacion).update(Some(pendienteDeDoc))
+    val fullquery = DBIO.seq(vi, es, v)
     Db.db.run(fullquery.transactionally)
   }
 
@@ -70,16 +71,19 @@ object LogisticaRepository extends Estados{
     Db.db.run(estados.filter(x => x.idVenta === idVenta && (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA)).delete)
   }
 
-  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String, String, String, String)]] = {
+  def ventasAConfirmar()(implicit obs: Seq[String]): Future[Seq[(Venta, String, String, String, String, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
 
-    val p = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, DATE_FORMAT(DATE(visitas.fecha), '%d/%m/%Y'), visitas.hora as horaVisita, auditorias.adherentes,
-              Case when (visitas.id_user IS NULL ) then 'Pendiente'
-              else 'Confirmar' END AS is_a_senior
+    val p = sql"""select ventas.dni, ventas.nombre, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.telefono, ventas.cuil, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, DATE_FORMAT(DATE(visitas.fecha), '%d/%m/%Y'), visitas.hora as horaVisita, auditorias.adherentes, usuarios.nombre,
+              Case
+              when visitas.id_user IS NULL then 'Pendiente'
+               when ventas.pendiente_documentacion = 1 then 'Pendiente de doc'
+              else 'Confirmar' END
                from ventas
         join estados on ventas.id = estados.id_venta
         join visitas on visitas.id_venta = ventas.id
+        left join usuarios on visitas.id_user = usuarios.user
         left join auditorias on auditorias.id_venta = ventas.id
         where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
          estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
@@ -87,9 +91,11 @@ object LogisticaRepository extends Estados{
          or ((estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
                           estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
                           ventas.id_obra_social in (#$obsSql) and visitas.id_user IS NOT NULL and visitas.id = (select id from visitas where id_venta = ventas.id order by id desc limit 1)  ))
-           group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, visitas.fecha, visitas.hora, auditorias.adherentes, Case when (visitas.id_user IS NULL ) then 'Pendiente'
+           group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, visitas.fecha, visitas.hora, auditorias.adherentes, usuarios.nombre, Case
+            when visitas.id_user IS NULL  then 'Pendiente'
+            when ventas.pendiente_documentacion = 1 then 'Pendiente de doc'
                               else 'Confirmar' END
-      """.as[(Venta, String, String, String, String)]
+      """.as[(Venta, String, String, String, String, String)]
 //    val j = group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.id, Case when (visitas.id_user IS NULL ) then 'Pendiente'
 
     Db.db.run(p)

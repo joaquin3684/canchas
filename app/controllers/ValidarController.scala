@@ -19,12 +19,13 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
 
   def validar = (authAction andThen checkObs) { implicit request =>
     val datos = jsonMapper.getAndRemoveElement(request.rootNode, "datosEmpresa")
+    val capitas = jsonMapper.getAndRemoveElement(request.rootNode, "capitas").toInt
     val d = jsonMapper.fromJson[DatosEmpresa](datos)
     val venta = jsonMapper.fromJson[Validacion](request.rootNode.toString)
     val estadoNuevo = venta.validar(request.user)
 
 
-    val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo, d)
+    val futureV = ValidacionRepository.validarVenta(venta, estadoNuevo, d, capitas)
 
     Await.result(futureV, Duration.Inf)
     Ok("validado")
@@ -66,6 +67,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
       val ejs = jsonMapper.toJsonString(x._2)
       jsonMapper.putElement(vNode, "fechaCreacion", x._2.toIsoDateTimeString)
       jsonMapper.putElement(vNode, "user", x._3)
+      jsonMapper.putElement(vNode, "sector", x._4)
 
 
       vNode

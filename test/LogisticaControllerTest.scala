@@ -242,6 +242,7 @@ class LogisticaControllerTest extends PlaySpec with GuiceOneAppPerSuite with Est
         """
         {
           "idVenta": 1,
+          "pendienteDeDoc": true,
           "dni": 432,
           "idVisita": 1,
           "user": "200"

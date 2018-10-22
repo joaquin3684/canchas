@@ -127,9 +127,9 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a", 3, "ds0"),
-        Auditoria(2, "a", 3, "ds0"),
-        Auditoria(3, "a", 3, "ds0"),
+        Auditoria(1, "a", "ds0"),
+        Auditoria(2, "a", "ds0"),
+        Auditoria(3, "a", "ds0"),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -172,9 +172,9 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a", 3, "ds0"),
-        Auditoria(2, "a", 3, "ds0"),
-        Auditoria(3, "a", 3, "ds0"),
+        Auditoria(1, "a",  "ds0"),
+        Auditoria(2, "a", "ds0"),
+        Auditoria(3, "a", "ds0"),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)

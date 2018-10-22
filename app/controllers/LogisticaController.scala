@@ -59,6 +59,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
       jsonMapper.addNode("estado", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._5)), obj)
       jsonMapper.addNode("horaVisita", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._3)), obj)
       jsonMapper.addNode("fechaVisita", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._2)), obj)
+      jsonMapper.addNode("usuario", jsonMapper.getJsonNode(jsonMapper.toJsonString(x._6)), obj)
       obj
     }
     Ok(jsonMapper.toJson(venta))
@@ -69,11 +70,12 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val rootNode = request.rootNode
 
     val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
+    val pendienteDeDoc = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "pendienteDeDoc").toBoolean
     val idVisita = rootNode.get("idVisita").asLong
     val estadoNuevo = Estado(request.user, idVenta, VISITA_CONFIRMADA, DateTime.now)
 
 
-    val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo)
+    val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo, pendienteDeDoc)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("confirmada")

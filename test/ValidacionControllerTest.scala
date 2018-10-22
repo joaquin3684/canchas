@@ -37,7 +37,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       Db.runWithAwait(estados ++= estadosEsperados)
 
 
-      val Some(result) = route(app, FakeRequest(GET, "/validacion/ventasAValidar").withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val Some(result) = route(app, FakeRequest(GET, "/validacion/ventasAValidar").withHeaders("My-Authorization" -> Token.operToken))
       val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
 
 
@@ -59,6 +59,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "motivoCodem": null,
           "motivoSuper": null,
           "motivoAfip": null,
+          "capitas":1,
           "datosEmpresa": {
             "empresa": "prueba",
             "direccion": "prueba",
@@ -84,7 +85,8 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "motivoCodem": "hijo discapacitado",
           "motivoSuper": null,
           "motivoAfip": null,
-                    "datosEmpresa": {
+          "capitas":1,
+                     "datosEmpresa": {
              "empresa": "prueba",
              "direccion": "prueba",
              "localidad": "prueba",
@@ -108,6 +110,8 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "motivoCodem": null,
           "motivoSuper": "impagos 2",
           "motivoAfip": null,
+          "capitas":1,
+
                     "datosEmpresa": {
              "empresa": "prueba",
              "direccion": "prueba",
@@ -132,6 +136,8 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
           "motivoCodem": "discapacitado",
           "motivoSuper": "pepe",
           "motivoAfip": null,
+          "capitas":1,
+
                     "datosEmpresa": {
              "empresa": "prueba",
              "direccion": "prueba",
@@ -220,9 +226,9 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 1),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
+        Venta(432, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None,None, None,  1),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None,None, None,  2),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None,None, None,  3),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, VALIDADO, DateTime.now),
@@ -275,9 +281,9 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
       val jsonMapper = new JsonMapper
 
       val ventasEsperadas = Seq(
-        Venta(467, "marcela Jordan", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "Sur", 47, "20hs", None, None, None, None, None, None, None, None, 1),
-        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 2),
-        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None, 3),
+        Venta(467, "marcela Jordan", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "Sur", 47, "20hs", None, None, None, None, None, None, None, None,None, None, 1),
+        Venta(435, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None,None, None, 2),
+        Venta(436, "pepe", "argentina", "tres arroyos", "floresta", "4672-7473", "30-20123-02", "casada", 60, "COBERTEC", Some(DateTime.now), "sur", 45, "20hs", None, None, None, None, None, None, None, None,None, None, 3),
       )
       val estadosEsperados = Seq(
         Estado("200", 1, CREADO, DateTime.now),
@@ -289,7 +295,7 @@ class ValidacionControllerTest extends PlaySpec with GuiceOneAppPerSuite with Es
 
       // FIN DE DATOS PARA INICIALIZAR TEST
 
-      val Some(result) = route(app, FakeRequest(PUT, "/validacion/updateVenta/1").withJsonBody(json).withHeaders("My-Authorization" -> "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImF1ZGl0b3JpYSIsImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.IS_NWi36CSS5gVsV3kU6wSrLXfEV3B1tNb3moat6te0"))
+      val Some(result) = route(app, FakeRequest(PUT, "/validacion/updateVenta/1").withJsonBody(json).withHeaders("My-Authorization" -> Token.operToken))
       val bodyText = status(result)
 
       val rootNode = jsonMapper.getJsonNode(json.toString)

@@ -3,7 +3,6 @@ package models
 case class Auditoria(
                       idVenta: Long,
                       audio1: String,
-                      capitas: Int,
                       adherentes: String,
                       audio2: Option[String] = None,
                       audio3: Option[String] = None,
