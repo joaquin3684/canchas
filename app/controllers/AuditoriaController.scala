@@ -49,6 +49,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
     val cantAudios = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "cantidadAudios").toInt
     val estado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "estado").toString
     val nombre = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "nombre").toString
+    val capitas = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "capitas").toInt
     val idVenta = request.rootNode.get("idVenta").asLong()
     val observacion = request.rootNode.get("observacion").asText()
 
@@ -84,7 +85,7 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
 
     if(estado != "rechazo") jsonMapper.removeElement(request.rootNode, "recuperable")
     val audi = jsonMapper.fromJson[Auditoria](request.rootNode.toString)
-    val futureVenta = AuditoriaRepository.auditar(audi, es._1, d, modificar)
+    val futureVenta = AuditoriaRepository.auditar(audi, es._1, d, modificar, capitas)
     Await.result(futureVenta, Duration.Inf)
 
     Ok("guardado")

@@ -1,9 +1,9 @@
 package repositories
 import scala.concurrent.Future
-
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, ventas, auditorias, usuariosPerfiles, datosEmpresas}
+import schemas.Schemas.{auditorias, datosEmpresas, estados, usuariosPerfiles, ventas}
+import slick.dbio.{DBIOAction, NoStream}
 
 object AuditoriaRepository extends Estados {
 
@@ -25,17 +25,34 @@ object AuditoriaRepository extends Estados {
     Db.db.run(query.result)
   }
 
-  def auditar(auditoria: Auditoria, estado: Estado, datos:DatosEmpresa, modificar: Boolean) = {
+  def auditar(auditoria: Auditoria, estado: Estado, datos:DatosEmpresa, modificar: Boolean, capitas: Int) = {
     val e = estados += estado
     val audi = auditorias += auditoria
     if(modificar) {
       val d = datosEmpresas.filter(_.idVenta === datos.idVenta).update(datos)
-      val fullQuery = DBIO.seq(audi, e, d)
-      Db.db.run(fullQuery)
+      if(capitas != 99){
+        val v = ventas.filter(x => x.id === auditoria.idVenta).map(_.capitas).update(Some(capitas))
+        val fullQuery = DBIO.seq(audi, e, d, v)
+        Db.db.run(fullQuery)
+
+      } else{
+        val fullQuery = DBIO.seq(audi, e, d)
+        Db.db.run(fullQuery)
+
+      }
+
     }
     else {
-      val fullQuery = DBIO.seq(audi, e)
-      Db.db.run(fullQuery)
+      if(capitas != 99){
+        val v = ventas.filter(x => x.id === auditoria.idVenta).map(_.capitas).update(Some(capitas))
+        val fullQuery = DBIO.seq(audi, e, v)
+        Db.db.run(fullQuery)
+
+      } else{
+        val fullQuery = DBIO.seq(audi, e)
+        Db.db.run(fullQuery)
+
+      }
     }
   }
 
