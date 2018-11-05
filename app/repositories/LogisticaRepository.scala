@@ -52,7 +52,8 @@ object LogisticaRepository extends Estados{
   }
 
   def confirmarVisita(idVisita: Long, estado: Estado, pendienteDeDoc: Boolean) = {
-    val vi = visitas.filter(_.id === idVisita).map(_.estado).update(VISITA_CONFIRMADA)
+    val est = if(pendienteDeDoc) PENDIENTE_DOC else VISITA_CONFIRMADA
+    val vi = visitas.filter(_.id === idVisita).map(_.estado).update(est)
     val es = estados += estado
     val v = ventas.filter(_.id === estado.idVenta).map(_.pendienteDeDocumentacion).update(Some(pendienteDeDoc))
     val fullquery = DBIO.seq(vi, es, v)
@@ -85,10 +86,10 @@ object LogisticaRepository extends Estados{
         join visitas on visitas.id_venta = ventas.id
         left join usuarios on visitas.id_user = usuarios.user
         left join auditorias on auditorias.id_venta = ventas.id
-        where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
+        where (estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' or estado = 'Pendiente de documentacion' group by id_venta) and
          estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
          ventas.id_obra_social in (#$obsSql) and visitas.id = (select id from visitas where id_venta = ventas.id order by id desc limit 1))
-         or ((estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' group by id_venta) and
+         or ((estados.id_venta in (select id_venta from estados where estado = 'Visita creada' or estado = 'Visita repactada' or estado = 'Pendiente de documentacion' group by id_venta) and
                           estados.id_venta not in (select id_venta from estados where estado = 'Visita confirmada' or estado = 'Rechazo por logistica' group by id_venta) and
                           ventas.id_obra_social in (#$obsSql) and visitas.id_user IS NOT NULL and visitas.id = (select id from visitas where id_venta = ventas.id order by id desc limit 1)  ))
            group by ventas.dni, ventas.nombre, ventas.cuil, ventas.telefono, ventas.nacionalidad, ventas.domicilio, ventas.localidad, ventas.estadoCivil, ventas.edad, ventas.id_obra_social, ventas.fecha_nacimiento, ventas.zona, ventas.codigo_postal, ventas.hora_contacto_tel, ventas.piso, ventas.departamento, ventas.celular, ventas.hora_contacto_cel, ventas.base, ventas.empresa, ventas.cuit, ventas.tres_porciento, ventas.capitas, ventas.pendiente_documentacion, ventas.id, visitas.fecha, visitas.hora, auditorias.adherentes, usuarios.nombre, Case
@@ -121,7 +122,7 @@ object LogisticaRepository extends Estados{
   def all(user: String): Future[Seq[(Venta, Visita)]] = {
     val query = {
       for {
-        e <- estados.filter(x => (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA || x.estado === VISITA_CONFIRMADA || x.estado === RECHAZO_LOGISTICA) && x.user === user ).map(_.idVenta)
+        e <- estados.filter(x => (x.estado === VISITA_CREADA || x.estado === VISITA_REPACTADA || x.estado === VISITA_CONFIRMADA || x.estado === PENDIENTE_DOC || x.estado === RECHAZO_LOGISTICA) && x.user === user ).map(_.idVenta)
         v <- ventas.filter(x => x.id === e )
         vis <- visitas.filter(_.idVenta === v.id)
       } yield (v, vis)

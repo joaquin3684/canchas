@@ -81,6 +81,7 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     val user = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "user")
     val f = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaCreacion")
     jsonMapper.removeElement(request.rootNode, "idVenta")
+
     val fechaCreacion = DateTime.fromIsoDateTimeString(f).get
     val venta = jsonMapper.fromJson[Venta](request.rootNode.toString)
     val futureVenta = VentaRepository.modificarVenta(venta, idVenta, user, fechaCreacion)

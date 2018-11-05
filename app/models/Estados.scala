@@ -11,6 +11,7 @@ trait Estados {
   val VISITA_CREADA = "Visita creada"
   val VISITA_REPACTADA = "Visita repactada"
   val VISITA_CONFIRMADA = "Visita confirmada"
+  val PENDIENTE_DOC = "Pendiente de documentacion"
   val RECHAZO_LOGISTICA = "Rechazo por logistica"
   val PRESENTADA = "Presentada"
   val PAGADA = "Pagada"

@@ -73,7 +73,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion").toString
     val pendienteDeDoc = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "pendienteDeDoc").toBoolean
     val idVisita = rootNode.get("idVisita").asLong
-    val estadoNuevo = Estado(request.user, idVenta, VISITA_CONFIRMADA, DateTime.now, true, Some(observacion))
+    val estadoNuevo = Estado(request.user, idVenta, if(pendienteDeDoc) PENDIENTE_DOC else VISITA_CONFIRMADA, DateTime.now, true, Some(observacion))
 
 
     val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo, pendienteDeDoc)
