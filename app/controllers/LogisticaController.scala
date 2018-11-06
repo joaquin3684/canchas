@@ -76,7 +76,7 @@ class LogisticaController @Inject()(cc: ControllerComponents, val jsonMapper: Js
     val estadoNuevo = Estado(request.user, idVenta, if(pendienteDeDoc) PENDIENTE_DOC else VISITA_CONFIRMADA, DateTime.now, true, Some(observacion))
 
 
-    val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo, pendienteDeDoc)
+    val futureEstado = LogisticaRepository.confirmarVisita(idVisita, estadoNuevo, pendienteDeDoc, observacion)
     Await.result(futureEstado, Duration.Inf)
 
     Ok("confirmada")

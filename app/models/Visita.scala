@@ -13,7 +13,8 @@ case class Visita(
                  fecha: DateTime,
                  hora: String,
                  estado: String,
-                 user: Option[String] = None
+                 user: Option[String] = None,
+                 observacion2: String = ""
 ) {
 
 }

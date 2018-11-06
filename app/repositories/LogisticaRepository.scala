@@ -51,9 +51,9 @@ object LogisticaRepository extends Estados{
     Db.db.run(fullquery.transactionally)
   }
 
-  def confirmarVisita(idVisita: Long, estado: Estado, pendienteDeDoc: Boolean) = {
+  def confirmarVisita(idVisita: Long, estado: Estado, pendienteDeDoc: Boolean, observacion: String) = {
     val est = if(pendienteDeDoc) PENDIENTE_DOC else VISITA_CONFIRMADA
-    val vi = visitas.filter(_.id === idVisita).map(_.estado).update(est)
+    val vi = visitas.filter(_.id === idVisita).map(x => (x.estado, x.observacion2)).update((est, observacion))
     val es = estados += estado
     val v = ventas.filter(_.id === estado.idVenta).map(_.pendienteDeDocumentacion).update(Some(pendienteDeDoc))
     val fullquery = DBIO.seq(vi, es, v)
