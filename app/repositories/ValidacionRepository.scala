@@ -60,18 +60,21 @@ object ValidacionRepository extends Estados with Perfiles {
   def validarVenta(validacion: Validacion, estado: Estado, datos: DatosEmpresa, capitas: Int) = {
 
     val e = estados += estado
+    val delV = validaciones.filter(_.idVenta === validacion.idVenta).delete
     val valid = validaciones += validacion
+    val delD = datosEmpresas.filter(_.idVenta === validacion.idVenta).delete
     val d = datosEmpresas += datos
+
     if(capitas == 99)
       {
-        val fullQuery = DBIO.seq(valid, e, d)
+        val fullQuery = DBIO.seq(delV, delD, valid, e, d)
         Db.db.run(fullQuery.transactionally)
       }
     else {
       val v = ventas.filter(x => x.id === validacion.idVenta).map(_.capitas).update(Some(capitas))
 
 
-      val fullQuery = DBIO.seq(valid, e, d,v)
+      val fullQuery = DBIO.seq(delV, delD, valid, e, d,v)
       Db.db.run(fullQuery.transactionally)
     }
 
