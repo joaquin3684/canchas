@@ -28,7 +28,7 @@ object AdministracionVentaRepository extends Estados{
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
-      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "OPERADOR VENTA")
+      up <- usuariosPerfiles.filter(x => x.idUsuario === u.user && x.idPerfil =!= "OPERADOR VENTA" && x.idPerfil =!= "OPERADOR_LOGISTICA" && x.idPerfil =!= "OPERADOR_AUDITORIA")
     } yield v
 
     val unionQuery = query ++ query2
