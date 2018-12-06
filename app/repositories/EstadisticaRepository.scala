@@ -72,4 +72,73 @@ object EstadisticaRepository extends Estados {
     Db.db.run(q.result)
   }
 
+  def cantidadVentasPerfil(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select
+                  usuarios.nombre,
+                  (select count(*) from estados
+                   where estados.user = e2.user and
+                    estados.estado = 'Creado' and
+                     estados.id_venta in
+                     (select estados.id_venta from estados
+                   where estados.estado like 'Rech%')) as rechazados,
+
+                 (select count(*) from estados
+                                    where estados.user = e2.user and
+                                     estados.estado = 'Creado' and
+                                      estados.id_venta in
+                                      (select estados.id_venta from estados
+                                    where estados.estado = 'Presentada')) as presentadas,
+
+                 (select count(*) from estados
+                                                     where estados.user = e2.user and
+                                                      estados.estado = 'Creado' and
+                                                       estados.id_venta in
+                                                       (select estados.id_venta from estados
+                                                     where estados.estado = 'Pagada')) as presentadas
+
+
+
+                  from estados e2
+                  join usuarios on e2.user = usuarios.user
+                  join usuario_perfil on usuarios.user = usuario_perfil.user
+                  where  e2.estado = 'Creado' and usuario_perfil.perfil = '#$perfil' and fecha between '#$fStr' and '#$fhStr'
+                  group by usuarios.nombre, usuarios.user
+
+      """.as[(String, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def cantidadVisitasPerfil(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String): Future[Seq[(String, Int)]] = {
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select
+                  usuarios.nombre,
+                  count(*) as cantVisitas
+                  from visitas
+                  join usuarios on visitas.id_user = usuarios.user
+                  join usuario_perfil on usuarios.user = usuario_perfil.user
+                  where visitas.estado = 'Visita confirmada' and usuario_perfil.perfil = '#$perfil' and visitas.fecha between '#$fStr' and '#$fhStr'
+                  group by usuarios.nombre, usuarios.user
+
+      """.as[(String, Int)]
+
+
+    Db.db.run(p)
+  }
+
+
+
+
 }

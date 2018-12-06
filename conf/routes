@@ -144,3 +144,11 @@ GET /estadistica/estados                     controllers.EstadisticaController.e
 POST /estadistica/visitas                    controllers.EstadisticaController.visitas
 
 POST /estadistica/archivos                   controllers.EstadisticaController.archivos
+
+POST /estadistica/vendedoras                 controllers.EstadisticaController.estadisticaVendedoras
+
+POST /estadistica/promotoras                controllers.EstadisticaController.estadisticaPromotoras
+
+POST /estadistica/promotoras/cantVisitas       controllers.EstadisticaController.estadisticaCantVisitasPromotora
+
+POST /estadistica/externos                    controllers.EstadisticaController.estadisticaExterno

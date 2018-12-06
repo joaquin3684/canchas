@@ -55,6 +55,13 @@ class JsonMapper {
     }
   }
 
+  def putElement(node: JsonNode, fieldName: String, value: Int) = {
+    if(node.isObject){
+      node.asInstanceOf[ObjectNode].put(fieldName, value)
+    } else {
+      throw new RuntimeException("not an object " + node)
+    }
+  }
 
   def getAndRemoveElementAndRemoveExtraQuotes(node: JsonNode, valueToRemove: String): String = {
     removeElement(node, valueToRemove).toString.replaceAll("\"", "")
