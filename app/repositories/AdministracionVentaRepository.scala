@@ -19,12 +19,12 @@ object AdministracionVentaRepository extends Estados{
   def ventasRechazables(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
 
     val query = for {
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
     }yield v
 
     val query2 = for{
-      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
@@ -64,7 +64,7 @@ object AdministracionVentaRepository extends Estados{
   def ventasPresentables(implicit obs: Seq[String]) : Future[Seq[(Venta, String, String, DateTime)]] = {
 
     val query = for{
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
 
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
@@ -73,7 +73,7 @@ object AdministracionVentaRepository extends Estados{
     } yield (v, u.nombre, up.idPerfil, e2.fecha)
 
     val query2 = for {
-      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && !x.empresa.isEmpty && !x.cuit.isEmpty && !x.tresPorciento.isEmpty)
 
       e2 <- estados.filter(x => x.estado === CREADO && x.idVenta === v.id)
@@ -117,7 +117,7 @@ object AdministracionVentaRepository extends Estados{
 
   def ventasPresentadas(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime)]] = {
     val query = for {
-      e <- estados.filter( x => x.estado === PRESENTADA && !(x.idVenta in estados.filter(x => x.estado === PAGADA || x.estado === RECHAZO_ADMINISTRACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === PRESENTADA && !(x.idVenta in estados.filter(x => x.estado === PAGADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
     } yield (v, e.fecha)
 
