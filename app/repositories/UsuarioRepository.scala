@@ -137,7 +137,7 @@ object UsuarioRepository extends Perfiles {
   def usuariosModificacion : Future[Seq[Usuario]] = {
     val q = for {
       up <- usuariosPerfiles.filter(x => x.idPerfil === VENDEDORA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO || x.idPerfil === OPERADOR_VENTA)
-      u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
+      u <- usuarios.filter(x => x.user === up.idUsuario)
 
     } yield u
 

@@ -180,12 +180,13 @@ object Db {
       PerfilPantalla("ADMIN", "recuperarVenta"),
       PerfilPantalla("ADMIN", "estadistica"),
       PerfilPantalla("ADMIN", "logisticaOper"),
+      PerfilPantalla("ADMIN", "modificar"),
+
       PerfilPantalla("ESTADISTICAS", "estadistica"),
       PerfilPantalla("OPERADOR LOGISTICA", "logisticaOper"),
       PerfilPantalla("OPERADOR AUDITORIA", "auditoria"),
       PerfilPantalla("OPERADOR AUDITORIA", "modificar"),
       PerfilPantalla("OPERADOR VALIDACION", "validacion"),
-      PerfilPantalla("OPERADOR VALIDACION", "modificar"),
       PerfilPantalla("OPERADOR VENTA", "venta"),
       PerfilPantalla("OPERADOR VENTA", "recuperarVenta"),// solo la quedice recuperar la que dice enviar a call no
       PerfilPantalla("SUPERVISOR CALL", "usuario"),
@@ -195,10 +196,14 @@ object Db {
       PerfilPantalla("SUPERVISOR CALL", "auditoria"),
       PerfilPantalla("SUPERVISOR CALL", "recuperarVenta"),
       PerfilPantalla("SUPERVISOR CALL", "estadistica"),
+      PerfilPantalla("SUPERVISOR CALL", "modificar"),
+
       PerfilPantalla("SUPERVISOR VENDEDORAS", "venta"),
       PerfilPantalla("SUPERVISOR VENDEDORAS", "validacion"),
       PerfilPantalla("SUPERVISOR VENDEDORAS", "estadistica"),
       PerfilPantalla("SUPERVISOR VENDEDORAS", "usuario"),
+      PerfilPantalla("SUPERVISOR VENDEDORAS", "modificar"),
+
       PerfilPantalla("ADMINISTRADOR VENTAS", "administracionVenta"),
       PerfilPantalla("ADMINISTRADOR VENTAS", "estadistica"),
       PerfilPantalla("ADMINISTRADOR VENTAS", "usuario"),
