@@ -1,6 +1,7 @@
 package models
 
 case class Auditoria(
+                      id: Long,
                       idVenta: Long,
                       audio1: String,
                       adherentes: String,

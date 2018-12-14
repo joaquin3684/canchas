@@ -26,16 +26,18 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
     implicit val obs : Seq[String] = request.obrasSociales
     val futureVentas = AuditoriaRepository.ventasParaAuditar
     val ventas = Await.result(futureVentas, Duration.Inf)
-    val ven = ventas.map(_._1).distinct
+
+    val ven = ventas.sortBy(x => x._2.fecha).map(_._1).distinct
     val v = ven.map{ x =>
       val js = jsonMapper.toJsonString(x)
       val vNode = jsonMapper.getJsonNode(js)
 
-      val perfiles = ventas.filter(_._1.id == x.id).map(_._2)
+      val perfiles = ventas.filter(_._1.id == x.id).map(_._3)
       val pjs = jsonMapper.toJsonString(perfiles)
       val pNode = jsonMapper.getJsonNode(pjs)
-
+      val fecha = ventas.find(_._1.id == x.id).map(_._2.fecha.toIsoDateString())
       jsonMapper.addNode("perfiles", pNode, vNode)
+      jsonMapper.putElement(vNode, "fecha", fecha.get)
 
       vNode
     }
@@ -52,9 +54,6 @@ class AuditoriaController @Inject()(cc: ControllerComponents, checkObs: ObraSoci
     val capitas = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "capitas").toInt
     val idVenta = request.rootNode.get("idVenta").asLong()
     val observacion = request.rootNode.get("observacion").asText()
-
-
-
 
 
     val es =  estado match {

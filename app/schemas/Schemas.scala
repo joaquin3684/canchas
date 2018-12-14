@@ -241,7 +241,8 @@ object Schemas {
 
   class Auditorias(tag: Tag) extends Table[Auditoria](tag, "auditorias") {
 
-    def idVenta =  column[Long]("id_venta", O.PrimaryKey)
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def idVenta =  column[Long]("id_venta")
     def audio =  column[String]("audio")
     def adherentes = column[String]("adherentes")
     def audio2 = column[Option[String]]("audio2")
@@ -250,7 +251,7 @@ object Schemas {
 
     def ventaFk = foreignKey("fk_venta_auditoria", idVenta, ventas)(_.id)
 
-    def * = (idVenta, audio, adherentes, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
+    def * = (id, idVenta, audio, adherentes, audio2, audio3, observacion) <> (Auditoria.tupled, Auditoria.unapply)
   }
 
   val auditorias = TableQuery[Auditorias]

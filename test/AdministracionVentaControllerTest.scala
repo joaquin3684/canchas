@@ -127,9 +127,9 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a", "ds0"),
-        Auditoria(2, "a", "ds0"),
-        Auditoria(3, "a", "ds0"),
+        Auditoria(1,1, "a", "ds0"),
+        Auditoria(1,2, "a", "ds0"),
+        Auditoria(1,3, "a", "ds0"),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -172,9 +172,9 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       )
 
       val auditoriasEsperadas = Seq(
-        Auditoria(1, "a",  "ds0"),
-        Auditoria(2, "a", "ds0"),
-        Auditoria(3, "a", "ds0"),
+        Auditoria(1,1, "a",  "ds0"),
+        Auditoria(1,2, "a", "ds0"),
+        Auditoria(1,3, "a", "ds0"),
       )
 
       Db.runWithAwait(ventas ++= ventasEsperadas)
@@ -186,7 +186,7 @@ class AdministracionVentaControllerTest extends PlaySpec with GuiceOneAppPerSuit
       val Some(result) = route(app, FakeRequest(GET, "/administracionVenta/ventasRechazables").withHeaders("My-Authorization" -> Token.header))
       val cantidadFilas = contentAsJson(result).asInstanceOf[JsArray].value.length
 
-      assert(cantidadFilas == 2)
+      assert(cantidadFilas == 3)
       status(result) mustBe OK
 
     }

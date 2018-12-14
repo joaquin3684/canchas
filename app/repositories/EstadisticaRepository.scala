@@ -19,6 +19,24 @@ object EstadisticaRepository extends Estados {
   implicit val impEs = GetResult( r => Estado(r.<<, r.<<, r.<<, DateTime(r.nextTimestamp().getTime), r.<<, r.<<, r.<<))
 
 
+  def rechazosTotales(fechaDesde: DateTime, fechaHasta:DateTime)(implicit obs:Seq[String]): Future[Seq[(String, String, String, String, String, String)]] = {
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select (select Date(fecha) from estados where id_venta = v.id and estado = 'Creado' limit 1) as fecha_creacion, v.nombre, v.cuil, e.estado, Date(e.fecha), e.observacion
+                  from ventas v
+                  join estados e on e.id_venta = v.id
+                  where e.recuperable = 0 and e.estado like 'Rech%' and e.fecha between '#$fStr' and '#$fhStr'
+
+      """.as[(String, String, String, String, String, String)]
+
+    Db.db.run(p)
+
+  }
+
   def estadisticaGeneral(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado, Option[Visita], Option[Validacion], Option[Auditoria], Usuario, String)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")

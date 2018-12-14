@@ -19,12 +19,12 @@ object AdministracionVentaRepository extends Estados{
   def ventasRechazables(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
 
     val query = for {
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === DIGITALIZADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
     }yield v
 
     val query2 = for{
-      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === PRESENTADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === DIGITALIZADA || x.estado === RECHAZO_ADMINISTRACION || x.estado === RECHAZO_PRESENTACION).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)
