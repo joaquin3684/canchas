@@ -18,6 +18,12 @@ object UsuarioRepository extends Perfiles {
     Db.db.run(fullQuery.transactionally)
   }
 
+
+  def habilitarUsuario(user: String) = {
+    Db.db.run(usuarios.filter(_.user === user).map(_.borrado).update(false))
+
+  }
+
   def getById(user: String)(implicit obs: Seq[String]): Future[Seq[(Usuario, ObraSocial, Perfil)]] = {
 
     val query = {

@@ -166,7 +166,8 @@ object Db {
       Pantalla("auditoria"),
       Pantalla("administracionVenta"),
       Pantalla("recuperarVenta"),
-      Pantalla("estadistica")
+      Pantalla("estadistica"),
+      Pantalla("modificar"),
     ),
 
     Schemas.perfilesPantallas ++= Seq(
@@ -182,7 +183,9 @@ object Db {
       PerfilPantalla("ESTADISTICAS", "estadistica"),
       PerfilPantalla("OPERADOR LOGISTICA", "logisticaOper"),
       PerfilPantalla("OPERADOR AUDITORIA", "auditoria"),
+      PerfilPantalla("OPERADOR AUDITORIA", "modificar"),
       PerfilPantalla("OPERADOR VALIDACION", "validacion"),
+      PerfilPantalla("OPERADOR VALIDACION", "modificar"),
       PerfilPantalla("OPERADOR VENTA", "venta"),
       PerfilPantalla("OPERADOR VENTA", "recuperarVenta"),// solo la quedice recuperar la que dice enviar a call no
       PerfilPantalla("SUPERVISOR CALL", "usuario"),
@@ -213,6 +216,8 @@ object Db {
       Ruta("/venta/all"),
       Ruta("/usuario/paraCreacion"),
       Ruta("/usuario/paraLogistica"),
+      Ruta("/validacion/ventasAModificar"),
+      Ruta("/validacion/updateVenta/"),
     ),
 
     Schemas.pantallasRutas ++= Seq(
@@ -221,6 +226,8 @@ object Db {
       PantallaRuta("venta", "/obraSocial/all"),
       PantallaRuta("venta", "/usuario/paraCreacion"),
       PantallaRuta("logistica", "/usuario/paraLogistica"),
+      PantallaRuta("auditoria", "/validacion/ventasAModificar"),
+      PantallaRuta("auditoria", "/validacion/updateVenta/")
     ),
 
   )

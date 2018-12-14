@@ -43,7 +43,7 @@ GET /usuario/paraLogistica/:perfil  controllers.UsuarioController.paraLogistica(
 
 GET /usuario/paraRecuperarVenta    controllers.UsuarioController.paraRecuperar
 
-
+POST /usuario/habilitarUsuario      controllers.UsuarioController.habilitarUsuario
 
 # LOGIN
 
@@ -65,9 +65,12 @@ GET /validacion/all                 controllers.ValidarController.all
 
 GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
 
-PUT /validacion/updateVenta/:idVenta   controllers.ValidarController.modificarVenta(idVenta: Long)
+PUT /modificar/updateVenta/:idVenta   controllers.ValidarController.modificarVenta(idVenta: Long)
 
-GET /validacion/ventasAModificar    controllers.ValidarController.ventasParaModificar
+GET /modificar/ventasAModificar    controllers.ValidarController.ventasParaModificar
+
+
+
 
 # LOGISTICA
 

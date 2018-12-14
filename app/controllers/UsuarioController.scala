@@ -46,8 +46,21 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
 
   }
 
+  def habilitarUsuario = authAction { implicit request =>
 
-  def getById(user: String) = getAuthAction { implicit request =>
+    val rootNode = request.rootNode
+
+    val idUser = jsonMapper.getAndRemoveElement(rootNode, "user")
+
+    val future = UsuarioRepository.habilitarUsuario(idUser)
+
+    val checkObs = Await.result(future, Duration.Inf)
+
+
+    Ok("modificado")
+  }
+
+    def getById(user: String) = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val futureUser = UsuarioRepository.getById(user)
     val userWithRealtionships = Await.result(futureUser, Duration.Inf)
