@@ -140,17 +140,17 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
   }
 
-  def estadisticaRechazosTotales = authAction { implicit request =>
+  def estadisticaRechazos = authAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
     val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
     val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
     val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
     val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
 
-    val future = EstadisticaRepository.rechazosTotales(fechaDesde, fechaHasta)
+    val future = EstadisticaRepository.rechazos(fechaDesde, fechaHasta)
     val arch = Await.result(future, Duration.Inf)
 
-    val v = arch.map { case (fechaCreacion, nombre, cuil, estado, fechaR, obs) =>
+    val v = arch.map { case (fechaCreacion, nombre, cuil, estado, fechaR, obs, recuperable, vendedor) =>
 
       val node = jsonMapper.mapper.createObjectNode()
       jsonMapper.putElement(node, "nombre", nombre)
@@ -159,6 +159,11 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
       jsonMapper.putElement(node, "estado", estado)
       jsonMapper.putElement(node, "fechaRechazo", fechaR)
       jsonMapper.putElement(node, "observacion", obs)
+      if (recuperable == "0")
+        jsonMapper.putElement(node, "tipo", "Total")
+      else
+        jsonMapper.putElement(node, "tipo", "Parcial")
+      jsonMapper.putElement(node, "vendedor", vendedor)
 
       node
     }
@@ -179,6 +184,7 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
     val v = arch.map { case (nombre, rechazadas, presentadas, pagadas) =>
 
       val node = jsonMapper.mapper.createObjectNode()
+
       jsonMapper.putElement(node, "nombre", nombre)
       jsonMapper.putElement(node, "rechazadas", rechazadas)
       jsonMapper.putElement(node, "presentadas", presentadas)

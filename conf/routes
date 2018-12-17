@@ -148,7 +148,7 @@ POST /estadistica/visitas                    controllers.EstadisticaController.v
 
 POST /estadistica/archivos                   controllers.EstadisticaController.archivos
 
-POST /estadistica/rechazosTotales            controllers.EstadisticaController.estadisticaRechazosTotales
+POST /estadistica/rechazos                  controllers.EstadisticaController.estadisticaRechazos
 
 POST /estadistica/vendedoras                 controllers.EstadisticaController.estadisticaVendedoras
 

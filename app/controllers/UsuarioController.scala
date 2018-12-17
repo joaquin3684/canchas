@@ -50,11 +50,11 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
 
     val rootNode = request.rootNode
 
-    val idUser = jsonMapper.getAndRemoveElement(rootNode, "user")
+    val idUser = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(rootNode, "user")
 
     val future = UsuarioRepository.habilitarUsuario(idUser)
 
-    val checkObs = Await.result(future, Duration.Inf)
+    Await.result(future, Duration.Inf)
 
 
     Ok("modificado")

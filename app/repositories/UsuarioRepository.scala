@@ -43,7 +43,7 @@ object UsuarioRepository extends Perfiles {
     val query = {
       for {
         uo <- usuariosObrasSociales.filter(x => x.idObraSocial.inSetBind(obs))
-        u <- usuarios.filter(x => x.borrado === false && x.user === uo.idUsuario)
+        u <- usuarios.filter(x => x.user === uo.idUsuario)
       } yield u
     }
     Db.db.run(query.result)
@@ -68,7 +68,7 @@ object UsuarioRepository extends Perfiles {
     val userObsBorrados = usuariosObrasSociales.filter({ x => x.idUsuario === user}).delete
     val userPerBorrados = usuariosPerfiles.filter({ x => x.idUsuario === user}).delete
 
-    val modUser = usuarios.filter(_.user === user).map( u => (u.user, u.email, u.nombre) ).update(userNuevo.user, userNuevo.email, userNuevo.nombre)
+    val modUser = usuarios.filter(_.user === user).map( u => (u.email, u.nombre) ).update(userNuevo.email, userNuevo.nombre)
     val userObs = usuariosObrasSociales ++= obrasSociales
     val userPerfiles = usuariosPerfiles ++= perfiles
 
