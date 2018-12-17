@@ -37,9 +37,7 @@ object EstadisticaRepository extends Estados {
                      (select u.nombre from estados e join usuarios u on u.user = e.user where e.estado = 'Creado' and e.id_venta = v.id) as vendedor
                   from ventas v
                   join estados e on e.id_venta = v.id
-                  where e.recuperable = 0 and
-                   e.estado like 'Rech%' and
-                    e.fecha between '#$fStr' and '#$fhStr'
+                  where e.estado like 'Rech%' and exists (select 1 from estados where fecha between '#$fStr' and '#$fhStr' and estado = 'Creado' and id_venta = v.id)
 
       """.as[(String, String, String, String, String, String, String, String)]
 
