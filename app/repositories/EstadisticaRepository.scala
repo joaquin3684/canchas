@@ -37,7 +37,9 @@ object EstadisticaRepository extends Estados {
                      (select u.nombre from estados e join usuarios u on u.user = e.user where e.estado = 'Creado' and e.id_venta = v.id) as vendedor
                   from ventas v
                   join estados e on e.id_venta = v.id
-                  where e.recuperable = 0 and e.estado like 'Rech%' and e.fecha between '#$fStr' and '#$fhStr'
+                  where e.recuperable = 0 and
+                   e.estado like 'Rech%' and
+                    e.fecha between '#$fStr' and '#$fhStr'
 
       """.as[(String, String, String, String, String, String, String, String)]
 
@@ -107,35 +109,38 @@ object EstadisticaRepository extends Estados {
 
 
     val p = sql"""select
-                  usuarios.nombre,
-                  (select count(*) from estados
-                   where estados.user = e2.user and
-                    estados.estado = 'Creado' and
-                     estados.id_venta in
-                     (select estados.id_venta from estados
-                   where estados.estado like 'Rech%')) as rechazados,
-
-                 (select count(*) from estados
-                                    where estados.user = e2.user and
-                                     estados.estado = 'Creado' and
+                                  u.nombre,
+                                   (select count(*) from estados
+                                    where estados.user = u.user and
+                                     estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
                                       estados.id_venta in
                                       (select estados.id_venta from estados
-                                    where estados.estado = 'Presentada')) as presentadas,
+                                    where estados.estado like 'Rech%')) as rechazados,
 
-                 (select count(*) from estados
-                                                     where estados.user = e2.user and
-                                                      estados.estado = 'Creado' and
+                                    (select count(*) from estados
+                                                     where estados.user = u.user and
+                                                      estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
                                                        estados.id_venta in
                                                        (select estados.id_venta from estados
-                                                     where estados.estado = 'Pagada')) as presentadas
+                                                     where estados.estado = 'Presentada')
+                                                           and estados.id_venta not in
+                                                    (select estados.id_venta from estados
+                                                                     where estados.estado = 'Pagada')
+                                  ) as presentadas,
+
+                  (select count(*) from estados
+                                                                      where estados.user = u.user and
+                                                                       estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                                                        estados.id_venta in
+                                                                        (select estados.id_venta from estados
+                                                                      where estados.estado = 'Pagada')) as pagadas
 
 
-
-                  from estados e2
-                  join usuarios on e2.user = usuarios.user
-                  join usuario_perfil on usuarios.user = usuario_perfil.user
-                  where  e2.estado = 'Creado' and usuario_perfil.perfil = '#$perfil' and fecha between '#$fStr' and '#$fhStr'
-                  group by usuarios.nombre, usuarios.user
+                   from usuarios u
+                                   join usuario_perfil on u.user = usuario_perfil.user
+                                   where  usuario_perfil.perfil = '#$perfil'
+                                   group by u.nombre, u.user
+                                   having rechazados > 0 or presentadas > 0 or pagadas > 0
 
       """.as[(String, Int, Int, Int)]
 
