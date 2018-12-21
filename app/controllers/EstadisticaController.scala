@@ -196,6 +196,80 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
     Ok(jsonMapper.toJson(v))
   }
 
+  def estadisticaCall = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val future = EstadisticaRepository.cantidadVentasCall(fechaDesde, fechaHasta, OPERADOR_VENTA)
+    val arch = Await.result(future, Duration.Inf)
+
+    val v = arch.map { case (nombre, rechazadas, presentadas, pagadas, auditadas) =>
+
+      val node = jsonMapper.mapper.createObjectNode()
+
+      jsonMapper.putElement(node, "nombre", nombre)
+      jsonMapper.putElement(node, "rechazadas", rechazadas)
+      jsonMapper.putElement(node, "presentadas", presentadas)
+      jsonMapper.putElement(node, "pagadas", pagadas)
+      jsonMapper.putElement(node, "auditadas", auditadas)
+
+      node
+    }
+
+    Ok(jsonMapper.toJson(v))
+  }
+
+  def estadisticaEmpresas = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+
+    val future = EstadisticaRepository.empresas(fechaDesde, fechaHasta)
+    val arch = Await.result(future, Duration.Inf)
+
+    val v = arch.map { case (idVenta, empresa, direccion, localidad, cantidadEmpleados, hora_entrada, hora_salida, vendedor) =>
+
+      val node = jsonMapper.mapper.createObjectNode()
+      jsonMapper.putElement(node, "empresa", empresa)
+      jsonMapper.putElement(node, "direccion", localidad)
+      jsonMapper.putElement(node, "cantidadEmpleados", cantidadEmpleados)
+      jsonMapper.putElement(node, "horaEntrada", hora_entrada)
+      jsonMapper.putElement(node, "horaSalida", hora_salida)
+      jsonMapper.putElement(node, "vendedor", vendedor)
+
+      node
+    }
+
+    Ok(jsonMapper.toJson(v))
+  }
+
+  def localidadesEmpresa = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+
+    val future2 = EstadisticaRepository.localidadesEmpresa(fechaDesde, fechaHasta)
+    val arch2 = Await.result(future2, Duration.Inf)
+    Ok(jsonMapper.toJson(arch2))
+    val v2 = arch2.map { case (localidad) =>
+
+      val node2 = jsonMapper.mapper.createObjectNode()
+      jsonMapper.putElement(node2, "localidad", localidad)
+
+
+      node2
+    }
+    Ok(jsonMapper.toJson(v2))
+  }
+
+
+
   def estadisticaPromotoras = authAction { implicit request =>
 
     implicit val obs: Seq[String] = request.obrasSociales
@@ -219,6 +293,109 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
     Ok(jsonMapper.toJson(v))
   }
+
+
+  def estadisticaEficienciaVendedoras = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val future = EstadisticaRepository.eficienciaPerfil(fechaDesde, fechaHasta, VENDEDORA)
+    val arch = Await.result(future, Duration.Inf)
+
+    val v = arch.map { case (nombre, rechazadas, presentadas, pagadas, auditadas) =>
+
+      val node = jsonMapper.mapper.createObjectNode()
+
+      jsonMapper.putElement(node, "nombre", nombre)
+      jsonMapper.putElement(node, "rechazadas", rechazadas)
+      jsonMapper.putElement(node, "presentadas", presentadas)
+      jsonMapper.putElement(node, "pagadas", pagadas)
+      jsonMapper.putElement(node, "auditadas", auditadas)
+
+      node
+    }
+
+    Ok(jsonMapper.toJson(v))
+  }
+
+  def estaditicaCantidadVentasTotales = authAction { implicit request =>
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val division = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "division")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val future = EstadisticaRepository.cantidadVentasTotal(fechaDesde, fechaHasta)
+    val arch = Await.result(future, Duration.Inf)
+
+    val v = arch.map { case (nombre, rechazadas, presentadas, pagadas, auditadas) =>
+
+      val node = jsonMapper.mapper.createObjectNode()
+
+      jsonMapper.putElement(node, "nombre", nombre)
+      jsonMapper.putElement(node, "rechazadas", rechazadas)
+      jsonMapper.putElement(node, "presentadas", presentadas)
+      jsonMapper.putElement(node, "pagadas", pagadas)
+      jsonMapper.putElement(node, "auditadas", auditadas)
+
+      node
+    }
+    Ok(jsonMapper.toJson(v))
+
+  }
+
+
+    def estadisticaCantidadVentasPorZona = authAction { implicit request =>
+      implicit val obs: Seq[String] = request.obrasSociales
+      val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+      val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+      val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+      val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+      val future = EstadisticaRepository.cantidadVentasPorZona(fechaDesde, fechaHasta)
+      val arch = Await.result(future, Duration.Inf)
+
+      val v = arch.map { case (zona, rechazadas, presentadas, pagadas) =>
+
+        val node = jsonMapper.mapper.createObjectNode()
+
+        jsonMapper.putElement(node, "zona", zona)
+        jsonMapper.putElement(node, "rechazadas", rechazadas)
+        jsonMapper.putElement(node, "presentadas", presentadas)
+        jsonMapper.putElement(node, "pagadas", pagadas)
+
+        node
+      }
+
+
+    Ok(jsonMapper.toJson(v))
+  }
+
+    def estadisticaCantidadVentasPorLocalidad = authAction { implicit request =>
+      implicit val obs: Seq[String] = request.obrasSociales
+      val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+      val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+      val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+      val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+      val future = EstadisticaRepository.cantidadVentasPorLocalidad(fechaDesde, fechaHasta)
+      val arch = Await.result(future, Duration.Inf)
+
+      val v = arch.map { case (localidad, rechazadas, presentadas, pagadas) =>
+
+        val node = jsonMapper.mapper.createObjectNode()
+
+        jsonMapper.putElement(node, "localidad", localidad)
+        jsonMapper.putElement(node, "rechazadas", rechazadas)
+        jsonMapper.putElement(node, "presentadas", presentadas)
+        jsonMapper.putElement(node, "pagadas", pagadas)
+
+        node
+      }
+
+
+      Ok(jsonMapper.toJson(v))
+    }
 
   def estadisticaCantVisitasPromotora = authAction { implicit request =>
 
@@ -264,4 +441,30 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
     Ok(jsonMapper.toJson(v))
   }
+
+  def indicadorVentasPresentadasDelMes = authAction { implicit request =>
+
+    implicit val obs: Seq[String] = request.obrasSociales
+    val fdesde = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaDesde")
+    val fhasta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "fechaHasta")
+    val fechaDesde = DateTime.fromIsoDateTimeString(fdesde).get
+    val fechaHasta = DateTime.fromIsoDateTimeString(fhasta).get
+    val future = EstadisticaRepository.indicadorVentasPresentadasDelMes(fechaDesde, fechaHasta)
+    val arch = Await.result(future, Duration.Inf)
+
+    val v = arch.map { case (nombre, rechazadas, presentadas, pagadas) =>
+
+      val node = jsonMapper.mapper.createObjectNode()
+      jsonMapper.putElement(node, "nombre", nombre)
+      jsonMapper.putElement(node, "rechazadas", rechazadas)
+      jsonMapper.putElement(node, "presentadas", presentadas)
+      jsonMapper.putElement(node, "pagadas", pagadas)
+
+      node
+    }
+
+    Ok(jsonMapper.toJson(v))
+  }
+
+
 }

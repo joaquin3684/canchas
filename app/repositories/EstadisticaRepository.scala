@@ -123,7 +123,7 @@ object EstadisticaRepository extends Estados {
                                                      where estados.estado = 'Presentada')
                                                            and estados.id_venta not in
                                                     (select estados.id_venta from estados
-                                                                     where estados.estado = 'Pagada')
+                                                                     where estados.estado = 'Pagada' or estados.estado like 'Rech%')
                                   ) as presentadas,
 
                   (select count(*) from estados
@@ -145,6 +145,287 @@ object EstadisticaRepository extends Estados {
 
     Db.db.run(p)
   }
+
+  def cantidadVentasCall(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select
+                                  u.nombre,
+                                   (select count(*) from estados
+                                    where estados.user = u.user and
+                                     estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                      estados.id_venta in
+                                      (select estados.id_venta from estados
+                                    where estados.estado like 'Rech%')) as rechazados,
+
+                                    (select count(*) from estados
+                                                     where estados.user = u.user and
+                                                      estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                                       estados.id_venta in
+                                                       (select estados.id_venta from estados
+                                                     where estados.estado = 'Presentada')
+                                                           and estados.id_venta not in
+                                                    (select estados.id_venta from estados
+                                                                     where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+                                  ) as presentadas,
+
+                  (select count(*) from estados
+                                                                      where estados.user = u.user and
+                                                                       estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                                                        estados.id_venta in
+                                                                        (select estados.id_venta from estados
+                                                                      where estados.estado = 'Pagada')) as pagadas
+
+                  (select count(*) from estados
+                             where estados.user = u.user
+                              and  estados.estado = 'Creado'
+                               and (fecha between '#$fStr' and '#$fhStr')
+                                and estados.id_venta in
+                             (select estados.id_venta from estados
+                                where estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada'))
+                                 and estados.id_venta not in
+                                           (select estados.id_venta from estados
+                                              where estados.estado = 'Pagada' or estados.estado = 'Presentada' or estados.estado like 'Rech%')as auditadas
+                   from usuarios u
+                                   join usuario_perfil on u.user = usuario_perfil.user
+                                   where  usuario_perfil.perfil = '#$perfil'
+                                   group by u.nombre, u.user
+                                   having rechazados > 0 or presentadas > 0 or pagadas > 0 or auditadas > 0
+
+      """.as[(String, Int, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def empresas(fechaDesde: DateTime, fechaHasta:DateTime): Future[Seq[(Long, String, String, String, String, String, String, String)]] = {
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+    val p = sql"""select datos_empresa.*, usuarios.nombre as vendedor from ventas
+                    join estados on ventas.id = estados.id_venta
+                    join usuarios on estados.user = usuarios.user
+                    join datos_empresa on ventas.id = datos_empresa.id_venta
+                    where estados.estado = 'Creado'
+
+      """.as[(Long, String, String, String, String, String, String, String)]
+    Db.db.run(p)
+
+  }
+
+  def localidadesEmpresa(fechaDesde: DateTime, fechaHasta:DateTime): Future[Seq[String]] = {
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+    val p = sql"""select datos_empresa.localidad from ventas
+                    join datos_empresa on ventas.id = datos_empresa.id_venta
+                    group by datos_empresa.localidad
+
+      """.as[String]
+    Db.db.run(p)
+
+  }
+
+
+  def eficienciaPerfil(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select
+                                  u.nombre,
+                                   (select count(*) from estados
+                                    where estados.user = u.user and
+                                     estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                      estados.id_venta in
+                                      (select estados.id_venta from estados
+                                    where estados.estado like 'Rech%')) as rechazados,
+
+                                    (select count(*) from estados
+                                                     where estados.user = u.user and
+                                                      estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                                       estados.id_venta in
+                                                       (select estados.id_venta from estados
+                                                     where estados.estado = 'Presentada')
+                                                           and estados.id_venta not in
+                                                    (select estados.id_venta from estados
+                                                                     where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+                                  ) as presentadas,
+
+                  (select count(*) from estados
+                                                                      where estados.user = u.user and
+                                                                       estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                                                                        estados.id_venta in
+                                                                        (select estados.id_venta from estados
+                                                                      where estados.estado = 'Pagada')) as pagadas
+
+                  (select count(*) from estados
+                             where estados.user = u.user
+                              and  estados.estado = 'Creado'
+                               and (fecha between '#$fStr' and '#$fhStr')
+                                and estados.id_venta in
+                             (select estados.id_venta from estados
+                                where estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada'))
+                                 and estados.id_venta not in
+                                           (select estados.id_venta from estados
+                                              where estados.estado = 'Pagada' or estados.estado = 'Presentada' or estados.estado like 'Rech%')as auditadas
+                   from usuarios u
+                                   join usuario_perfil on u.user = usuario_perfil.user
+                                   where  usuario_perfil.perfil = '#$perfil'
+                                   group by u.nombre, u.user
+                                   having rechazados > 0 or presentadas > 0 or pagadas > 0 or auditadas > 0
+
+      """.as[(String, Int, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+
+  def cantidadVentasTotal(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select count(*)
+                          from estados
+                          group by
+
+
+      """.as[(String, Int, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+
+  def cantidadVentasPorZona(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select ventas.zona,
+
+                 (select count(*) from estados
+                    (fecha between '#$fStr' and '#$fhStr') and
+                    estados.estado = 'Creado'
+                     estados.id_venta in
+                     (select estados.id_venta from estados
+                       where estados.estado like 'Rech%')) as rechazados,
+
+                 (select count(*) from estados
+                        where
+                        estados.estado = 'Creado'
+                        and (fecha between '#$fStr' and '#$fhStr') and
+                        estados.id_venta in
+                        (select estados.id_venta from estados
+                        where estados.estado = 'Presentada')
+                        and estados.id_venta not in
+                        (select estados.id_venta from estados
+                        where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+                        ) as presentadas,
+
+
+                 (select count(*) from estados
+                        where
+                        estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                        estados.id_venta in
+                             (select estados.id_venta from estados
+                              where estados.estado = 'Pagada')) as pagadas
+
+                          from ventas
+                          where
+                          group by ventas.zona
+
+
+      """.as[(String, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def cantidadVentasPorLocalidad(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select ventas.localidad,
+
+                 (select count(*) from estados
+                    (fecha between '#$fStr' and '#$fhStr') and
+                    estados.estado = 'Creado'
+                     estados.id_venta in
+                     (select estados.id_venta from estados
+                       where estados.estado like 'Rech%')) as rechazados,
+
+                 (select count(*) from estados
+                        where
+                        estados.estado = 'Creado'
+                        and (fecha between '#$fStr' and '#$fhStr') and
+                        estados.id_venta in
+                        (select estados.id_venta from estados
+                        where estados.estado = 'Presentada')
+                        and estados.id_venta not in
+                        (select estados.id_venta from estados
+                        where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+                        ) as presentadas,
+
+
+                 (select count(*) from estados
+                        where
+                        estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
+                        estados.id_venta in
+                             (select estados.id_venta from estados
+                              where estados.estado = 'Pagada')) as pagadas
+
+                          from ventas
+                          where
+                          group by ventas.localidad
+
+
+      """.as[(String, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def indicadorVentasPresentadasDelMes(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select count(*) from estados
+                          where month(estados.fecha) = month(CURDATE())
+                          where estados.estado = 'Presentada'
+                           and estados.id_venta not int (select estados.id_venta from estados
+                                         where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+
+      """.as[(String, Int, Int, Int)]
+
+
+    Db.db.run(p)
+  }
+
 
   def cantidadVisitasPerfil(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String): Future[Seq[(String, Int)]] = {
 

@@ -157,3 +157,13 @@ POST /estadistica/promotoras                controllers.EstadisticaController.es
 POST /estadistica/promotoras/cantVisitas       controllers.EstadisticaController.estadisticaCantVisitasPromotora
 
 POST /estadistica/externos                    controllers.EstadisticaController.estadisticaExterno
+
+POST /estadistica/call                        controllers.EstadisticaController.estadisticaCall
+
+POST /estadistica/empresa                       controllers.EstadisticaController.estadisticaEmpresas
+
+POST /estadistica/localidadesEmpresa            controllers.EstadisticaController.localidadesEmpresa
+
+POST /estadistica/ventasPorLocalidad            controllers.EstadisticaController.estadisticaCantidadVentasPorLocalidad
+
+POST /estadistica/ventasPorZona                 controllers.EstadisticaController.estadisticaCantidadVentasPorZona

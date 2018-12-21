@@ -139,11 +139,11 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
     val estado = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "estado")
     val observacion = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "observacion")
-
+    val recuperable = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "recuperable").toBoolean
 
     val estadoNuevo = estado match {
       case "PAGADA" => Estado(request.user, idVenta, PAGADA, DateTime.now)
-      case "RECHAZADA" => Estado(request.user, idVenta, RECHAZO_PRESENTACION, DateTime.now, false, Some(observacion))
+      case "RECHAZADA" => Estado(request.user, idVenta, RECHAZO_PRESENTACION, DateTime.now, recuperable, Some(observacion))
       case "PENDIENTE AUDITORIA" => Estado(request.user, idVenta, "estado auxiliar", DateTime.now)
     }
 
