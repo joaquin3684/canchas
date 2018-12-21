@@ -179,7 +179,7 @@ object EstadisticaRepository extends Estados {
                                                                        estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
                                                                         estados.id_venta in
                                                                         (select estados.id_venta from estados
-                                                                      where estados.estado = 'Pagada')) as pagadas
+                                                                      where estados.estado = 'Pagada')) as pagadas,
 
                   (select count(*) from estados
                              where estados.user = u.user
@@ -190,7 +190,7 @@ object EstadisticaRepository extends Estados {
                                 where estados.estado = 'Auditoria aprobada' or estados.estado = 'Auditoria observada'))
                                  and estados.id_venta not in
                                            (select estados.id_venta from estados
-                                              where estados.estado = 'Pagada' or estados.estado = 'Presentada' or estados.estado like 'Rech%')as auditadas
+                                              where estados.estado = 'Pagada' or estados.estado = 'Presentada' or estados.estado like 'Rech%'))as auditadas
                    from usuarios u
                                    join usuario_perfil on u.user = usuario_perfil.user
                                    where  usuario_perfil.perfil = '#$perfil'
