@@ -164,6 +164,8 @@ POST /estadistica/empresa                       controllers.EstadisticaControlle
 
 POST /estadistica/localidadesEmpresa            controllers.EstadisticaController.localidadesEmpresa
 
+GET /estadistica/zonas                         controllers.EstadisticaController.zonas
+
 POST /estadistica/ventasPorLocalidad            controllers.EstadisticaController.estadisticaCantidadVentasPorLocalidad
 
 POST /estadistica/ventasPorZona                 controllers.EstadisticaController.estadisticaCantidadVentasPorZona
@@ -175,3 +177,13 @@ POST /estadistica/ventasTotalesPorSemana        controllers.EstadisticaControlle
 POST /estadistica/ventasTotalesPorMes           controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorMes
 
 POST /estadistica/ventasTotalesPorAnio          controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorAnio
+
+POST /estadistica/eficienciaCall                controllers.EstadisticaController.estadistiscaEficienciaCall
+
+POST /estadistica/eficienciaVendedora                controllers.EstadisticaController.estadistiscaEficienciaVendedora
+
+POST /estadistica/eficienciaExterno                controllers.EstadisticaController.estadistiscaEficienciaExterno
+
+POST /estadistica/eficienciaPromotora                controllers.EstadisticaController.estadisticaEficienciaPromotora
+
+POST /estadistica/cantidadVentasPorObraSocial   controllers.EstadisticaController.estadisticaCantidadVentasPorObraSocial
