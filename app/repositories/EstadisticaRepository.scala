@@ -290,7 +290,7 @@ object EstadisticaRepository extends Estados {
   }
 
 
-  def cantidadVentasTotal(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int, Int)]] = {
+  def cantidadVentasTotalPorDia(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
 
@@ -298,17 +298,91 @@ object EstadisticaRepository extends Estados {
     val fhStr = fechaHasta.toIsoDateString()
 
 
-    val p = sql"""select count(*)
-                          from estados
-                          group by
+    val p = sql"""select e.fecha,
+                               sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                               sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                               sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
 
+                           from estados e
+                                           where (e.fecha between '#$fStr' and '#$fhStr') and e.estado = 'Presentada'
+                                           group by e.fecha
 
-      """.as[(String, Int, Int, Int, Int)]
+      """.as[(String, Int)]
 
 
     Db.db.run(p)
   }
 
+  def cantidadVentasTotalPorSemana(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select floor((dayofyear(e.fecha) - dayofyear('#$fStr'))/7),
+                               sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                               sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                               sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
+
+
+
+                           from estados e
+                                           where (e.fecha between '#$fhStr' and '#$fhStr') and e.estado = 'Presentada'
+                                           group by floor((dayofyear(e.fecha) - dayofyear('#$fStr'))/7)
+
+      """.as[(String, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def cantidadVentasTotalPorMes(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select month(e.fecha),
+                   sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                   sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                   sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
+
+                   from estados e
+                        where (e.fecha between '#$fStr' and '#$fhStr') and e.estado = 'Presentada'
+                        group by month(e.fecha)
+
+      """.as[(String, Int)]
+
+
+    Db.db.run(p)
+  }
+
+  def cantidadVentasTotalPorAnio(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int)]] = {
+
+    val obsSql = obs.mkString("'", "', '", "'")
+
+    val fStr = fechaDesde.toIsoDateString()
+    val fhStr = fechaHasta.toIsoDateString()
+
+
+    val p = sql"""select year(e.fecha),
+                   sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                   sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                   sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
+
+                   from estados e
+                        where (e.fecha between '#$fStr' and '#$fhStr') and e.estado = 'Presentada'
+                        group by year(e.fecha)
+
+      """.as[(String, Int)]
+
+
+    Db.db.run(p)
+  }
 
   def cantidadVentasPorZona(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
 

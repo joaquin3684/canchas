@@ -3,162 +3,162 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /cargarbase                           controllers.HomeController.index
+GET     /cargarbase                             controllers.HomeController.index
 # An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
+GET     /count                                  controllers.CountController.count
 
 
 # An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
+GET     /message                                controllers.AsyncController.message
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                           controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /prueba                     controllers.HomeController.prueba
+GET     /prueba                                 controllers.HomeController.prueba
 
 # USUARIOS
 
-POST /usuario/create                controllers.UsuarioController.create
+POST /usuario/create                            controllers.UsuarioController.create
 
-GET /usuario/get/:user              controllers.UsuarioController.getById(user: String)
+GET /usuario/get/:user                          controllers.UsuarioController.getById(user: String)
 
-GET /usuario/all                    controllers.UsuarioController.all
+GET /usuario/all                                controllers.UsuarioController.all
 
-GET /usuario/perfiles               controllers.UsuarioController.perfiles
+GET /usuario/perfiles                           controllers.UsuarioController.perfiles
 
-PUT /usuario/update/:user           controllers.UsuarioController.update(user: String)
+PUT /usuario/update/:user                       controllers.UsuarioController.update(user: String)
 
-DELETE /usuario/delete/:user        controllers.UsuarioController.delete(user: String)
+DELETE /usuario/delete/:user                    controllers.UsuarioController.delete(user: String)
 
-POST /usuario/cambiarPasswordPropia controllers.UsuarioController.cambiarPasswordPropia
+POST /usuario/cambiarPasswordPropia             controllers.UsuarioController.cambiarPasswordPropia
 
-POST /usuario/cambiarPassword       controllers.UsuarioController.cambiarPassword
+POST /usuario/cambiarPassword                   controllers.UsuarioController.cambiarPassword
 
-GET /usuario/paraCreacion           controllers.UsuarioController.paraCreacion
+GET /usuario/paraCreacion                       controllers.UsuarioController.paraCreacion
 
-GET /usuario/paraModificacion       controllers.UsuarioController.paraModificacion
+GET /usuario/paraModificacion                   controllers.UsuarioController.paraModificacion
 
-GET /usuario/paraLogistica/:perfil  controllers.UsuarioController.paraLogistica(perfil: String)
+GET /usuario/paraLogistica/:perfil              controllers.UsuarioController.paraLogistica(perfil: String)
 
-GET /usuario/paraRecuperarVenta    controllers.UsuarioController.paraRecuperar
+GET /usuario/paraRecuperarVenta                 controllers.UsuarioController.paraRecuperar
 
-POST /usuario/habilitarUsuario      controllers.UsuarioController.habilitarUsuario
+POST /usuario/habilitarUsuario                  controllers.UsuarioController.habilitarUsuario
 
 # LOGIN
 
-POST /login                         controllers.LoginController.login
+POST /login                                     controllers.LoginController.login
 
 # VENTA
 
-POST /venta/create                  controllers.VentaController.create
+POST /venta/create                              controllers.VentaController.create
 
-GET /venta/all                      controllers.VentaController.all
+GET /venta/all                                  controllers.VentaController.all
 
-POST /venta/existenciaDni           controllers.VentaController.checkDniExistence
+POST /venta/existenciaDni                       controllers.VentaController.checkDniExistence
 
 # VALIDACION
 
-POST /validacion/validar            controllers.ValidarController.validar
+POST /validacion/validar                        controllers.ValidarController.validar
 
-GET /validacion/all                 controllers.ValidarController.all
+GET /validacion/all                             controllers.ValidarController.all
 
-GET /validacion/ventasAValidar      controllers.ValidarController.ventasAValidar
+GET /validacion/ventasAValidar                  controllers.ValidarController.ventasAValidar
 
-PUT /modificar/updateVenta/:idVenta   controllers.ValidarController.modificarVenta(idVenta: Long)
+PUT /modificar/updateVenta/:idVenta             controllers.ValidarController.modificarVenta(idVenta: Long)
 
-GET /modificar/ventasAModificar    controllers.ValidarController.ventasParaModificar
+GET /modificar/ventasAModificar                 controllers.ValidarController.ventasParaModificar
 
 
 
 
 # LOGISTICA
 
-POST /logisticaOper/generarVisita       controllers.LogisticaController.altaVisita
+POST /logisticaOper/generarVisita               controllers.LogisticaController.altaVisita
 
-POST /logistica/confirmarVisita     controllers.LogisticaController.confirmarVisita
+POST /logistica/confirmarVisita                 controllers.LogisticaController.confirmarVisita
 
-POST /logistica/repactarVisita      controllers.LogisticaController.repactarVisita
+POST /logistica/repactarVisita                  controllers.LogisticaController.repactarVisita
 
-POST /logistica/rechazar            controllers.LogisticaController.rechazar
+POST /logistica/rechazar                        controllers.LogisticaController.rechazar
 
-GET /logisticaOper/ventasSinVisita      controllers.LogisticaController.ventasSinVisita
+GET /logisticaOper/ventasSinVisita              controllers.LogisticaController.ventasSinVisita
 
-GET /logistica/ventasATrabajar     controllers.LogisticaController.ventasATrabajar
+GET /logistica/ventasATrabajar                  controllers.LogisticaController.ventasATrabajar
 
-GET /logistica/all                  controllers.LogisticaController.all
+GET /logistica/all                              controllers.LogisticaController.all
 
-POST /logistica/asignarUsuario      controllers.LogisticaController.asignarUsuario
+POST /logistica/asignarUsuario                  controllers.LogisticaController.asignarUsuario
 
-POST /logistica/enviarAlCall        controllers.LogisticaController.enviarACall
+POST /logistica/enviarAlCall                    controllers.LogisticaController.enviarACall
 
 # GET /logistica/getAll/:dni           controllers.LogisticaController.getVisitas(dni: Int)
 
-GET /logistica/get/:dni             controllers.LogisticaController.getVisita(dni: Int)
+GET /logistica/get/:dni                         controllers.LogisticaController.getVisita(dni: Int)
 
 # AUDITORIA
 
-GET /auditoria/all                  controllers.AuditoriaController.all
+GET /auditoria/all                              controllers.AuditoriaController.all
 
-GET /auditoria/ventasParaAuditar    controllers.AuditoriaController.ventasParaAuditar
+GET /auditoria/ventasParaAuditar                controllers.AuditoriaController.ventasParaAuditar
 
-POST /auditoria/auditar              controllers.AuditoriaController.upload
+POST /auditoria/auditar                         controllers.AuditoriaController.upload
 
 # ADMINISTRACION DE VENTA
 
-GET /administracionVenta/ventasIncompletas  controllers.AdministracionVentaController.ventasIncompletas
+GET /administracionVenta/ventasIncompletas      controllers.AdministracionVentaController.ventasIncompletas
 
-POST /administracionVenta/completarVenta    controllers.AdministracionVentaController.completarVenta
+POST /administracionVenta/completarVenta        controllers.AdministracionVentaController.completarVenta
 
-GET /administracionVenta/ventasPresentables controllers.AdministracionVentaController.ventasPresentables
+GET /administracionVenta/ventasPresentables     controllers.AdministracionVentaController.ventasPresentables
 
-POST /administracionVenta/presentarVentas   controllers.AdministracionVentaController.presentarVentas
+POST /administracionVenta/presentarVentas       controllers.AdministracionVentaController.presentarVentas
 
-GET /administracionVenta/ventasPresentadas  controllers.AdministracionVentaController.ventasPresentadas
+GET /administracionVenta/ventasPresentadas      controllers.AdministracionVentaController.ventasPresentadas
 
-POST /administracionVenta/analizarPresentacion controllers.AdministracionVentaController.analizarPresentacion
+POST /administracionVenta/analizarPresentacion  controllers.AdministracionVentaController.analizarPresentacion
 
-GET /administracionVenta/ventasPagadas      controllers.AdministracionVentaController.ventasPagadas
+GET /administracionVenta/ventasPagadas          controllers.AdministracionVentaController.ventasPagadas
 
-POST /administracionVenta/digitalizarArchivos controllers.AdministracionVentaController.digitalizarArchivos
+POST /administracionVenta/digitalizarArchivos   controllers.AdministracionVentaController.digitalizarArchivos
 
-GET /administracionVenta/ventasRechazables     controllers.AdministracionVentaController.ventasRechazables
+GET /administracionVenta/ventasRechazables      controllers.AdministracionVentaController.ventasRechazables
 
 POST /administracionVenta/rechazar              controllers.AdministracionVentaController.rechazar
 
 # RECUPERACION DE VENTA
 
-GET /recuperarVenta/all                     controllers.RecuperarVentaController.ventasRecuperables
+GET /recuperarVenta/all                         controllers.RecuperarVentaController.ventasRecuperables
 
-POST /recuperarVenta/recuperar              controllers.RecuperarVentaController.recuperar
+POST /recuperarVenta/recuperar                  controllers.RecuperarVentaController.recuperar
 
-POST /recuperarVenta/rechazo                controllers.RecuperarVentaController.rechazo
+POST /recuperarVenta/rechazo                    controllers.RecuperarVentaController.rechazo
 
-GET /recuperarVenta/ventasParaPoderRecuperar controllers.RecuperarVentaController.ventasParaMarcarComoRecuperar
+GET /recuperarVenta/ventasParaPoderRecuperar    controllers.RecuperarVentaController.ventasParaMarcarComoRecuperar
 
-POST /recuperarVenta/marcarParaRecuperar    controllers.RecuperarVentaController.marcarParaRecuperar
+POST /recuperarVenta/marcarParaRecuperar        controllers.RecuperarVentaController.marcarParaRecuperar
 
 # ESTADISTICAS
 
-POST /estadistica/general                    controllers.EstadisticaController.general
+POST /estadistica/general                       controllers.EstadisticaController.general
 
-GET /estadistica/estados                     controllers.EstadisticaController.estados
+GET /estadistica/estados                        controllers.EstadisticaController.estados
 
-POST /estadistica/visitas                    controllers.EstadisticaController.visitas
+POST /estadistica/visitas                       controllers.EstadisticaController.visitas
 
-POST /estadistica/archivos                   controllers.EstadisticaController.archivos
+POST /estadistica/archivos                      controllers.EstadisticaController.archivos
 
-POST /estadistica/rechazos                  controllers.EstadisticaController.estadisticaRechazos
+POST /estadistica/rechazos                      controllers.EstadisticaController.estadisticaRechazos
 
-POST /estadistica/vendedoras                 controllers.EstadisticaController.estadisticaVendedoras
+POST /estadistica/vendedoras                    controllers.EstadisticaController.estadisticaVendedoras
 
-POST /estadistica/promotoras                controllers.EstadisticaController.estadisticaPromotoras
+POST /estadistica/promotoras                    controllers.EstadisticaController.estadisticaPromotoras
 
-POST /estadistica/promotoras/cantVisitas       controllers.EstadisticaController.estadisticaCantVisitasPromotora
+POST /estadistica/promotoras/cantVisitas        controllers.EstadisticaController.estadisticaCantVisitasPromotora
 
-POST /estadistica/externos                    controllers.EstadisticaController.estadisticaExterno
+POST /estadistica/externos                      controllers.EstadisticaController.estadisticaExterno
 
-POST /estadistica/call                        controllers.EstadisticaController.estadisticaCall
+POST /estadistica/call                          controllers.EstadisticaController.estadisticaCall
 
 POST /estadistica/empresa                       controllers.EstadisticaController.estadisticaEmpresas
 
@@ -167,3 +167,11 @@ POST /estadistica/localidadesEmpresa            controllers.EstadisticaControlle
 POST /estadistica/ventasPorLocalidad            controllers.EstadisticaController.estadisticaCantidadVentasPorLocalidad
 
 POST /estadistica/ventasPorZona                 controllers.EstadisticaController.estadisticaCantidadVentasPorZona
+
+POST /estadistica/ventasTotalesPorDia           controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorDia
+
+POST /estadistica/ventasTotalesPorSemana        controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorSemana
+
+POST /estadistica/ventasTotalesPorMes           controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorMes
+
+POST /estadistica/ventasTotalesPorAnio          controllers.EstadisticaController.estaditicaCantidadVentasTotalesPorAnio
