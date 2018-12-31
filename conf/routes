@@ -187,3 +187,5 @@ POST /estadistica/eficienciaExterno                controllers.EstadisticaContro
 POST /estadistica/eficienciaPromotora                controllers.EstadisticaController.estadisticaEficienciaPromotora
 
 POST /estadistica/cantidadVentasPorObraSocial   controllers.EstadisticaController.estadisticaCantidadVentasPorObraSocial
+
+GET /estadistica/indicadorVentasPresentadasDelMes  controllers.EstadisticaController.indicadorVentasPresentadasDelMes

@@ -523,21 +523,55 @@ object EstadisticaRepository extends Estados {
     Db.db.run(p)
   }
 
-  def indicadorVentasPresentadasDelMes(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
+  def indicadorVentasPresentadasDelMes()(implicit obs:Seq[String]): Future[Seq[(Int, Int, Int, Int, Int, Int)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
 
-    val fStr = fechaDesde.toIsoDateString()
-    val fhStr = fechaHasta.toIsoDateString()
 
 
-    val p = sql"""select count(*) from estados
-                          where month(estados.fecha) = month(CURDATE())
-                          where estados.estado = 'Presentada'
-                           and estados.id_venta not int (select estados.id_venta from estados
-                                         where estados.estado = 'Pagada' or estados.estado like 'Rech%')
+    val p = sql"""select (select count(distinct id_venta) from estados
+                            where estado = '#$PRESENTADA'
+                            and month(fecha) = month(CURDATE())
+                            and id_venta not in (select id_venta from estados
+                                                          where estado = 'Pagada' or estado like 'Rech%')) as presentadas,
 
-      """.as[(String, Int, Int, Int)]
+                          (select count(distinct id_venta) from estados
+                                    where estado = '#$PAGADA'
+                                    and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE()))
+                                    and id_venta not in (select id_venta from estados
+                                           where estado like 'Rech%')) as pagadas,
+
+                         (select count(distinct id_venta) from estados
+                                    where estado like 'Rech%'
+                                    and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE()))
+                                    ) as rechazadas,
+
+                         (select count(distinct id_venta) from estados
+                                where estado = '#$PRESENTADA'
+                                  and month(fecha) = month(CURDATE()- INTERVAL 1 MONTH)
+                                  and id_venta not in (select id_venta from estados
+                                      where estado = 'Pagada' or estado like 'Rech%')) as presentadasMesAnterior,
+
+                          (select count(distinct id_venta) from estados
+                                    where estado = '#$PAGADA'
+                                    and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE() - INTERVAL 1 MONTH))
+                                    and id_venta not in (select id_venta from estados
+                                           where estado like 'Rech%')) as pagadasMesAnterior,
+                          (select count(distinct id_venta) from estados
+                                    where estado like 'Rech%'
+                                    and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE() - INTERVAL 1 MONTH))
+                                    ) as rechazadasMesAnterior
+
+
+                          from estados e
+                          where e.estado = '#$PRESENTADA'
+                           or e.estado = '#$PAGADA'
+                           or e.estado like 'Rech%'
+
+                          group by e.estado
+                          limit 1
+
+      """.as[(Int, Int, Int, Int, Int, Int)]
 
 
     Db.db.run(p)

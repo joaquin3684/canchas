@@ -46,7 +46,8 @@ object RecuperacionVentaRepository extends Estados{
         (x.estado === RECHAZO_LOGISTICA ||
           x.estado === RECHAZO_AUDITORIA ||
           x.estado === RECHAZO_VALIDACION ||
-          x.estado === RECHAZO_ADMINISTRACION) &&
+          x.estado === RECHAZO_ADMINISTRACION ||
+          x.estado === RECHAZO_PRESENTACION) &&
           x.recuperable === true && x.paraRecuperar === false)
       v <- ventas.filter( x => x.idObraSocial.inSetBind(obs) && x.id === e.idVenta)
 

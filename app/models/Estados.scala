@@ -16,7 +16,7 @@ trait Estados {
   val PRESENTADA = "Presentada"
   val PAGADA = "Pagada"
   val RECHAZO_ADMINISTRACION = "Rechazo por administracion"
-  val RECHAZO_PRESENTACION = "Presentacion rechazada"
+  val RECHAZO_PRESENTACION = "Rechazo presentacion"
   val DIGITALIZADA = "Venta digitalizada"
 
 }
