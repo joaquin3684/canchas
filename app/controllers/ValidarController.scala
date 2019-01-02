@@ -56,6 +56,13 @@ class ValidarController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     Ok(json)
   }
 
+  def borrarVenta = authAction { implicit  request =>
+
+    val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "id").toLong
+    val future = ValidacionRepository.borrarVenta(idVenta)
+     Await.result(future, Duration.Inf)
+    Ok("borrado")
+  }
 
   def ventasAValidar = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales

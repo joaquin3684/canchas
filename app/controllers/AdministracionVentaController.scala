@@ -51,37 +51,6 @@ class AdministracionVentaController @Inject()(cc: ControllerComponents, val json
     Ok(ventas)
   }
 
-/*  def ventasPresentables = getAuthAction { implicit request =>
-    implicit val obs : Seq[String] = request.obrasSociales
-    val future = AdministracionVentaRepository.ventasPresentables
-    val ventasPres = Await.result(future, Duration.Inf)
-    val ventasA = ventasPres.map(_._1).distinct
-    val v = ventasA.map {
-      x =>
-
-        val perfil = ventasPres.filter(v => v._1 == x && v._3 == "OPERADOR VENTA" || v._3 == "EXTERNO" || v._3 == "PROMOTORA" || v._3 == "VENDEDORA").map(_._3).head
-        val nombreUsuario = ventasPres.filter(v => v._1 == x ).map(_._2).head
-        val fechaCreacion = ventasPres.filter(_._1 == x).map(_._4).head
-
-
-
-        val a = jsonMapper.toJsonString(x)
-        //val b = jsonMapper.toJsonString(auditoria)
-        val node = jsonMapper.getJsonNode(a)
-        //val audiNode = jsonMapper.getJsonNode(b)
-
-        jsonMapper.putElement(node, "perfil", perfil)
-        //jsonMapper.addNode("auditoria", audiNode, node)
-        jsonMapper.putElement(node, "nombreUsuario", nombreUsuario)
-        jsonMapper.putElement(node, "fechaCreacion", fechaCreacion.toIsoDateTimeString)
-        node
-
-    }.distinct
-    val ventas = jsonMapper.toJson(v.distinct)
-    Ok(ventas)
-  }*/
-
-
 
   def ventasPresentadas = getAuthAction { implicit request =>
     implicit val obs : Seq[String] = request.obrasSociales

@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import akka.http.scaladsl.model.DateTime
 import models._
 import slick.jdbc.MySQLProfile.api._
-import schemas.Schemas.{estados, validaciones, ventas, datosEmpresas, usuariosPerfiles}
+import schemas.Schemas.{estados, validaciones, ventas, datosEmpresas, usuariosPerfiles, auditorias, visitas}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
@@ -31,6 +31,17 @@ object ValidacionRepository extends Estados with Perfiles {
     }
     Db.db.run(query.result)
 
+  }
+
+  def borrarVenta(id: Long) = {
+    val es = estados.filter(_.idVenta === id).delete
+    val v = validaciones.filter(_.idVenta === id).delete
+    val da = datosEmpresas.filter(_.idVenta === id).delete
+    val vi = visitas.filter(_.idVenta === id).delete
+    val au = auditorias.filter(_.idVenta === id).delete
+    val ven = ventas.filter(_.id === id).delete
+    val fullQuery = DBIO.seq(es, v, da, vi, au, ven)
+    Db.db.run(fullQuery.transactionally)
   }
 
   def ventasModificables (implicit obs: Seq[String]): Future[Seq[(Venta, Estado)]]= {

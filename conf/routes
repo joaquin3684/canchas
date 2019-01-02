@@ -69,7 +69,7 @@ PUT /modificar/updateVenta/:idVenta             controllers.ValidarController.mo
 
 GET /modificar/ventasAModificar                 controllers.ValidarController.ventasParaModificar
 
-
+POST /borrar/borrarVenta                        controllers.ValidarController.borrarVenta
 
 
 # LOGISTICA
