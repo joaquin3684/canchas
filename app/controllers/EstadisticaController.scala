@@ -339,7 +339,7 @@ class EstadisticaController @Inject()(cc: ControllerComponents, val jsonMapper: 
 
       val node = jsonMapper.mapper.createObjectNode()
 
-      jsonMapper.putElement(node, "fecha", fecha )
+      jsonMapper.putElement(node, "dia", fecha )
       jsonMapper.putElement(node, "rechazadas", rechazadas)
       jsonMapper.putElement(node, "presentadas", presentadas)
       jsonMapper.putElement(node, "pagadas", pagadas)
