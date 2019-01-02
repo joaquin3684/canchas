@@ -289,53 +289,6 @@ object EstadisticaRepository extends Estados {
   }
 
 
-  def eficienciaPerfil(fechaDesde: DateTime, fechaHasta: DateTime, perfil: String): Future[Seq[(String, Int, Int, Int)]] = {
-
-
-    val fStr = fechaDesde.toIsoDateString()
-    val fhStr = fechaHasta.toIsoDateString()
-
-
-    val p = sql"""select
-                                  u.nombre,
-                                   (select count(*) from estados
-                                    where estados.user = u.user and
-                                     estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
-                                      estados.id_venta in
-                                      (select estados.id_venta from estados
-                                    where estados.estado like 'Rech%')) as rechazados,
-
-                                    (select count(*) from estados
-                                                     where estados.user = u.user and
-                                                      estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
-                                                       estados.id_venta in
-                                                       (select estados.id_venta from estados
-                                                     where estados.estado = 'Presentada')
-                                                           and estados.id_venta not in
-                                                    (select estados.id_venta from estados
-                                                                     where estados.estado = 'Pagada' or estados.estado like 'Rech%')
-                                  ) as presentadas,
-
-                  (select count(*) from estados
-                                                                      where estados.user = u.user and
-                                                                       estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
-                                                                        estados.id_venta in
-                                                                        (select estados.id_venta from estados
-                                                                      where estados.estado = 'Pagada')) as pagadas
-
-                   from usuarios u
-                                   join usuario_perfil on u.user = usuario_perfil.user
-                                   where  usuario_perfil.perfil = '#$perfil'
-                                   group by u.nombre, u.user
-                                   having rechazados > 0 or presentadas > 0 or pagadas > 0
-
-      """.as[(String, Int, Int, Int)]
-
-
-    Db.db.run(p)
-  }
-
-
   def cantidadVentasTotalPorDia(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
@@ -367,14 +320,15 @@ object EstadisticaRepository extends Estados {
     val fhStr = fechaHasta.toIsoDateString()
 
 
-    val p = sql"""select concat(month(e.fecha), '-', floor((dayofyear(date(e.fecha)) - dayofyear(date('#$fStr')))/7)),
+    val p = sql"""select concat(month(e.fecha), '-', round((dayofyear(date(e.fecha)) - dayofyear(date('#$fStr')))/7)) as semana,
                                sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
                                sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
                                sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
 
                            from estados e
                                            where (e.fecha between '#$fStr' and '#$fhStr') and e.estado = 'Presentada'
-                                           group by concat(month(e.fecha), '-', floor((dayofyear(date(e.fecha)) - dayofyear(date('#$fStr')))/7))
+                                           group by semana
+                                           order by cast(REPLACE(semana, '-', '') as unsigned) asc
 
       """.as[(String, Int, Int, Int)]
 
@@ -436,37 +390,19 @@ object EstadisticaRepository extends Estados {
     val fhStr = fechaHasta.toIsoDateString()
 
 
-    val p = sql"""select ventas.zona,
-
-                 (select count(*) from estados where
-                    (fecha between '#$fStr' and '#$fhStr') and
-                    estados.estado = 'Creado' and
-                     estados.id_venta in
-                     (select estados.id_venta from estados
-                       where estados.estado like 'Rech%')) as rechazados,
-
-                 (select count(*) from estados
-                        where
-                        estados.estado = 'Creado'
-                        and (fecha between '#$fStr' and '#$fhStr') and
-                        estados.id_venta in
-                        (select estados.id_venta from estados
-                        where estados.estado = 'Presentada')
-                        and estados.id_venta not in
-                        (select estados.id_venta from estados
-                        where estados.estado = 'Pagada' or estados.estado like 'Rech%')
-                        ) as presentadas,
+    val p = sql"""select v.zona,
+                       sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                       sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                       sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
 
 
-                 (select count(*) from estados
-                        where
-                        estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
-                        estados.id_venta in
-                             (select estados.id_venta from estados
-                              where estados.estado = 'Pagada')) as pagadas
 
-                          from ventas
-                          group by ventas.zona
+                          from ventas v
+                          join estados e on e.id_venta = v.id
+                          WHERE
+                          (fecha between '#$fStr' and '#$fhStr') and
+                          e.estado = 'Creado'
+                          group by v.zona
 
 
       """.as[(String, Int, Int, Int)]
@@ -485,35 +421,15 @@ object EstadisticaRepository extends Estados {
 
     val p = sql"""select ventas.localidad,
 
-                 (select count(*) from estados where
-                    (fecha between '#$fStr' and '#$fhStr') and
-                    estados.estado = 'Creado' and
-                     estados.id_venta in
-                     (select estados.id_venta from estados
-                       where estados.estado like 'Rech%')) as rechazados,
-
-                 (select count(*) from estados
-                        where
-                        estados.estado = 'Creado'
-                        and (fecha between '#$fStr' and '#$fhStr') and
-                        estados.id_venta in
-                        (select estados.id_venta from estados
-                        where estados.estado = 'Presentada')
-                        and estados.id_venta not in
-                        (select estados.id_venta from estados
-                        where estados.estado = 'Pagada' or estados.estado like 'Rech%')
-                        ) as presentadas,
-
-
-                 (select count(*) from estados
-                        where
-                        estados.estado = 'Creado' and (fecha between '#$fStr' and '#$fhStr') and
-                        estados.id_venta in
-                             (select estados.id_venta from estados
-                              where estados.estado = 'Pagada')) as pagadas
+                 sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado like 'Rech%') then 1 else 0 end) as rechazados,
+                 sum(case when not exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' or estado like 'Rech%' ) then 1 else 0 end) as presentados,
+                 sum(case when exists (select 1 from estados where estados.id_venta = e.id_venta and estado = 'Pagada' and not exists (select 1 from estados ea where estados.id_venta = ea.id_venta and estado like 'Rech%' )) then 1 else 0 end) as pagados
 
                           from ventas
-                          where ventas.zona in (#$zon)
+                          join estados e on e.id_venta = ventas.id
+                          where ventas.zona in (#$zon) and
+                          (fecha between '#$fStr' and '#$fhStr') and
+                          e.estado = 'Creado'
                           group by ventas.localidad
 
 
