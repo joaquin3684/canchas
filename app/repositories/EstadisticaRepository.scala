@@ -473,6 +473,7 @@ object EstadisticaRepository extends Estados {
                                     and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE() - INTERVAL 1 MONTH))
                                     and id_venta not in (select id_venta from estados
                                            where estado like 'Rech%')) as pagadasMesAnterior,
+
                           (select count(distinct id_venta) from estados
                                     where estado like 'Rech%'
                                     and id_venta in (select id_venta from estados where estado = '#$PRESENTADA' and month(fecha) = month(CURDATE() - INTERVAL 1 MONTH))
