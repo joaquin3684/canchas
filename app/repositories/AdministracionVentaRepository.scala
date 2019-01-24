@@ -39,12 +39,12 @@ object AdministracionVentaRepository extends Estados{
   def ventasIncompletas(implicit obs: Seq[String]) : Future[Seq[Venta]] = {
 
     val query = for{
-      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA)
+      e <- estados.filter( x => x.estado === VISITA_CONFIRMADA && !(x.idVenta in estados.filter(x => x.estado === DIGITALIZADA || x.estado.like("%Rech%")).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && (x.empresa.isEmpty || x.cuit.isEmpty || x.tresPorciento.isEmpty))
     } yield v
 
     val query2 = for{
-      e <- estados.filter( x => x.estado === VALIDADO)
+      e <- estados.filter( x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === DIGITALIZADA || x.estado.like("%Rech%")).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs) && (x.empresa.isEmpty || x.cuit.isEmpty || x.tresPorciento.isEmpty))
       e2 <- estados.filter( x => x.estado === CREADO && x.idVenta === v.id)
       u <- usuarios.filter(_.user === e2.user)

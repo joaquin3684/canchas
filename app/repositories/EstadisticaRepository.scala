@@ -152,7 +152,6 @@ object EstadisticaRepository extends Estados {
     Db.db.run(p)
   }
 
-
   def cantidadVentasTotalPorObraSocial(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
@@ -287,7 +286,6 @@ object EstadisticaRepository extends Estados {
     Db.db.run(p)
 
   }
-
 
   def cantidadVentasTotalPorDia(fechaDesde: DateTime, fechaHasta: DateTime)(implicit obs:Seq[String]): Future[Seq[(String, Int, Int, Int)]] = {
 
@@ -442,8 +440,6 @@ object EstadisticaRepository extends Estados {
   def indicadorVentasPresentadasDelMes()(implicit obs:Seq[String]): Future[Seq[(Int, Int, Int, Int, Int, Int)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
-
-
 
     val p = sql"""select (select count(distinct id_venta) from estados
                             where estado = '#$PRESENTADA'
