@@ -85,7 +85,7 @@ object AdministracionVentaRepository extends Estados{
 
     Db.db.run(unionQuery.result)
   }
-  
+
 
   def presentarVentas(presentaciones: Seq[Long], fechaPresentacion: DateTime, user:String) = {
       val est = presentaciones.map( x => Estado(user, x, PRESENTADA, fechaPresentacion))

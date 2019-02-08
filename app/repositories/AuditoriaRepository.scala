@@ -11,7 +11,7 @@ object AuditoriaRepository extends Estados {
 
   def ventasParaAuditar()(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado, String)]]= {
     val query = for {
-      e <- estados.filter(x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA || x.estado === RECHAZO_AUDITORIA).map(_.idVenta)))
+      e <- estados.filter(x => x.estado === VALIDADO && !(x.idVenta in estados.filter(x => x.estado === AUDITORIA_APROBADA || x.estado === AUDITORIA_OBSERVADA || x.estado.like("%Rech%")).map(_.idVenta)))
       v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
       e2 <- estados.filter(x => x.estado === CREADO && v.id === x.idVenta)
       up <- usuariosPerfiles.filter(x => x.idUsuario === e2.user)

@@ -59,7 +59,7 @@ object ValidacionRepository extends Estados with Perfiles {
   def ventasAValidar(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, DateTime, String, String)]] = {
     val query = {
       for {
-        e <- estados.filter(x => x.estado === CREADO && !(x.idVenta in estados.filter(x => x.estado === VALIDADO || x.estado === RECHAZO_VALIDACION).map(_.idVenta)))
+        e <- estados.filter(x => x.estado === CREADO && !(x.idVenta in estados.filter(x => x.estado === VALIDADO || x.estado.like("%Rech%")).map(_.idVenta)))
         v <- ventas.filter(x => x.id === e.idVenta && x.idObraSocial.inSetBind(obs))
         up <- usuariosPerfiles.filter(x => e.user === x.idUsuario && (x.idPerfil === OPERADOR_VENTA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO || x.idPerfil === VENDEDORA))
       } yield (v, e.fecha, e.user, up.idPerfil)
