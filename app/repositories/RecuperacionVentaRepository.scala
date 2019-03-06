@@ -18,7 +18,7 @@ object RecuperacionVentaRepository extends Estados{
   implicit val impVenta = GetResult( r => (Venta(r.<<, r.<<, r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,r.<<, Some(DateTime(r.nextTimestamp().getTime)),r.<<,r.<<,r.<<,r.<<,r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<), Estado(r.<<, r.<<, r.<<, DateTime(r.nextTimestamp().getTime), r.<<, r.<<, r.<<, r.<<)))
   //implicit val impEs = GetResult( r => Estado(r.<<, r.<<, r.<<, DateTime(r.nextTimestamp().getTime), r.<<, r.<<, r.<<, r.<<))
 
-  def ventasRecuperables(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado)]] = {
+  def ventasRecuperablesCall(user: String)(implicit obs: Seq[String]) : Future[Seq[(Venta, Estado)]] = {
 
     val obsSql = obs.mkString("'", "', '", "'")
 
@@ -69,8 +69,14 @@ object RecuperacionVentaRepository extends Estados{
     val a = estados.filter(_.id === idEstado).map(_.paraRecuperar).update(true)
     val b = estados.filter(x => x.idVenta === idVenta && x.estado === CREADO).map(_.user).update(user)
     val fullQuery = DBIO.seq(a, b)
+    Db.db.run(fullQuery.transactionally)
+  }
 
+  def recuperarVentaSinCall(idEstado: Long, user:String, idVenta: Long) = {
 
+    val a = estados.filter(x => x.idVenta === idVenta && x.estado.like("%Rech%")).delete
+    val b = estados.filter(x => x.idVenta === idVenta && x.estado === CREADO).map(_.user).update(user)
+    val fullQuery = DBIO.seq(a, b)
     Db.db.run(fullQuery.transactionally)
   }
 

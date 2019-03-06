@@ -35,11 +35,16 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
     implicit val obs: Seq[String] = request.obrasSociales
     val futureVentas = VentaRepository.all(request.user)
     val ventas = Await.result(futureVentas, Duration.Inf)
-    val v = ventas.map {x =>
-      val sv = jsonMapper.toJsonString(x._1)
+    val a = ventas.map(_._1).distinct
+    val v = a.map {x =>
+      val sv = jsonMapper.toJsonString(x)
       val vNode = jsonMapper.getJsonNode(sv)
-      jsonMapper.putElement(vNode, "user", x._2.user)
-      jsonMapper.putElement(vNode, "fechaCreacion", x._2.fecha.toIsoDateTimeString())
+      val estadoCreado = ventas.filter(_._1.id == x.id).head._2
+      val ultimoEstado = ventas.filter(_._1.id == x.id).map(_._3).sortBy(_.id).head
+      jsonMapper.putElement(vNode, "user", estadoCreado.user)
+      jsonMapper.putElement(vNode, "ultimoEstado", ultimoEstado.estado)
+      jsonMapper.putElement(vNode, "fechaCreacion", estadoCreado.fecha.toIsoDateTimeString())
+
     }
     val json = jsonMapper.toJson(v)
     Ok(json)

@@ -12,11 +12,11 @@ import com.github.t3hnar.bcrypt._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc) with Estados{
+class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMapper, authAction: AuthenticatedAction, getAuthAction: GetAuthenticatedAction, checkObs: ObraSocialFilterAction) extends AbstractController(cc) with Estados with Perfiles{
 
   def ventasRecuperables = getAuthAction { implicit request =>
     implicit val obs: Seq[String] = request.obrasSociales
-    val future = RecuperacionVentaRepository.ventasRecuperables(request.user)
+    val future = RecuperacionVentaRepository.ventasRecuperablesCall(request.user)
     val ventasRec = Await.result(future, Duration.Inf)
     val v = ventasRec.map { x =>
 
@@ -66,9 +66,21 @@ class RecuperarVentaController @Inject()(cc: ControllerComponents, val jsonMappe
     val user = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "user").toString
     val idVenta = jsonMapper.getAndRemoveElementAndRemoveExtraQuotes(request.rootNode, "idVenta").toLong
 
-    val future = RecuperacionVentaRepository.marcarParaRecuperar(idEstado, user, idVenta)
-    Await.result(future, Duration.Inf)
-    Ok("venta enviada a call")
+    val f = UsuarioRepository.getPerfilFromUser(user)
+    val perfiles = Await.result(f, Duration.Inf)
+
+    if(perfiles.exists(x => x == PROMOTORA || x == EXTERNO || x == VENDEDORA))
+      {
+        val future = RecuperacionVentaRepository.recuperarVentaSinCall(idEstado, user, idVenta)
+        Await.result(future, Duration.Inf)
+        Ok("venta recuperada")
+      }
+    else
+    {
+      val future = RecuperacionVentaRepository.marcarParaRecuperar(idEstado, user, idVenta)
+      Await.result(future, Duration.Inf)
+      Ok("venta enviada a call")
+    }
   }
 
 }

@@ -49,7 +49,9 @@ object UsuarioRepository extends Perfiles {
     Db.db.run(query.result)
   }
 
-
+  def getPerfilFromUser(user: String) : Future[Seq[String]] = {
+    Db.db.run(usuariosPerfiles.filter(_.idUsuario === user).map(_.idPerfil).result)
+  }
 
   def checkObraSocial(user: String)(implicit obs: Seq[String]) : Future[Option[String]] = {
 
@@ -146,7 +148,7 @@ object UsuarioRepository extends Perfiles {
 
   def usuariosParaRecuperarVenta : Future[Seq[Usuario]] = {
     val q = for {
-      up <- usuariosPerfiles.filter(x => x.idPerfil === OPERADOR_VALIDACION || x.idPerfil === OPERADOR_LOGISTICA || x.idPerfil === OPERADOR_AUDITORIA || x.idPerfil === OPERADOR_VENTA)
+      up <- usuariosPerfiles.filter(x => x.idPerfil === OPERADOR_VALIDACION || x.idPerfil === OPERADOR_LOGISTICA || x.idPerfil === OPERADOR_AUDITORIA || x.idPerfil === OPERADOR_VENTA || x.idPerfil === VENDEDORA || x.idPerfil === PROMOTORA || x.idPerfil === EXTERNO)
       u <- usuarios.filter(x => x.user === up.idUsuario && x.borrado === false)
 
     } yield u
