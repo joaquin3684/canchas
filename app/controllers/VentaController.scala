@@ -43,6 +43,8 @@ class VentaController @Inject()(cc: ControllerComponents, val jsonMapper: JsonMa
       val ultimoEstado = ventas.filter(_._1.id == x.id).map(_._3).sortBy(_.id).head
       jsonMapper.putElement(vNode, "user", estadoCreado.user)
       jsonMapper.putElement(vNode, "ultimoEstado", ultimoEstado.estado)
+      jsonMapper.putElement(vNode, "observacion", ultimoEstado.observacion.getOrElse(""))
+      jsonMapper.putElement(vNode, "fechaUltimoEstado", ultimoEstado.fecha.toIsoDateString())
       jsonMapper.putElement(vNode, "fechaCreacion", estadoCreado.fecha.toIsoDateTimeString())
 
     }
