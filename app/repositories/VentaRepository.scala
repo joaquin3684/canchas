@@ -54,7 +54,7 @@ object VentaRepository extends Estados {
         e <- estados.filter( x => x.user === user && x.estado === CREADO)
         v <- ventas.filter(_.id === e.idVenta)
         e2 <- estados.filter(_.idVenta === v.id)
-      } yield (v,e, e2)
+      } yield (v, e, e2)
     }
     Db.db.run(query.result)
   }
