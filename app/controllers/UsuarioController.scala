@@ -23,7 +23,7 @@ class UsuarioController @Inject()(cc: ControllerComponents, val jsonMapper: Json
     val obrasSocialesJson = jsonMapper.getAndRemoveElement(rootNode, "obrasSociales")
     val password = rootNode.get("password").asText().bcrypt
     jsonMapper.putElement(rootNode, "password", password)
-    
+
     val userJson = rootNode.toString
 
     val obrasSociales = jsonMapper.fromJson[Seq[ObraSocial]](obrasSocialesJson)
