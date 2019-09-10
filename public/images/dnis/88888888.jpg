@@ -1,0 +1,407 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ventas",
+		"_postman_id": "3f275c36-36b5-2ec7-87fd-d037bcdca183",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:9000/usuario/create",
+			"request": {
+				"url": "localhost:9000/usuario/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iXX0.IYVFjip1HKQEuo4wjQmqYbHfYFHHarsXsgtlNnRYPCg",
+						"description": ""
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"description": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"pepe\",\n\t\"password\": 3,\n\t\"email\": \"pepe@gmail.com\",\n\t\"nombre\": \"plin\",\n\t\"perfiles\": [\n\t\t{\"nombre\": \"admin\"},\n\t\t{\"nombre\": \"operador\"}\n\t\t\n\t\t],\n\t\"obrasSociales\": [\n\t\t{\"nombre\": \"cobertec\"},\n\t\t{\"nombre\": \"osde\"}\n\t\t]\n\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/get/pepe",
+			"request": {
+				"url": "localhost:9000/usuario/get/pepe",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iXX0.IYVFjip1HKQEuo4wjQmqYbHfYFHHarsXsgtlNnRYPCg",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 3,\n\t\"nombre\":\"queso4fd\",\n\t\"direccion\": \"24\",\n\t\"telefono\": \"24\",\n\t\"particular\": 24,\n\t\"zona\": \"24\",\n\t\"localidad\": \"34\",\n\t\"longitude\": 34,\n\t\"latitude\": 34,\n\t\"especialidades\": [\n\t\t{ \"id\":1, \"nombre\": \"forro\", \"estudio\":3}\n\t\t],\n\t\"obrasSociales\": [\n\t\t{ \"id\":1, \"nombre\": \"forro\"}\n\t\t]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/all",
+			"request": {
+				"url": "localhost:9000/usuario/all",
+				"method": "GET",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iXX0.IYVFjip1HKQEuo4wjQmqYbHfYFHHarsXsgtlNnRYPCg",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "prueba",
+							"description": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "prueba",
+							"description": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "fecha_creacion_desde",
+							"value": "2018-02-01",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "fecha_creacion_hasta",
+							"value": "2018-05-05",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "fecha_modificacion_desde",
+							"value": "2018-02-01",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "fecha_modificacion_hasta",
+							"value": "2018-05-05",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/update/pepe",
+			"request": {
+				"url": "localhost:9000/usuario/update/pepiisdfnpo",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyJdLCJwZXJtaXNvcyI6WyJ1c3VhcmlvIl19.CMPojGhq3CmIe-i2m0A8W_QQLC6QadB_7hBck0j7kZs",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"asd\",\n\t\"password\": 4,\n\t\"email\": \"pepeiinpo@gmail.com\",\n\t\"nombre\": \"fds\",\n\t\"perfiles\": [\n\t\t{\"nombre\": \"admin\"}\n\t\t\n\t\t],\n\t\"obrasSociales\": [\n\t\t{\"nombre\": \"cobertec\"}\n\t\t\n\t\t]\n\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/login",
+			"request": {
+				"url": "localhost:9000/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLmdlc3Rpb25hcnR1cm5vcy5jb20vbG9naW4iLCJpYXQiOjE1MjE0ODAzMTYsImV4cCI6MTUyMTQ4MzkxNiwibmJmIjoxNTIxNDgwMzE2LCJqdGkiOiIxS2phRG9qRTVFSml0VEJqIiwic3ViIjo1NCwicHJ2IjoiODdlMGFmMWVmOWZkMTU4MTJmZGVjOTcxNTNhMTRlMGIwNDc1NDZhYSIsInBlcm1pc29zIjpbImFmaWxpYWRvIiwiY2xpbWVkIiwic29saWNpdHVkIiwiZmFybWFjaWEiLCJ1c2VyIiwiZXNwZWNpYWxpZGFkIiwiYXVkaXRvcmlhIiwibWVkaWNvcyJdLCJ1c2VyX2lkIjo1NH0.Y5wOIdiCF4vdSr-4yX4bu5olvLwXx40RJD-nzbeIYEQ",
+						"description": "",
+						"disabled": true
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"description": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"200\",\n\t\"password\": \"200\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/delete/pepiinpo",
+			"request": {
+				"url": "localhost:9000/usuario/delete/asd",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyJdLCJwZXJtaXNvcyI6WyJ1c3VhcmlvIl19.CMPojGhq3CmIe-i2m0A8W_QQLC6QadB_7hBck0j7kZs",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "1",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "1",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/cambiarPasswordPropia",
+			"request": {
+				"url": "localhost:9000/usuario/cambiarPassword",
+				"method": "POST",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyJdLCJwZXJtaXNvcyI6WyJ1c3VhcmlvIl19.CMPojGhq3CmIe-i2m0A8W_QQLC6QadB_7hBck0j7kZs",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"asd\",\n\t\"password\": \"4\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/usuario/cambiarPassword",
+			"request": {
+				"url": "localhost:9000/usuario/cambiarPasswordPropia",
+				"method": "POST",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyJdLCJwZXJtaXNvcyI6WyJ1c3VhcmlvIl19.CMPojGhq3CmIe-i2m0A8W_QQLC6QadB_7hBck0j7kZs"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"password\": \"4\"\n}"
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/venta/all",
+			"request": {
+				"url": "localhost:9000/venta/all",
+				"method": "GET",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iLCJ2ZW50YSJdfQ.eIfMrkRa35Ia62JQ5SHBEtIjxJCvWzKyDSAO4tmVGuY",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/venta/create",
+			"request": {
+				"url": "localhost:9000/venta/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMzAwIiwib2JyYXNTb2NpYWxlcyI6WyJtZWRpY3VzIiwib3NkZSJdLCJwZXJtaXNvcyI6WyJ1c3VhcmlvIiwidmVudGEiXX0.v2M8HYG37yTQBYwzuIqNQLwi2zZX1F_LclgV4gB8Mcc",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"dni\": 12,\n\t\"nombre\": \"pepe argento\",\n\t\"nacionalidad\": \"argentino\",\n\t\"domicilio\": \"tres arroyos 54\",\n\t\"localidad\": \"avellaneda\",\n\t\"telefono\": \"4672-7473\",\n\t\"cuil\": \"45\",\n\t\"estadoCivil\": \"casado\",\n\t\"edad\": 43,\n\t\"idObraSocial\": \"medicus\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/validacion/validar",
+			"request": {
+				"url": "localhost:9000/validacion/validar",
+				"method": "POST",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.xcI5MrRvUk7ZBjNOC9xsZUN-rcw1NkwTc_LCi7jGjuw",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"dni\": 7,\n\t\"codem\": \"true\",\n\t\"supper\": \"true\",\n\t\"afip\": \"true\",\n\t\"motivoCodem\": null,\n\t\"motivoSupper\": null,\n\t\"motivoAfip\": null\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/validacion/all",
+			"request": {
+				"url": "localhost:9000/validacion/all",
+				"method": "GET",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.xcI5MrRvUk7ZBjNOC9xsZUN-rcw1NkwTc_LCi7jGjuw",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/validacion/ventasAValidar",
+			"request": {
+				"url": "localhost:9000/validacion/ventasAValidar",
+				"method": "GET",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.xcI5MrRvUk7ZBjNOC9xsZUN-rcw1NkwTc_LCi7jGjuw",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/logistica/generarvisita",
+			"request": {
+				"url": "localhost:9000/logistica/generarvisita",
+				"method": "POST",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.cSaIqKMtxYAe_QAn6CKQVaHY18ckgAendZIdxIJIgDQ",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"dni\": 5,\n\t\"lugar\": \"2\",\n\t\"direccion\":\"2\",\n\t\"entreCalles\":\"2\",\n\t\"localidad\":\"2\",\n\t\"observacion\":\"2\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9000/logistica/ventassinvisita",
+			"request": {
+				"url": "localhost:9000/logistica/ventassinvisita",
+				"method": "GET",
+				"header": [
+					{
+						"key": "My-Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMjAwIiwib2JyYXNTb2NpYWxlcyI6WyJjb2JlcnRlYyIsIm1lZGljdXMiLCJvc2RlIl0sInBlcm1pc29zIjpbImxvZ2lzdGljYSIsInVzdWFyaW8iLCJ2YWxpZGFjaW9uIiwidmVudGEiXX0.cSaIqKMtxYAe_QAn6CKQVaHY18ckgAendZIdxIJIgDQ",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
